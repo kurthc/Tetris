@@ -22,10 +22,15 @@ static LRESULT CALLBACK WindowsTetrisWindowProcedure(HWND Window, UINT Message, 
 	switch (Message)
 	{
 	case(WM_PAINT):
+	{
 		if (LOGMESSAGES)
 			std::cout << "WM_PAINT" << "\n";
-		Result = DefWindowProc(Window, Message, wParam, lParam);
-		break;
+		PAINTSTRUCT ps;
+		HDC DeviceContext = BeginPaint(Window, &ps);
+		Win32DrawClientArea(DeviceContext);
+		EndPaint(Window, &ps);
+		//Result = DefWindowProc(Window, Message, wParam, lParam);
+	} break;
 	case(WM_ACTIVATE):
 		if (LOGMESSAGES)
 			std::cout << "WM_ACTIVATE\n";
@@ -73,11 +78,12 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	Win32AddConsole();
 
 	HDC DeviceContext = GetDC(Window);
-
+	Win32SetUpMemoryDeviceContext(DeviceContext);
 
 	bool GameLoopFinished = false;
 
-
+	GlobalGameState = new game_state();
+	
 	while (!GameLoopFinished)
 	{
 		timing_information TimeFrameStart = GetSeconds();
@@ -111,6 +117,16 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	}
 }
 
+// Create the Memory DC.
+bool Win32SetUpMemoryDeviceContext(HDC DeviceContext)
+{
+	bool Success;
+	MemoryDeviceContext = CreateCompatibleDC(DeviceContext);                             // Get a memory DC the same size/attributes as the Window one.
+	MemoryDeviceContextBitmap = CreateCompatibleBitmap(DeviceContext, GameWindowWidth, GameWindowHeight);  // The memory DC needs a bitmap to write to.
+	Success = SelectObject(MemoryDeviceContext, MemoryDeviceContextBitmap);                                      // Attach the bitmap to the memory DC.
+	if (!Success) std::cout << "Failure setting up Device Context\n";
+	return Success;
+}
 
 // Attach a console window for debugging.
 static void Win32AddConsole()
@@ -119,4 +135,63 @@ static void Win32AddConsole()
 	AllocConsole();
 	AttachConsole(GetCurrentProcessId());
 	freopen_s(&stream, "CON", "w", stdout);
+}
+
+static void Win32DrawClientArea(HDC DeviceContext)
+{
+	Win32DrawGameMap();
+	BitBlt(DeviceContext, 0, 0, GameWindowWidth, GameWindowHeight, MemoryDeviceContext, 0, 0, SRCCOPY);
+}
+
+static void Win32DrawGameMap()
+{
+	int GameMapLeft = 20;
+	int GameMapTop = 24;
+	int BlockWidth = 24;
+	int BlockHeight = BlockWidth;
+
+	game_board& GameBoard = GlobalGameState->GameBoard;
+
+	HBRUSH Brush = CreateSolidBrush(RGB(255, 0, 0));
+
+	RECT r = {};
+
+	//for (int y = 0; y < 1; ++y)
+	//{
+	//	for (int x = 0; x < 1; ++x)
+	//	{
+	//		r.left = GameMapLeft + x * BlockWidth;
+	//		r.top = GameMapTop + y * BlockHeight;
+	//		r.right = GameMapLeft + (x + 1) * BlockWidth;
+	//		r.bottom = GameMapTop + (y + 1) * BlockHeight;
+	//		FillRect(MemoryDeviceContext, &r, Brush);
+	//	}
+	//}
+
+	for (int y = 0; y < GameBoard.GameBoardHeight; ++y)
+	{
+		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
+		{
+			r.left = GameMapLeft + x * BlockWidth;
+			r.top = GameMapTop + y * BlockHeight;
+			r.right = GameMapLeft + (x + 1) * BlockWidth;
+			r.bottom = GameMapTop + (y + 1) * BlockHeight;
+			if (GameBoard.GameBoard[x][y] == 1)
+			{
+				FillRect(MemoryDeviceContext, &r, Brush);
+			}
+		}
+	}
+
+	DeleteObject(Brush);
+
+	//FillRect(MemoryDeviceContext, &r, Brush);
+
+	//r.top = 100;
+	//r.bottom = 200;
+	//HBRUSH Brush2 = CreateSolidBrush(RGB(255, 0, 255));
+	//FillRect(MemoryDeviceContext, &r, Brush2);
+
+	//Rectangle(MemoryDeviceContext, 0, 0, 800, 600);
+	//Rectangle(MemoryDeviceContext, 0, 0, 100, 100);
 }
