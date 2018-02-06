@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include "Game.h"
+#include "..\Tetris\resource.h"
 
 
 
@@ -15,6 +16,8 @@ static int CountsPerSecond;
 static HDC MemoryDeviceContext;
 static HBITMAP MemoryDeviceContextBitmap;
 static game_state* GlobalGameState;
+
+static HBITMAP BitmapBlockPurple;
 
 struct timing_information
 {

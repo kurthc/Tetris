@@ -9,7 +9,7 @@ timing_information GetSeconds()
 	int Counts;
 	double Seconds;
 	QueryPerformanceCounter(&LICounts);
-	Counts = LICounts.QuadPart;
+	Counts = (int)LICounts.QuadPart;
 	Seconds = (double)Counts / CountsPerSecond;
 	return { Seconds, Counts, LICounts };
 }
@@ -64,6 +64,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	QueryPerformanceFrequency(&CountsPerSecondLarge);
 	CountsPerSecond = (int)CountsPerSecondLarge.QuadPart;
 
+	Win32AddConsole();
+
 	WNDCLASSEXA WindowClass = {};
 	WindowClass.cbSize = sizeof(WNDCLASSEX);
 	WindowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -75,10 +77,12 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	HWND Window = CreateWindowExA(0, WindowClass.lpszClassName, "My Tetris Window", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
 		GameWindowWidth, GameWindowHeight, NULL, NULL, Instance, NULL);
 
-	Win32AddConsole();
 
 	HDC DeviceContext = GetDC(Window);
 	Win32SetUpMemoryDeviceContext(DeviceContext);
+
+	//BitmapSquare = LoadBitmap(Instance, TEXT("IDB_Brick"));
+	BitmapBlockPurple = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
 
 	bool GameLoopFinished = false;
 
@@ -101,10 +105,10 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 		//Sleep(15);
 		timing_information TimeAfterProcess = GetSeconds();
 		double ProcessingTime = TimeAfterProcess.Seconds - TimeFrameStart.Seconds;
-		double TimeToSleep = 1 / TargetFPS - ProcessingTime;
+		double TimeToSleep = (1 / TargetFPS) - ProcessingTime;
 		if (TimeToSleep > 0)
 		{
-			Sleep(1000 * TimeToSleep);
+			Sleep((DWORD)(1000 * TimeToSleep));
 		}
 
 		timing_information TimeFrameEnd = GetSeconds();
@@ -146,27 +150,19 @@ static void Win32DrawClientArea(HDC DeviceContext)
 static void Win32DrawGameMap()
 {
 	int GameMapLeft = 20;
-	int GameMapTop = 24;
-	int BlockWidth = 24;
+	int GameMapTop = 20;
+	int BlockWidth = 25;
 	int BlockHeight = BlockWidth;
 
 	game_board& GameBoard = GlobalGameState->GameBoard;
 
-	HBRUSH Brush = CreateSolidBrush(RGB(255, 0, 0));
+	//HBRUSH Brush = CreateSolidBrush(RGB(255, 0, 0));
 
 	RECT r = {};
 
-	//for (int y = 0; y < 1; ++y)
-	//{
-	//	for (int x = 0; x < 1; ++x)
-	//	{
-	//		r.left = GameMapLeft + x * BlockWidth;
-	//		r.top = GameMapTop + y * BlockHeight;
-	//		r.right = GameMapLeft + (x + 1) * BlockWidth;
-	//		r.bottom = GameMapTop + (y + 1) * BlockHeight;
-	//		FillRect(MemoryDeviceContext, &r, Brush);
-	//	}
-	//}
+	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
+	SelectObject(BlockDC, BitmapBlockPurple);
+
 
 	for (int y = 0; y < GameBoard.GameBoardHeight; ++y)
 	{
@@ -178,12 +174,14 @@ static void Win32DrawGameMap()
 			r.bottom = GameMapTop + (y + 1) * BlockHeight;
 			if (GameBoard.GameBoard[x][y] == 1)
 			{
-				FillRect(MemoryDeviceContext, &r, Brush);
+				//FillRect(MemoryDeviceContext, &r, Brush);
+				BitBlt(MemoryDeviceContext, r.left, r.top, BlockWidth, BlockHeight, BlockDC, 0, 0, SRCCOPY);
 			}
 		}
 	}
 
-	DeleteObject(Brush);
+	DeleteObject(BlockDC);
+	//DeleteObject(Brush);
 
 	//FillRect(MemoryDeviceContext, &r, Brush);
 
