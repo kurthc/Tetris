@@ -32,3 +32,4 @@ static void Win32AddConsole();
 timing_information GetSeconds();
 static void Win32DrawClientArea(HDC DeviceContext);
 static void Win32DrawGameMap();
+void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B);

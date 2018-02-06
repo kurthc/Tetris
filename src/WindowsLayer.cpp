@@ -156,13 +156,17 @@ static void Win32DrawGameMap()
 
 	game_board& GameBoard = GlobalGameState->GameBoard;
 
-	//HBRUSH Brush = CreateSolidBrush(RGB(255, 0, 0));
-
-	RECT r = {};
+	RECT r {};
 
 	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
 	SelectObject(BlockDC, BitmapBlockPurple);
 
+	const static int BorderWidth = 4;
+	Win32DrawRectangle(MemoryDeviceContext, GameMapLeft - BorderWidth, GameMapTop - BorderWidth, GameMapLeft + GameBoard.GameBoardWidth * BlockWidth + BorderWidth,
+		GameMapTop + GameBoard.GameBoardHeight * BlockHeight + BorderWidth, 255, 255, 255);
+
+	Win32DrawRectangle(MemoryDeviceContext, GameMapLeft, GameMapTop - 4, GameMapLeft + GameBoard.GameBoardWidth * BlockWidth,
+		GameMapTop + GameBoard.GameBoardHeight * BlockHeight, 0, 0, 0);
 
 	for (int y = 0; y < GameBoard.GameBoardHeight; ++y)
 	{
@@ -174,22 +178,24 @@ static void Win32DrawGameMap()
 			r.bottom = GameMapTop + (y + 1) * BlockHeight;
 			if (GameBoard.GameBoard[x][y] == 1)
 			{
-				//FillRect(MemoryDeviceContext, &r, Brush);
 				BitBlt(MemoryDeviceContext, r.left, r.top, BlockWidth, BlockHeight, BlockDC, 0, 0, SRCCOPY);
 			}
 		}
 	}
 
 	DeleteObject(BlockDC);
-	//DeleteObject(Brush);
+}
 
-	//FillRect(MemoryDeviceContext, &r, Brush);
+void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B)
+{
+	RECT r{};
+	HBRUSH Brush;
 
-	//r.top = 100;
-	//r.bottom = 200;
-	//HBRUSH Brush2 = CreateSolidBrush(RGB(255, 0, 255));
-	//FillRect(MemoryDeviceContext, &r, Brush2);
-
-	//Rectangle(MemoryDeviceContext, 0, 0, 800, 600);
-	//Rectangle(MemoryDeviceContext, 0, 0, 100, 100);
+	Brush = CreateSolidBrush(RGB(R, G, B));
+	r.left = x;
+	r.top = y;
+	r.right = x2;
+	r.bottom = y2;
+	FillRect(DeviceContext, &r, Brush);
+	DeleteObject(Brush);
 }
