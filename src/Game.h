@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 //#include "WindowsLayer.h"
 
@@ -14,8 +15,18 @@ public:
 	game_board();
 };
 
+class falling_piece
+{
+public:
+	int x;
+	int y;
+	std::vector<int> blocks;
+};
+
+
 class game_state
 {
 public:
 	game_board GameBoard;
 };
+
