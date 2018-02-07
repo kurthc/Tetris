@@ -163,19 +163,19 @@ static void Win32DrawGameMap()
 
 	const static int BorderWidth = 4;
 	Win32DrawRectangle(MemoryDeviceContext, GameMapLeft - BorderWidth, GameMapTop - BorderWidth, GameMapLeft + GameBoard.GameBoardWidth * BlockWidth + BorderWidth,
-		GameMapTop + GameBoard.GameBoardHeight * BlockHeight + BorderWidth, 255, 255, 255);
+		GameMapTop + GameBoard.PlayableHeight * BlockHeight + BorderWidth, 255, 255, 255);
 
 	Win32DrawRectangle(MemoryDeviceContext, GameMapLeft, GameMapTop - 4, GameMapLeft + GameBoard.GameBoardWidth * BlockWidth,
-		GameMapTop + GameBoard.GameBoardHeight * BlockHeight, 0, 0, 0);
+		GameMapTop + GameBoard.PlayableHeight * BlockHeight, 0, 0, 0);
 
-	for (int y = 0; y < GameBoard.GameBoardHeight; ++y)
+	for (int y = GameBoard.PlayableHeight - 1; y >= 0; --y)
 	{
 		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
 		{
 			r.left = GameMapLeft + x * BlockWidth;
-			r.top = GameMapTop + y * BlockHeight;
+			r.top = GameMapTop + (GameBoard.PlayableHeight - 1 - y) * BlockHeight;
 			r.right = GameMapLeft + (x + 1) * BlockWidth;
-			r.bottom = GameMapTop + (y + 1) * BlockHeight;
+			r.bottom = GameMapTop + ((GameBoard.PlayableHeight - 1 - y) + 1) * BlockHeight;
 			if (GameBoard.GameBoard[x][y] == 1)
 			{
 				BitBlt(MemoryDeviceContext, r.left, r.top, BlockWidth, BlockHeight, BlockDC, 0, 0, SRCCOPY);

@@ -10,7 +10,7 @@
 
 
 constexpr int GameWindowWidth = 800;
-constexpr int GameWindowHeight = 600;
+constexpr int GameWindowHeight = 800;
 constexpr float TargetFPS = 60.0f;
 static int CountsPerSecond;
 static HDC MemoryDeviceContext;

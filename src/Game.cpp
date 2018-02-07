@@ -1,5 +1,12 @@
 #include "Game.h"
 
+falling_piece::falling_piece()
+{
+	this->x = 0;
+	this->y = 0;
+	this->blocks = std::vector<int>
+}
+
 game_board::game_board()
 {
 	for (int y = 0; y < this->GameBoardHeight; ++y)
@@ -18,4 +25,15 @@ game_board::game_board()
 		}
 	}
 	
+}
+
+
+game_state::game_state()
+{
+
+}
+
+void game_state::SetStandardPieces()
+{
+	//this->StandardPiece[0].Blocks
 }
