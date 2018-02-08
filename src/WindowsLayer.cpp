@@ -1,6 +1,7 @@
 #include "WindowsLayer.h"
 
 static constexpr bool LOGMESSAGES = false;
+static constexpr bool LOG_FPS = false;
 
 // Get the current time from QueryPerformanceCounter().
 timing_information GetSeconds()
@@ -81,7 +82,6 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	HDC DeviceContext = GetDC(Window);
 	Win32SetUpMemoryDeviceContext(DeviceContext);
 
-	//BitmapSquare = LoadBitmap(Instance, TEXT("IDB_Brick"));
 	BitmapBlockPurple = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
 
 	bool GameLoopFinished = false;
@@ -116,7 +116,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 		std::stringstream ss{""};
 		ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
 
-		std::cout << ss.str() << "\n";
+		if (LOG_FPS)
+			std::cout << ss.str() << "\n";
 
 	}
 }
@@ -147,6 +148,18 @@ static void Win32DrawClientArea(HDC DeviceContext)
 	BitBlt(DeviceContext, 0, 0, GameWindowWidth, GameWindowHeight, MemoryDeviceContext, 0, 0, SRCCOPY);
 }
 
+intvec2 MapToDisplayCoordinates(intvec2 MapPosition)
+{
+	int GameMapLeft = 20;
+	int GameMapTop = 20;
+	int BlockWidth = 25;
+	int BlockHeight = BlockWidth;
+	game_board& GameBoard = GlobalGameState->GameBoard;
+	int DisplayX = GameMapLeft + MapPosition.x * BlockWidth;
+	int DisplayY = GameMapTop + (GameBoard.PlayableHeight - MapPosition.y) * BlockHeight;
+	return { DisplayX, DisplayY };
+}
+
 static void Win32DrawGameMap()
 {
 	int GameMapLeft = 20;
@@ -172,18 +185,36 @@ static void Win32DrawGameMap()
 	{
 		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
 		{
-			r.left = GameMapLeft + x * BlockWidth;
-			r.top = GameMapTop + (GameBoard.PlayableHeight - 1 - y) * BlockHeight;
-			r.right = GameMapLeft + (x + 1) * BlockWidth;
-			r.bottom = GameMapTop + ((GameBoard.PlayableHeight - 1 - y) + 1) * BlockHeight;
+			intvec2 LeftTop = MapToDisplayCoordinates(intvec2(x, y+1));
+			//intvec2 RightBottom = MapToDisplayCoordinates(intvec2(x + 1, y - 1));
+			//r.left = GameMapLeft + x * BlockWidth;
+			//r.top = GameMapTop + (GameBoard.PlayableHeight - 1 - y) * BlockHeight;
+			//r.right = GameMapLeft + (x + 1) * BlockWidth;
+			//r.bottom = GameMapTop + ((GameBoard.PlayableHeight - 1 - y) + 1) * BlockHeight;
 			if (GameBoard.GameBoard[x][y] == 1)
 			{
-				BitBlt(MemoryDeviceContext, r.left, r.top, BlockWidth, BlockHeight, BlockDC, 0, 0, SRCCOPY);
+				BitBlt(MemoryDeviceContext, LeftTop.x, LeftTop.y, BlockWidth, BlockHeight, BlockDC, 0, 0, SRCCOPY);
 			}
 		}
 	}
 
 	DeleteObject(BlockDC);
+}
+
+static void Wind32DrawFallingPiece()
+{
+	piece& Piece = GlobalGameState->StandardPiece[0];
+	std::vector<intvec2>::iterator it = Piece.Blocks.begin();
+
+	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
+	SelectObject(BlockDC, BitmapBlockRed);
+
+	
+	while (it != Piece.Blocks.end())
+	{
+
+		++it;
+	}
 }
 
 void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B)
@@ -199,3 +230,4 @@ void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, 
 	FillRect(DeviceContext, &r, Brush);
 	DeleteObject(Brush);
 }
+

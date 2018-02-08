@@ -18,6 +18,7 @@ static HBITMAP MemoryDeviceContextBitmap;
 static game_state* GlobalGameState;
 
 static HBITMAP BitmapBlockPurple;
+static HBITMAP BitmapBlockRed;
 
 struct timing_information
 {
