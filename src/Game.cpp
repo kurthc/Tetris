@@ -7,6 +7,13 @@
 //	//this->blocks = std::vector<int>
 //}
 
+intvec2 intvec2::operator+(const intvec2& v)
+{
+	int ResultX = this->x + v.x;
+	int ResultY = this->y + v.y;
+	return { ResultX, ResultY };
+}
+
 piece::piece()
 {
 	this->Center = intvec2(0,0);
@@ -33,16 +40,22 @@ game_board::game_board()
 	
 }
 
+falling_piece::falling_piece()
+{
+	
+}
+
 falling_piece::falling_piece(piece Piece)
 {
 	this->Piece = Piece;    //copy
-	this->CenterLocation = intvec2(4, 18);
+	this->CenterLocation = intvec2(4, 17);
 	
 }
 
 game_state::game_state()
 {
 	this->SetStandardPieces();
+	this->FallingPiece = falling_piece(this->StandardPiece[1]);
 }
 
 void game_state::SetStandardPieces()
@@ -53,9 +66,16 @@ void game_state::SetStandardPieces()
 	this->StandardPiece[0].Blocks.push_back(intvec2(1, 1));
 	this->StandardPiece[0].Blocks.push_back(intvec2(0, 1));
 	this->StandardPiece[0].Center = intvec2(0, 0);
-	this->StandardPiece[0].CenterType = PieceCenterTypeCenter;
-	
+	this->StandardPiece[0].CenterType = piece_center_type::Center;
 
-	//std::cout << "SetStandardPieces";
+	this->StandardPiece[1].Blocks.push_back(intvec2(0, 0));
+	this->StandardPiece[1].Blocks.push_back(intvec2(1, 0));
+	this->StandardPiece[1].Blocks.push_back(intvec2(-1, 0));
+	this->StandardPiece[1].Blocks.push_back(intvec2(0, 1));
+	this->StandardPiece[1].Center = intvec2(0, 0);
+	this->StandardPiece[1].CenterType = piece_center_type::Center;
+
+
+
 	//this->StandardPiece[0].Blocks
 }

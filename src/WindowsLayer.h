@@ -9,9 +9,15 @@
 
 
 
-constexpr int GameWindowWidth = 800;
-constexpr int GameWindowHeight = 800;
+constexpr int GAME_WINDOW_WIDTH = 800;
+constexpr int GAME_WINDOW_HEIGHT = 800;
+constexpr int GAME_MAP_LEFT = 100;
+constexpr int GAME_MAP_TOP = 20;
+constexpr int BLOCK_WIDTH = 25;
+constexpr int BLOCK_HEIGHT = BLOCK_WIDTH;
+
 constexpr float TargetFPS = 60.0f;
+
 static int CountsPerSecond;
 static HDC MemoryDeviceContext;
 static HBITMAP MemoryDeviceContextBitmap;
@@ -34,3 +40,4 @@ timing_information GetSeconds();
 static void Win32DrawClientArea(HDC DeviceContext);
 static void Win32DrawGameMap();
 void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B);
+static void Wind32DrawFallingPiece();
