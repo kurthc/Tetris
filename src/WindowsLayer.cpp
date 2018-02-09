@@ -55,6 +55,11 @@ static LRESULT CALLBACK WindowsTetrisWindowProcedure(HWND Window, UINT Message, 
 		PostQuitMessage(0);
 	} break;
 
+	case(WM_KEYDOWN || WM_KEYUP):
+	{
+		Result = Win32ProcessKeyboardMessage(Window, Message, wParam, lParam);
+	} break;
+
 	default:
 		if (LOGMESSAGES)
 			std::cout << "Unhandled message - " << Message << "\n";
@@ -65,15 +70,41 @@ static LRESULT CALLBACK WindowsTetrisWindowProcedure(HWND Window, UINT Message, 
 	return Result;
 }
 
-//LRESULT Win32ProcessKeyboardMessage(UINT Message, WPARAM wParam, LPARAM lParam)
-//{
-//	// At this point, Message should be either WM_KEYDOWN or WM_KEYUP
-//	// TODO: Include System Key Messages?
-//	switch (wParam)
-//	{
-//		case(WM_KEYDOWN)
-//	}
-//}
+LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+	// At this point, Message should be either WM_KEYDOWN or WM_KEYUP
+	// TODO: Include System Key Messages?
+	bool IsKeyDown = (Message == WM_KEYDOWN);
+
+	for (int i = 0; i < KeyboardInfo.size(); ++i)
+	{
+		if (wParam == KeyboardInfo.Key[i].VKey)
+		{
+			KeyboardInfo.Key[i].IsDown = IsKeyDown;
+		}
+	}
+
+	//switch (wParam)
+	//{
+	//case('W'):
+	//	KeyboardInfo.KeyW.WasDown = KeyboardInfo.KeyW.IsDown;
+	//	KeyboardInfo.KeyW.IsDown = IsKeyDown;
+	//	break;
+	//case('A'):
+	//	KeyboardInfo.KeyA.WasDown = KeyboardInfo.KeyA.IsDown;
+	//	KeyboardInfo.KeyA.IsDown = IsKeyDown;
+	//	break;
+	//case('S'):
+	//	KeyboardInfo.KeyS.WasDown = KeyboardInfo.KeyS.IsDown;
+	//	KeyboardInfo.KeyS.IsDown = IsKeyDown;
+	//	break;
+	//case('D'):
+	//	KeyboardInfo.KeyD.WasDown = KeyboardInfo.KeyD.IsDown;
+	//	KeyboardInfo.KeyD.IsDown = IsKeyDown;
+	//	break;
+	//}
+	return 0;
+}
 
 
 // Program entry point.
@@ -105,10 +136,29 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	bool GameLoopFinished = false;
 
 	GlobalGameState = new game_state();
+	//KeyboardInfo = keyboard_info();
 	
 	while (!GameLoopFinished)
 	{
 		timing_information TimeFrameStart = GetSeconds();
+
+		///// Make new method
+		for (int i = 0; i < KeyboardInfo.size(); ++i)
+		{
+			KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
+		}
+		/////
+
+		///// This is just for testing
+		for (int i = 0; i < KeyboardInfo.size(); ++i)
+		{
+			if (KeyboardInfo.Key[i].VKey == 'D' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false);
+			{
+				++GlobalGameState->FallingPiece.CenterLocation.x;
+			}
+		}
+		/////
+
 
 		MSG Message;
 		while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE) && !GameLoopFinished)
@@ -120,7 +170,9 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 			TranslateMessage(&Message);
 			DispatchMessageA(&Message);
 		}
-		//Sleep(15);
+		
+
+
 		timing_information TimeAfterProcess = GetSeconds();
 		double ProcessingTime = TimeAfterProcess.Seconds - TimeFrameStart.Seconds;
 		double TimeToSleep = (1 / TargetFPS) - ProcessingTime;
@@ -256,3 +308,18 @@ void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, 
 	DeleteObject(Brush);
 }
 
+
+keyboard_info::keyboard_info()
+{
+	this->Key.push_back(key_state('W'));
+	this->Key.push_back(key_state('A'));
+	this->Key.push_back(key_state('S'));
+	this->Key.push_back(key_state('D'));
+	//this->KeyMap.push_back('A');
+	//this->KeyMap.push_back('S');
+	//this->KeyMap.push_back('D');
+	//this->KeyMap.push_back(VK_UP);
+	//this->KeyMap.push_back(VK_LEFT);
+	//this->KeyMap.push_back(VK_DOWN);
+	//this->KeyMap.push_back(VK_RIGHT);
+}

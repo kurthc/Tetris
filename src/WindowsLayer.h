@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <map>
 #include "Game.h"
 #include "..\Tetris\resource.h"
 
@@ -33,6 +34,46 @@ struct timing_information
 	LARGE_INTEGER LICounts;
 };
 
+class key_state
+{
+public:
+	WPARAM VKey;
+	bool IsDown = false;
+	bool WasDown = false;    //Last frame
+
+	key_state() : VKey(0) {};
+	key_state(WPARAM wParam) : VKey(wParam) {};
+};
+
+class keyboard_info
+{
+public:
+	//std::vector<WPARAM> KeyMap;
+	std::vector<key_state> Key;
+
+
+	//key_state KeyW;
+	//key_state KeyA;
+	//key_state KeyS;
+	//key_state KeyD;
+	//key_state KeyUp;
+	//key_state KeyLeft;
+	//key_state KeyDown;
+	//key_state KeyRight;
+
+	keyboard_info();
+	int size() { return Key.size(); }
+};
+
+//class key_mapping
+//{
+//public:
+//	//std::map<int, 
+//	key_mapping();
+//};
+
+static keyboard_info KeyboardInfo;
+//static key_mapping KeyMapping;
 
 bool Win32SetUpMemoryDeviceContext(HDC DeviceContext);
 static void Win32AddConsole();
@@ -41,3 +82,4 @@ static void Win32DrawClientArea(HDC DeviceContext);
 static void Win32DrawGameMap();
 void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B);
 static void Wind32DrawFallingPiece();
+LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam);
