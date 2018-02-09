@@ -32,30 +32,48 @@ static LRESULT CALLBACK WindowsTetrisWindowProcedure(HWND Window, UINT Message, 
 		EndPaint(Window, &ps);
 		//Result = DefWindowProc(Window, Message, wParam, lParam);
 	} break;
+
 	case(WM_ACTIVATE):
+	{
 		if (LOGMESSAGES)
 			std::cout << "WM_ACTIVATE\n";
 		Result = DefWindowProc(Window, Message, wParam, lParam);
-		break;
+	} break;
+
 	case(WM_CLOSE):
+	{
 		if (LOGMESSAGES)
 			std::cout << "WM_CLOSE\n";
 		DestroyWindow(Window);
 		//Result = DefWindowProc(Window, Message, wParam, lParam);
-		break;
+	} break;
+
 	case(WM_DESTROY):
+	{
 		if (LOGMESSAGES)
 			std::cout << "WM_DESTROY\n";
 		PostQuitMessage(0);
-		break;
+	} break;
+
 	default:
 		if (LOGMESSAGES)
 			std::cout << "Unhandled message - " << Message << "\n";
 		Result = DefWindowProc(Window, Message, wParam, lParam);
+	
 	}
 	
 	return Result;
 }
+
+//LRESULT Win32ProcessKeyboardMessage(UINT Message, WPARAM wParam, LPARAM lParam)
+//{
+//	// At this point, Message should be either WM_KEYDOWN or WM_KEYUP
+//	// TODO: Include System Key Messages?
+//	switch (wParam)
+//	{
+//		case(WM_KEYDOWN)
+//	}
+//}
 
 
 // Program entry point.
