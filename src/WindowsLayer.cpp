@@ -55,7 +55,12 @@ static LRESULT CALLBACK WindowsTetrisWindowProcedure(HWND Window, UINT Message, 
 		PostQuitMessage(0);
 	} break;
 
-	case(WM_KEYDOWN || WM_KEYUP):
+	case(WM_KEYDOWN):
+	{
+		Result = Win32ProcessKeyboardMessage(Window, Message, wParam, lParam);
+	} break;
+
+	case(WM_KEYUP):
 	{
 		Result = Win32ProcessKeyboardMessage(Window, Message, wParam, lParam);
 	} break;
@@ -80,6 +85,7 @@ LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LP
 	{
 		if (wParam == KeyboardInfo.Key[i].VKey)
 		{
+			std::cout << "Setting IsKeyDown for: " << KeyboardInfo.Key[i].VKey << "\n";
 			KeyboardInfo.Key[i].IsDown = IsKeyDown;
 		}
 	}
@@ -142,23 +148,11 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	{
 		timing_information TimeFrameStart = GetSeconds();
 
-		///// Make new method
+		///// Make method: Win32HandleMessages()
 		for (int i = 0; i < KeyboardInfo.size(); ++i)
 		{
 			KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
 		}
-		/////
-
-		///// This is just for testing
-		for (int i = 0; i < KeyboardInfo.size(); ++i)
-		{
-			if (KeyboardInfo.Key[i].VKey == 'D' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false);
-			{
-				++GlobalGameState->FallingPiece.CenterLocation.x;
-			}
-		}
-		/////
-
 
 		MSG Message;
 		while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE) && !GameLoopFinished)
@@ -170,7 +164,32 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 			TranslateMessage(&Message);
 			DispatchMessageA(&Message);
 		}
-		
+
+		/////
+
+		///// This is just for testing
+		for (int i = 0; i < KeyboardInfo.size(); ++i)
+		{
+			if (KeyboardInfo.Key[i].VKey == 'W' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
+			{
+				++GlobalGameState->FallingPiece.CenterLocation.y;
+			}
+			if (KeyboardInfo.Key[i].VKey == 'A' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
+			{
+				--GlobalGameState->FallingPiece.CenterLocation.x;
+			}
+			if (KeyboardInfo.Key[i].VKey == 'S' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
+			{
+				--GlobalGameState->FallingPiece.CenterLocation.y;
+			}
+			if (KeyboardInfo.Key[i].VKey == 'D' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
+			{
+				++GlobalGameState->FallingPiece.CenterLocation.x;
+			}
+		}
+		/////
+
+		Win32DrawClientArea(DeviceContext);
 
 
 		timing_information TimeAfterProcess = GetSeconds();
@@ -221,10 +240,6 @@ static void Win32DrawClientArea(HDC DeviceContext)
 
 intvec2 MapToDisplayCoordinates(intvec2 MapPosition)
 {
-	//int GameMapLeft = 20;
-	//int GameMapTop = 20;
-	//int BlockWidth = 25;
-	//int BlockHeight = BlockWidth;
 	game_board& GameBoard = GlobalGameState->GameBoard;
 	int DisplayX = GAME_MAP_LEFT + MapPosition.x * BLOCK_WIDTH;
 	int DisplayY = GAME_MAP_TOP + (GameBoard.PlayableHeight - MapPosition.y) * BLOCK_HEIGHT;
@@ -233,11 +248,6 @@ intvec2 MapToDisplayCoordinates(intvec2 MapPosition)
 
 static void Win32DrawGameMap()
 {
-	//int GameMapLeft = 20;
-	//int GameMapTop = 20;
-	//int BlockWidth = 25;
-	//int BlockHeight = BlockWidth;
-
 	game_board& GameBoard = GlobalGameState->GameBoard;
 
 	RECT r {};
@@ -257,11 +267,6 @@ static void Win32DrawGameMap()
 		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
 		{
 			intvec2 LeftTop = MapToDisplayCoordinates(intvec2(x, y+1));
-			//intvec2 RightBottom = MapToDisplayCoordinates(intvec2(x + 1, y - 1));
-			//r.left = GameMapLeft + x * BlockWidth;
-			//r.top = GameMapTop + (GameBoard.PlayableHeight - 1 - y) * BlockHeight;
-			//r.right = GameMapLeft + (x + 1) * BlockWidth;
-			//r.bottom = GameMapTop + ((GameBoard.PlayableHeight - 1 - y) + 1) * BlockHeight;
 			if (GameBoard.GameBoard[x][y] == 1)
 			{
 				BitBlt(MemoryDeviceContext, LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BlockDC, 0, 0, SRCCOPY);
@@ -274,8 +279,6 @@ static void Win32DrawGameMap()
 
 static void Wind32DrawFallingPiece()
 {
-	//int BlockWidth = 25;
-	//int BlockHeight = BlockWidth;
 	falling_piece& FallingPiece = GlobalGameState->FallingPiece;
 
 	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
