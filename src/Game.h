@@ -6,6 +6,7 @@
 constexpr int GAMEBOARDWIDTH = 10;
 constexpr int GAMEBOARDHEIGHT = 20;
 constexpr int GAMEBOARDPLAYABLEHEIGHT = GAMEBOARDHEIGHT + 4;
+constexpr float KEYBOARD_REPEAT_TIME = .1f;
 
 enum piece_center_type { Center, Corner };
 
@@ -19,6 +20,7 @@ public:
 	game_board();
 };
 
+// A tetris piece. Coordinates are not relative to the game map.
 class piece
 {
 public:
@@ -38,6 +40,7 @@ public:
 	//falling_piece(piece Piece) : Piece(Piece), CenterLocation(intvec2()) {};
 	falling_piece();
 	falling_piece(piece Piece);
+
 };
 
 class game_state

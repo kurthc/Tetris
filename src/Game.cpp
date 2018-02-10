@@ -88,24 +88,38 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 {
+	KeyboardInfo->RepeatTimer = MAX(KeyboardInfo->RepeatTimer - 1.0f / TargetFPS, 0.0f);
+	intvec2 NewLocation{0,0};
+
 	for (int i = 0; i < KeyboardInfo->size(); ++i)
 	{
-		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
 		{
-			++this->FallingPiece.CenterLocation.y;
+			//++this->FallingPiece.CenterLocation.y;
+			NewLocation = NewLocation + intvec2(0, 1);
+			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		//if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
 		{
-			--this->FallingPiece.CenterLocation.x;
+			NewLocation = NewLocation + intvec2(-1, 0);
+			//--this->FallingPiece.CenterLocation.x;
+			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'S' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		if (KeyboardInfo->Key[i].VKey == 'S' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
 		{
-			--this->FallingPiece.CenterLocation.y;
+			NewLocation = NewLocation + intvec2(0, -1);
+			//--this->FallingPiece.CenterLocation.y;
+			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		//if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
 		{
-			++this->FallingPiece.CenterLocation.x;
+			NewLocation = NewLocation + intvec2(1, 0);
+			//++this->FallingPiece.CenterLocation.x;
+			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
 	}
-	/////
+	//piece ProposedLocation = 
+	
 }

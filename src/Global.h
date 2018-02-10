@@ -3,6 +3,18 @@
 #include <Windows.h>
 #include <vector>
 
+constexpr float TargetFPS = 60.0f;
+
+template <typename T> inline T const& MAX(T const& X, T const& Y)
+{
+	return X > Y ? X : Y;
+}
+
+template <typename T> inline T const& MIN(T const& X, T const& Y)
+{
+	return X > Y ? Y : X;
+}
+
 class intvec2
 {
 public:
@@ -30,5 +42,8 @@ class keyboard_info
 public:
 	std::vector<key_state> Key;
 	keyboard_info();
+	float RepeatTimer;
 	int size() { return Key.size(); }
 };
+
+

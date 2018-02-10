@@ -18,7 +18,6 @@ constexpr int GAME_MAP_TOP = 20;
 constexpr int BLOCK_WIDTH = 25;
 constexpr int BLOCK_HEIGHT = BLOCK_WIDTH;
 
-constexpr float TargetFPS = 60.0f;
 
 static int CountsPerSecond;                // Used to convert the timer to seconds.
 static HDC MemoryDeviceContext;
