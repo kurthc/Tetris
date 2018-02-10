@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include "Global.h"
 #include "Game.h"
 #include "..\Tetris\resource.h"
 
@@ -48,19 +49,7 @@ public:
 class keyboard_info
 {
 public:
-	//std::vector<WPARAM> KeyMap;
 	std::vector<key_state> Key;
-
-
-	//key_state KeyW;
-	//key_state KeyA;
-	//key_state KeyS;
-	//key_state KeyD;
-	//key_state KeyUp;
-	//key_state KeyLeft;
-	//key_state KeyDown;
-	//key_state KeyRight;
-
 	keyboard_info();
 	int size() { return Key.size(); }
 };

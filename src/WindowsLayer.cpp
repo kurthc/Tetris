@@ -95,6 +95,7 @@ LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LP
 
 bool Win32HandleMessages()
 {
+	// Update WasDown.
 	bool GameLoopFinished = false;
 	for (int i = 0; i < KeyboardInfo.size(); ++i)
 	{
@@ -149,24 +150,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 		timing_information TimeFrameStart = GetSeconds();
 
 		GameLoopFinished = Win32HandleMessages();
-		///// Make method: Win32HandleMessages()
-		//for (int i = 0; i < KeyboardInfo.size(); ++i)
-		//{
-		//	KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
-		//}
 
-		//MSG Message;
-		//while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE) && !GameLoopFinished)
-		//{
-		//	if (Message.message == WM_QUIT)
-		//	{
-		//		GameLoopFinished = true;
-		//	}
-		//	TranslateMessage(&Message);
-		//	DispatchMessageA(&Message);
-		//}
-
-		/////
+		//GlobalGameState->UpdateGame(KeyboardInfo);
 
 		///// This is just for testing
 		for (int i = 0; i < KeyboardInfo.size(); ++i)

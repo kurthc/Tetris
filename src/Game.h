@@ -1,8 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
-
-//#include "WindowsLayer.h"
+#include "Global.h"
 
 constexpr int GAMEBOARDWIDTH = 10;
 constexpr int GAMEBOARDHEIGHT = 20;
@@ -10,16 +9,7 @@ constexpr int GAMEBOARDPLAYABLEHEIGHT = GAMEBOARDHEIGHT + 4;
 
 enum piece_center_type { Center, Corner };
 
-class intvec2
-{
-public:
-	int x;
-	int y;
-	intvec2() : x(0), y(0) {}
-	intvec2(int x, int y) : x(x), y(y) {}
 
-	intvec2 operator+(const intvec2& v);
-};
 
 class game_board
 {
@@ -65,5 +55,6 @@ public:
 
 	game_state();
 	void SetStandardPieces();
+	//void UpdateGame(key);
 };
 

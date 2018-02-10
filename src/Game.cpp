@@ -1,12 +1,7 @@
 #include "Game.h"
 
 
-intvec2 intvec2::operator+(const intvec2& v)
-{
-	int ResultX = this->x + v.x;
-	int ResultY = this->y + v.y;
-	return { ResultX, ResultY };
-}
+
 
 piece::piece()
 {
@@ -69,7 +64,10 @@ void game_state::SetStandardPieces()
 	this->StandardPiece[1].Center = intvec2(0, 0);
 	this->StandardPiece[1].CenterType = piece_center_type::Center;
 
-
-
 	//this->StandardPiece[0].Blocks
 }
+
+//void game_state::UpdateGame()
+//{
+//
+//}
