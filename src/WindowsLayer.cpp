@@ -90,26 +90,28 @@ LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LP
 		}
 	}
 
-	//switch (wParam)
-	//{
-	//case('W'):
-	//	KeyboardInfo.KeyW.WasDown = KeyboardInfo.KeyW.IsDown;
-	//	KeyboardInfo.KeyW.IsDown = IsKeyDown;
-	//	break;
-	//case('A'):
-	//	KeyboardInfo.KeyA.WasDown = KeyboardInfo.KeyA.IsDown;
-	//	KeyboardInfo.KeyA.IsDown = IsKeyDown;
-	//	break;
-	//case('S'):
-	//	KeyboardInfo.KeyS.WasDown = KeyboardInfo.KeyS.IsDown;
-	//	KeyboardInfo.KeyS.IsDown = IsKeyDown;
-	//	break;
-	//case('D'):
-	//	KeyboardInfo.KeyD.WasDown = KeyboardInfo.KeyD.IsDown;
-	//	KeyboardInfo.KeyD.IsDown = IsKeyDown;
-	//	break;
-	//}
 	return 0;
+}
+
+bool Win32HandleMessages()
+{
+	bool GameLoopFinished = false;
+	for (int i = 0; i < KeyboardInfo.size(); ++i)
+	{
+		KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
+	}
+
+	MSG Message;
+	while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE) && !GameLoopFinished)
+	{
+		if (Message.message == WM_QUIT)
+		{
+			GameLoopFinished = true;
+		}
+		TranslateMessage(&Message);
+		DispatchMessageA(&Message);
+	}
+	return GameLoopFinished;
 }
 
 
@@ -132,8 +134,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	RegisterClassExA(&WindowClass);
 	HWND Window = CreateWindowExA(0, WindowClass.lpszClassName, "My Tetris Window", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
 		GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, NULL, NULL, Instance, NULL);
-
-
+	
 	HDC DeviceContext = GetDC(Window);
 	Win32SetUpMemoryDeviceContext(DeviceContext);
 
@@ -142,28 +143,28 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	bool GameLoopFinished = false;
 
 	GlobalGameState = new game_state();
-	//KeyboardInfo = keyboard_info();
 	
 	while (!GameLoopFinished)
 	{
 		timing_information TimeFrameStart = GetSeconds();
 
+		GameLoopFinished = Win32HandleMessages();
 		///// Make method: Win32HandleMessages()
-		for (int i = 0; i < KeyboardInfo.size(); ++i)
-		{
-			KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
-		}
+		//for (int i = 0; i < KeyboardInfo.size(); ++i)
+		//{
+		//	KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
+		//}
 
-		MSG Message;
-		while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE) && !GameLoopFinished)
-		{
-			if (Message.message == WM_QUIT)
-			{
-				GameLoopFinished = true;
-			}
-			TranslateMessage(&Message);
-			DispatchMessageA(&Message);
-		}
+		//MSG Message;
+		//while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE) && !GameLoopFinished)
+		//{
+		//	if (Message.message == WM_QUIT)
+		//	{
+		//		GameLoopFinished = true;
+		//	}
+		//	TranslateMessage(&Message);
+		//	DispatchMessageA(&Message);
+		//}
 
 		/////
 
@@ -318,11 +319,8 @@ keyboard_info::keyboard_info()
 	this->Key.push_back(key_state('A'));
 	this->Key.push_back(key_state('S'));
 	this->Key.push_back(key_state('D'));
-	//this->KeyMap.push_back('A');
-	//this->KeyMap.push_back('S');
-	//this->KeyMap.push_back('D');
-	//this->KeyMap.push_back(VK_UP);
-	//this->KeyMap.push_back(VK_LEFT);
-	//this->KeyMap.push_back(VK_DOWN);
-	//this->KeyMap.push_back(VK_RIGHT);
+	this->Key.push_back(key_state(VK_UP));
+	this->Key.push_back(key_state(VK_LEFT));
+	this->Key.push_back(key_state(VK_DOWN));
+	this->Key.push_back(key_state(VK_RIGHT));
 }

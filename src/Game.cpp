@@ -1,11 +1,5 @@
 #include "Game.h"
 
-//falling_piece::falling_piece()
-//{
-//	this->x = 0;
-//	this->y = 0;
-//	//this->blocks = std::vector<int>
-//}
 
 intvec2 intvec2::operator+(const intvec2& v)
 {
@@ -48,7 +42,7 @@ falling_piece::falling_piece()
 falling_piece::falling_piece(piece Piece)
 {
 	this->Piece = Piece;    //copy
-	this->CenterLocation = intvec2(4, 17);
+	this->CenterLocation = intvec2(4, 7);
 	
 }
 
