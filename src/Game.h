@@ -9,8 +9,6 @@ constexpr int GAMEBOARDPLAYABLEHEIGHT = GAMEBOARDHEIGHT + 4;
 
 enum piece_center_type { Center, Corner };
 
-
-
 class game_board
 {
 public:
@@ -20,10 +18,6 @@ public:
 	int GameBoard[GAMEBOARDWIDTH][GAMEBOARDPLAYABLEHEIGHT];
 	game_board();
 };
-
-
-
-
 
 class piece
 {
@@ -55,6 +49,7 @@ public:
 
 	game_state();
 	void SetStandardPieces();
-	//void UpdateGame(key);
+	void HandleKeyboard(keyboard_info*);
+	void UpdateGame(keyboard_info*);
 };
 

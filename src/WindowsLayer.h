@@ -20,10 +20,11 @@ constexpr int BLOCK_HEIGHT = BLOCK_WIDTH;
 
 constexpr float TargetFPS = 60.0f;
 
-static int CountsPerSecond;
+static int CountsPerSecond;                // Used to convert the timer to seconds.
 static HDC MemoryDeviceContext;
 static HBITMAP MemoryDeviceContextBitmap;
 static game_state* GlobalGameState;
+static keyboard_info* KeyboardInfo;
 
 static HBITMAP BitmapBlockPurple;
 static HBITMAP BitmapBlockRed;
@@ -35,33 +36,9 @@ struct timing_information
 	LARGE_INTEGER LICounts;
 };
 
-class key_state
-{
-public:
-	WPARAM VKey;
-	bool IsDown = false;
-	bool WasDown = false;    //Last frame
 
-	key_state() : VKey(0) {};
-	key_state(WPARAM wParam) : VKey(wParam) {};
-};
 
-class keyboard_info
-{
-public:
-	std::vector<key_state> Key;
-	keyboard_info();
-	int size() { return Key.size(); }
-};
 
-//class key_mapping
-//{
-//public:
-//	//std::map<int, 
-//	key_mapping();
-//};
-
-static keyboard_info KeyboardInfo;
 //static key_mapping KeyMapping;
 
 bool Win32SetUpMemoryDeviceContext(HDC DeviceContext);

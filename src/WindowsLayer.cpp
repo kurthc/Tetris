@@ -12,6 +12,7 @@ timing_information GetSeconds()
 	QueryPerformanceCounter(&LICounts);
 	Counts = (int)LICounts.QuadPart;
 	Seconds = (double)Counts / CountsPerSecond;
+	std::cout << "LiCounts = " << LICounts.HighPart << " and " << LICounts.LowPart << "\n";
 	return { Seconds, Counts, LICounts };
 }
 
@@ -81,12 +82,12 @@ LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LP
 	// TODO: Include System Key Messages?
 	bool IsKeyDown = (Message == WM_KEYDOWN);
 
-	for (int i = 0; i < KeyboardInfo.size(); ++i)
+	for (int i = 0; i < KeyboardInfo->size(); ++i)
 	{
-		if (wParam == KeyboardInfo.Key[i].VKey)
+		if (wParam == KeyboardInfo->Key[i].VKey)
 		{
-			std::cout << "Setting IsKeyDown for: " << KeyboardInfo.Key[i].VKey << "\n";
-			KeyboardInfo.Key[i].IsDown = IsKeyDown;
+			std::cout << "Setting IsKeyDown for: " << KeyboardInfo->Key[i].VKey << "\n";
+			KeyboardInfo->Key[i].IsDown = IsKeyDown;
 		}
 	}
 
@@ -97,9 +98,9 @@ bool Win32HandleMessages()
 {
 	// Update WasDown.
 	bool GameLoopFinished = false;
-	for (int i = 0; i < KeyboardInfo.size(); ++i)
+	for (int i = 0; i < KeyboardInfo->size(); ++i)
 	{
-		KeyboardInfo.Key[i].WasDown = KeyboardInfo.Key[i].IsDown;
+		KeyboardInfo->Key[i].WasDown = KeyboardInfo->Key[i].IsDown;
 	}
 
 	MSG Message;
@@ -144,6 +145,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	bool GameLoopFinished = false;
 
 	GlobalGameState = new game_state();
+	KeyboardInfo = new keyboard_info();
+	
 	
 	while (!GameLoopFinished)
 	{
@@ -151,29 +154,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 		GameLoopFinished = Win32HandleMessages();
 
-		//GlobalGameState->UpdateGame(KeyboardInfo);
+		GlobalGameState->UpdateGame(KeyboardInfo);
 
-		///// This is just for testing
-		for (int i = 0; i < KeyboardInfo.size(); ++i)
-		{
-			if (KeyboardInfo.Key[i].VKey == 'W' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
-			{
-				++GlobalGameState->FallingPiece.CenterLocation.y;
-			}
-			if (KeyboardInfo.Key[i].VKey == 'A' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
-			{
-				--GlobalGameState->FallingPiece.CenterLocation.x;
-			}
-			if (KeyboardInfo.Key[i].VKey == 'S' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
-			{
-				--GlobalGameState->FallingPiece.CenterLocation.y;
-			}
-			if (KeyboardInfo.Key[i].VKey == 'D' && KeyboardInfo.Key[i].IsDown == true && KeyboardInfo.Key[i].WasDown == false)
-			{
-				++GlobalGameState->FallingPiece.CenterLocation.x;
-			}
-		}
-		/////
 
 		Win32DrawClientArea(DeviceContext);
 

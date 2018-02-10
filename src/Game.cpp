@@ -44,7 +44,7 @@ falling_piece::falling_piece(piece Piece)
 game_state::game_state()
 {
 	this->SetStandardPieces();
-	this->FallingPiece = falling_piece(this->StandardPiece[1]);
+	this->FallingPiece = falling_piece(this->StandardPiece[2]);
 }
 
 void game_state::SetStandardPieces()
@@ -64,10 +64,48 @@ void game_state::SetStandardPieces()
 	this->StandardPiece[1].Center = intvec2(0, 0);
 	this->StandardPiece[1].CenterType = piece_center_type::Center;
 
+	this->StandardPiece[2].Blocks.push_back(intvec2(0, 0));
+	this->StandardPiece[2].Blocks.push_back(intvec2(0, -1));
+	this->StandardPiece[2].Blocks.push_back(intvec2(0, -2));
+	this->StandardPiece[2].Blocks.push_back(intvec2(1, -1));
+	this->StandardPiece[2].Blocks.push_back(intvec2(2, 0));
+	this->StandardPiece[2].Blocks.push_back(intvec2(2, -1));
+	this->StandardPiece[2].Blocks.push_back(intvec2(2, -2));
+	this->StandardPiece[2].Blocks.push_back(intvec2(4, 0));
+	this->StandardPiece[2].Blocks.push_back(intvec2(4, -1));
+	this->StandardPiece[2].Blocks.push_back(intvec2(4, -2));
+	this->StandardPiece[2].Center = intvec2(0, 0);
+	this->StandardPiece[2].CenterType = piece_center_type::Center;
+
+
 	//this->StandardPiece[0].Blocks
 }
 
-//void game_state::UpdateGame()
-//{
-//
-//}
+void game_state::UpdateGame(keyboard_info* KeyboardInfo)
+{
+	this->HandleKeyboard(KeyboardInfo);
+}
+
+void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
+{
+	for (int i = 0; i < KeyboardInfo->size(); ++i)
+	{
+		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		{
+			++this->FallingPiece.CenterLocation.y;
+		}
+		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		{
+			--this->FallingPiece.CenterLocation.x;
+		}
+		if (KeyboardInfo->Key[i].VKey == 'S' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		{
+			--this->FallingPiece.CenterLocation.y;
+		}
+		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		{
+			++this->FallingPiece.CenterLocation.x;
+		}
+	}
+	/////
+}
