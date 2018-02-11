@@ -256,7 +256,7 @@ static void Wind32DrawFallingPiece()
 	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
 	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
-		intvec2 BlockLocation = MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it));
+		intvec2 BlockLocation = MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0,1));
 
 		BitBlt(MemoryDeviceContext, BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BlockDC, 0, 0, SRCCOPY);
 		++it;

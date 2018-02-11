@@ -140,8 +140,9 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 void game_state::FreezePiece()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
-	auto it = FallingPiece.Piece.Blocks->begin();
-	while (it != FallingPiece.Piece.Blocks->end())
+	int PieceOrientation = FallingPiece.PieceOrientation;
+	auto it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
+	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = FallingPiece.CenterLocation + *it;
 		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
