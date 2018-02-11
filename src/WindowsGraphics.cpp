@@ -2,9 +2,10 @@
 #include "WindowsLayer.h"
 
 
-buffer::buffer(game_state* GameState)
+buffer::buffer(game_state* GameState, bitmap_manager* BitmapManager)
 {
 	this->GameState = GameState;
+	this->BitmapManager = BitmapManager;
 }
 
 // Create the Memory DC.
@@ -30,7 +31,7 @@ intvec2 buffer::MapToDisplayCoordinates(intvec2 MapPosition)
 }
 
 
-void buffer::Win32DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B)
+void buffer::DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B)
 {
 	RECT r{};
 	HBRUSH Brush;
@@ -42,4 +43,68 @@ void buffer::Win32DrawRectangle(int x, int y, int x2, int y2, int R, int G, int 
 	r.bottom = y2;
 	FillRect(this->MemoryDeviceContext, &r, Brush);
 	DeleteObject(Brush);
+}
+
+
+void buffer::DrawBitmap(int x, int y, int width, int height, HBITMAP Bitmap)
+{
+	HDC BlockDC = CreateCompatibleDC(this->MemoryDeviceContext);
+	SelectObject(BlockDC, Bitmap);
+	BitBlt(this->MemoryDeviceContext, x, y, width, height, BlockDC, 0, 0, SRCCOPY);
+	DeleteObject(BlockDC);
+}
+
+
+void buffer::DrawFallingPiece()
+{
+	falling_piece& FallingPiece = this->GameState->FallingPiece;
+
+	int PieceOrientation = FallingPiece.PieceOrientation;
+	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
+	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
+	{
+		intvec2 BlockLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0, 1));
+		int BitmapIndex = BitmapIndex::BlockPurple;
+		this->DrawBitmap(BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
+		++it;
+	}
+}
+
+
+void buffer::DrawGameMap()
+{
+	game_board& GameBoard = this->GameState->GameBoard;
+
+	RECT r{};
+
+	//TODO: Make this a constant somewhere.
+	const static int BorderWidth = 4;  
+	this->DrawRectangle(GAME_MAP_LEFT - BorderWidth, GAME_MAP_TOP - BorderWidth, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH + BorderWidth,
+		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT + BorderWidth, 255, 255, 255);
+
+	this->DrawRectangle(GAME_MAP_LEFT, GAME_MAP_TOP - 4, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH,
+		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT, 0, 0, 0);
+
+	for (int y = GameBoard.PlayableHeight - 1; y >= 0; --y)
+	{
+		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
+		{
+			intvec2 LeftTop = this->MapToDisplayCoordinates(intvec2(x, y + 1));
+			if (GameBoard.GameBoard[x][y] == 1)
+			{
+
+				int BitmapIndex = BitmapIndex::BlockBlue;
+				this->DrawBitmap(LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
+			}
+		}
+	}
+}
+
+
+void buffer::DrawClientArea(HDC DeviceContext)
+{
+	this->DrawRectangle(0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, 0, 0, 0);
+	this->DrawGameMap();
+	this->DrawFallingPiece();
+	BitBlt(DeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, this->MemoryDeviceContext, 0, 0, SRCCOPY);
 }

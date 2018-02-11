@@ -9,8 +9,6 @@
 #include "Game.h"
 #include "..\Tetris\resource.h"
 
-
-
 constexpr int GAME_WINDOW_WIDTH = 800;
 constexpr int GAME_WINDOW_HEIGHT = 800;
 constexpr int GAME_MAP_LEFT = 100;
@@ -26,7 +24,6 @@ class bitmap_manager
 {
 public:
 	HBITMAP Bitmap[6];
-	//bitmap_manager();
 	void LoadBitmaps(HINSTANCE);
 };
 
@@ -36,10 +33,16 @@ public:
 	HDC MemoryDeviceContext;
 	HBITMAP MemoryDeviceContextBitmap;
 	game_state* GameState;   // Get rid of this later.
+	bitmap_manager* BitmapManager;
 
-	buffer(game_state*);
+	buffer(game_state*, bitmap_manager*);
 	bool SetUpMemoryDeviceContext(HDC DeviceContext);
 	intvec2 MapToDisplayCoordinates(intvec2 MapPosition);
+	void DrawBitmap(int x, int y, int width, int height, HBITMAP Bitmap);
+	void DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B);
+	void DrawFallingPiece();
+	void DrawGameMap();
+	void DrawClientArea(HDC DeviceContext);
 };
 
 class windows_layer
@@ -48,17 +51,8 @@ public:
 
 };
 
-//constexpr int BLOCK_BLACK = 0;
-//constexpr int BLOCK_BLUE = 1;
-//constexpr int BLOCK_GREEN = 2;
-//constexpr int BLOCK_PURPLE = 3;
-//constexpr int BLOCK_RED = 4;
-//constexpr int BLOCK_YELLOW = 5;
-
 static int CountsPerSecond;                // Used to convert the timer to seconds.
 static buffer* Buffer;
-										   //static HDC MemoryDeviceContext;
-//static HBITMAP MemoryDeviceContextBitmap;
 static game_state* GlobalGameState;
 static keyboard_info* KeyboardInfo;
 
@@ -76,8 +70,4 @@ struct timing_information
 //bool Win32SetUpMemoryDeviceContext(HDC DeviceContext);
 static void Win32AddConsole();
 timing_information GetSeconds();
-static void Win32DrawClientArea(HDC DeviceContext);
-static void Win32DrawGameMap();
-void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B);
-static void Wind32DrawFallingPiece();
 LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam);

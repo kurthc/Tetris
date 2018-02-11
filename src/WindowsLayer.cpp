@@ -29,7 +29,7 @@ static LRESULT CALLBACK WindowsTetrisWindowProcedure(HWND Window, UINT Message, 
 			std::cout << "WM_PAINT" << "\n";
 		PAINTSTRUCT ps;
 		HDC DeviceContext = BeginPaint(Window, &ps);
-		Win32DrawClientArea(DeviceContext);
+		Buffer->DrawClientArea(DeviceContext);
 		EndPaint(Window, &ps);
 		//Result = DefWindowProc(Window, Message, wParam, lParam);
 	} break;
@@ -142,10 +142,10 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	bool GameLoopFinished = false;
 
 	GlobalGameState = new game_state();
-	Buffer = new buffer(GlobalGameState);
-	Buffer->SetUpMemoryDeviceContext(DeviceContext);
 	BitmapManager = new bitmap_manager();
 	BitmapManager->LoadBitmaps(Instance);
+	Buffer = new buffer(GlobalGameState, BitmapManager);
+	Buffer->SetUpMemoryDeviceContext(DeviceContext);
 	KeyboardInfo = new keyboard_info();
 	
 	
@@ -158,7 +158,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 		GlobalGameState->UpdateGame(KeyboardInfo);
 
 
-		Win32DrawClientArea(DeviceContext);
+		Buffer->DrawClientArea(DeviceContext);
 
 
 		timing_information TimeAfterProcess = GetSeconds();
@@ -189,78 +189,6 @@ static void Win32AddConsole()
 	AllocConsole();
 	AttachConsole(GetCurrentProcessId());
 	freopen_s(&stream, "CON", "w", stdout);
-}
-
-static void Win32DrawClientArea(HDC DeviceContext)
-{
-	Buffer->Win32DrawRectangle(0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, 0, 0, 0);
-	Win32DrawGameMap();
-	Wind32DrawFallingPiece();
-	BitBlt(DeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, Buffer->MemoryDeviceContext, 0, 0, SRCCOPY);
-}
-
-
-
-void Win32DrawBitmap(HDC DC, int x, int y, int width, int height, HBITMAP Bitmap)
-{
-	HDC BlockDC = CreateCompatibleDC(Buffer->MemoryDeviceContext);
-	SelectObject(BlockDC, Bitmap);
-	BitBlt(DC, x, y, width, height, BlockDC, 0, 0, SRCCOPY);
-	DeleteObject(BlockDC);
-
-}
-
-static void Win32DrawGameMap()
-{
-	game_board& GameBoard = GlobalGameState->GameBoard;
-
-	RECT r {};
-
-	//HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
-	//SelectObject(BlockDC, BitmapBlockPurple);
-
-	const static int BorderWidth = 4;
-	Buffer->Win32DrawRectangle(GAME_MAP_LEFT - BorderWidth, GAME_MAP_TOP - BorderWidth, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH + BorderWidth,
-		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT + BorderWidth, 255, 255, 255);
-
-	Buffer->Win32DrawRectangle(GAME_MAP_LEFT, GAME_MAP_TOP - 4, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH,
-		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT, 0, 0, 0);
-
-	for (int y = GameBoard.PlayableHeight - 1; y >= 0; --y)
-	{
-		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
-		{
-			intvec2 LeftTop = Buffer->MapToDisplayCoordinates(intvec2(x, y+1));
-			if (GameBoard.GameBoard[x][y] == 1)
-			{
-
-				int BitmapIndex = BitmapIndex::BlockBlue;
-				Win32DrawBitmap(Buffer->MemoryDeviceContext, LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
-
-
-				//BitBlt(MemoryDeviceContext, LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BlockDC, 0, 0, SRCCOPY);
-			}
-		}
-	}
-
-	//DeleteObject(BlockDC);
-}
-
-
-static void Wind32DrawFallingPiece()
-{
-	falling_piece& FallingPiece = GlobalGameState->FallingPiece;
-
-	int PieceOrientation = FallingPiece.PieceOrientation;
-	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
-	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
-	{
-		intvec2 BlockLocation = Buffer->MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0,1));
-		//Win32DrawBitmap(MemoryDeviceContext, BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapBlockRed);
-		int BitmapIndex = BitmapIndex::BlockPurple;
-		Win32DrawBitmap(Buffer->MemoryDeviceContext, BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
-		++it;
-	}
 }
 
 
