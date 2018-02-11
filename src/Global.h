@@ -15,6 +15,9 @@ template <typename T> inline T const& MIN(T const& X, T const& Y)
 	return X > Y ? Y : X;
 }
 
+int ProperMod(int a, int b);
+
+
 class intvec2
 {
 public:

@@ -26,8 +26,10 @@ class piece
 public:
 	intvec2 Center;
 	piece_center_type CenterType;
-	std::vector<intvec2> Blocks;
+	std::vector<intvec2> Blocks[4];
 	piece();
+	void GetRotatedPiecesFrom0();
+	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
 };
 
 class falling_piece
@@ -36,6 +38,7 @@ public:
 	intvec2 CenterLocation;
 	piece Piece;
 	bool Visible = true;
+	int PieceOrientation = 0;
 	
 	//falling_piece(piece Piece) : Piece(Piece), CenterLocation(intvec2()) {};
 	falling_piece();

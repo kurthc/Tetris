@@ -252,9 +252,9 @@ static void Wind32DrawFallingPiece()
 	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
 	SelectObject(BlockDC, BitmapBlockPurple);
 
-	
-	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks.begin();
-	while (it != FallingPiece.Piece.Blocks.end())
+	int PieceOrientation = FallingPiece.PieceOrientation;
+	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
+	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it));
 
@@ -286,6 +286,8 @@ keyboard_info::keyboard_info()
 	this->Key.push_back(key_state('A'));
 	this->Key.push_back(key_state('S'));
 	this->Key.push_back(key_state('D'));
+	this->Key.push_back(key_state('J'));
+	this->Key.push_back(key_state('L'));
 	this->Key.push_back(key_state(VK_UP));
 	this->Key.push_back(key_state(VK_LEFT));
 	this->Key.push_back(key_state(VK_DOWN));

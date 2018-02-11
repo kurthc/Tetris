@@ -2,13 +2,6 @@
 
 
 
-
-piece::piece()
-{
-	this->Center = intvec2(0,0);
-	this->Blocks = {};
-}
-
 game_board::game_board()
 {
 	for (int y = 0; y < this->GameBoardHeight; ++y)
@@ -50,32 +43,36 @@ game_state::game_state()
 void game_state::SetStandardPieces()
 {
 	//piece Piece {};
-	this->StandardPiece[0].Blocks.push_back(intvec2(0, 0));
-	this->StandardPiece[0].Blocks.push_back(intvec2(1, 0));
-	this->StandardPiece[0].Blocks.push_back(intvec2(1, 1));
-	this->StandardPiece[0].Blocks.push_back(intvec2(0, 1));
+	this->StandardPiece[0].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[0].Blocks[0].push_back(intvec2(1, 0));
+	this->StandardPiece[0].Blocks[0].push_back(intvec2(1, 1));
+	this->StandardPiece[0].Blocks[0].push_back(intvec2(0, 1));
 	this->StandardPiece[0].Center = intvec2(0, 0);
 	this->StandardPiece[0].CenterType = piece_center_type::Center;
+	this->StandardPiece[0].GetRotatedPiecesFrom0();
+	
 
-	this->StandardPiece[1].Blocks.push_back(intvec2(0, 0));
-	this->StandardPiece[1].Blocks.push_back(intvec2(1, 0));
-	this->StandardPiece[1].Blocks.push_back(intvec2(-1, 0));
-	this->StandardPiece[1].Blocks.push_back(intvec2(0, 1));
+	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[1].Blocks[0].push_back(intvec2(1, 0));
+	this->StandardPiece[1].Blocks[0].push_back(intvec2(-1, 0));
+	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 1));
 	this->StandardPiece[1].Center = intvec2(0, 0);
 	this->StandardPiece[1].CenterType = piece_center_type::Center;
+	this->StandardPiece[1].GetRotatedPiecesFrom0();
 
-	this->StandardPiece[2].Blocks.push_back(intvec2(0, 0));
-	this->StandardPiece[2].Blocks.push_back(intvec2(0, -1));
-	this->StandardPiece[2].Blocks.push_back(intvec2(0, -2));
-	this->StandardPiece[2].Blocks.push_back(intvec2(1, -1));
-	this->StandardPiece[2].Blocks.push_back(intvec2(2, 0));
-	this->StandardPiece[2].Blocks.push_back(intvec2(2, -1));
-	this->StandardPiece[2].Blocks.push_back(intvec2(2, -2));
-	this->StandardPiece[2].Blocks.push_back(intvec2(4, 0));
-	this->StandardPiece[2].Blocks.push_back(intvec2(4, -1));
-	this->StandardPiece[2].Blocks.push_back(intvec2(4, -2));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -1));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -2));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, -1));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(2, 0));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -1));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -2));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(4, 0));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -1));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -2));
 	this->StandardPiece[2].Center = intvec2(0, 0);
 	this->StandardPiece[2].CenterType = piece_center_type::Center;
+	this->StandardPiece[2].GetRotatedPiecesFrom0();
 
 
 	//this->StandardPiece[0].Blocks
@@ -99,7 +96,6 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 			NewLocation = NewLocation + intvec2(0, 1);
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		//if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
 		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
 		{
 			NewLocation = NewLocation + intvec2(-1, 0);
@@ -112,14 +108,38 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 			//--this->FallingPiece.CenterLocation.y;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		//if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
 		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
 		{
 			NewLocation = NewLocation + intvec2(1, 0);
 			//++this->FallingPiece.CenterLocation.x;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
+		if (KeyboardInfo->Key[i].VKey == 'J' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		{
+			this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
+			//this->FallingPiece.PieceOrientation = 1;
+			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+		}
+		if (KeyboardInfo->Key[i].VKey == 'L' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		{
+			this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
+			//this->FallingPiece.PieceOrientation = 1;
+			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+		}
+
 	}
-	//piece ProposedLocation = 
+
+	// For now...
+	if (NewLocation.x != 0 || NewLocation.y != 0)
+	{
+		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + NewLocation;
+	}
+	
+
+	//piece ProposedLocation;
+	//ProposedLocation
+	//this->FallingPiece.Piece.Center = ProposedLocation + NewLocation;
+	// **** Collision check
+
 	
 }

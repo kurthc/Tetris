@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\Game.cpp" />
     <ClCompile Include="..\src\Global.cpp" />
+    <ClCompile Include="..\src\Piece.cpp" />
     <ClCompile Include="..\src\WindowsLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
