@@ -193,7 +193,7 @@ static void Win32AddConsole()
 
 static void Win32DrawClientArea(HDC DeviceContext)
 {
-	Win32DrawRectangle(Buffer->MemoryDeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, 0, 0, 0);
+	Buffer->Win32DrawRectangle(0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, 0, 0, 0);
 	Win32DrawGameMap();
 	Wind32DrawFallingPiece();
 	BitBlt(DeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, Buffer->MemoryDeviceContext, 0, 0, SRCCOPY);
@@ -220,10 +220,10 @@ static void Win32DrawGameMap()
 	//SelectObject(BlockDC, BitmapBlockPurple);
 
 	const static int BorderWidth = 4;
-	Win32DrawRectangle(Buffer->MemoryDeviceContext, GAME_MAP_LEFT - BorderWidth, GAME_MAP_TOP - BorderWidth, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH + BorderWidth,
+	Buffer->Win32DrawRectangle(GAME_MAP_LEFT - BorderWidth, GAME_MAP_TOP - BorderWidth, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH + BorderWidth,
 		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT + BorderWidth, 255, 255, 255);
 
-	Win32DrawRectangle(Buffer->MemoryDeviceContext, GAME_MAP_LEFT, GAME_MAP_TOP - 4, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH,
+	Buffer->Win32DrawRectangle(GAME_MAP_LEFT, GAME_MAP_TOP - 4, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH,
 		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT, 0, 0, 0);
 
 	for (int y = GameBoard.PlayableHeight - 1; y >= 0; --y)
@@ -264,19 +264,6 @@ static void Wind32DrawFallingPiece()
 }
 
 
-void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B)
-{
-	RECT r{};
-	HBRUSH Brush;
-
-	Brush = CreateSolidBrush(RGB(R, G, B));
-	r.left = x;
-	r.top = y;
-	r.right = x2;
-	r.bottom = y2;
-	FillRect(DeviceContext, &r, Brush);
-	DeleteObject(Brush);
-}
 
 
 keyboard_info::keyboard_info()
