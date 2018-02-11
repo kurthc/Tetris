@@ -46,7 +46,7 @@ public:
 	std::vector<key_state> Key;
 	keyboard_info();
 	float RepeatTimer;
-	int size() { return Key.size(); }
+	size_t size() { return Key.size(); }
 };
 
 

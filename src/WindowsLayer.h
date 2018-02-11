@@ -35,10 +35,11 @@ class buffer
 public:
 	HDC MemoryDeviceContext;
 	HBITMAP MemoryDeviceContextBitmap;
+	game_state* GameState;   // Get rid of this later.
 
-	bool SetUpMemoryDeviceContext(HDC WindowDeviceContext);
+	buffer(game_state*);
+	bool SetUpMemoryDeviceContext(HDC DeviceContext);
 	intvec2 MapToDisplayCoordinates(intvec2 MapPosition);
-	void Win32DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B);
 };
 
 class windows_layer
@@ -58,7 +59,7 @@ static int CountsPerSecond;                // Used to convert the timer to secon
 static buffer* Buffer;
 										   //static HDC MemoryDeviceContext;
 //static HBITMAP MemoryDeviceContextBitmap;
-game_state* GlobalGameState;
+static game_state* GlobalGameState;
 static keyboard_info* KeyboardInfo;
 
 static bitmap_manager* BitmapManager;
@@ -77,6 +78,6 @@ static void Win32AddConsole();
 timing_information GetSeconds();
 static void Win32DrawClientArea(HDC DeviceContext);
 static void Win32DrawGameMap();
-
+void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B);
 static void Wind32DrawFallingPiece();
 LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam);

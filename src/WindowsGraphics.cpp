@@ -1,7 +1,11 @@
 #include "Global.h"
 #include "WindowsLayer.h"
 
-extern game_state* GlobalGameState;
+
+buffer::buffer(game_state* GameState)
+{
+	this->GameState = GameState;
+}
 
 // Create the Memory DC.
 //bool Win32SetUpMemoryDeviceContext(HDC DeviceContext)
@@ -18,7 +22,8 @@ bool buffer::SetUpMemoryDeviceContext(HDC WindowDeviceContext)
 
 intvec2 buffer::MapToDisplayCoordinates(intvec2 MapPosition)
 {
-	game_board& GameBoard = GlobalGameState->GameBoard;
+	game_board& GameBoard = this->GameState->GameBoard;
+	//game_board& GameBoard = this->GameState.GameBoard;
 	int DisplayX = GAME_MAP_LEFT + MapPosition.x * BLOCK_WIDTH;
 	int DisplayY = GAME_MAP_TOP + (GameBoard.PlayableHeight - MapPosition.y) * BLOCK_HEIGHT;
 	return { DisplayX, DisplayY };
