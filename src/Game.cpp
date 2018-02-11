@@ -37,7 +37,7 @@ falling_piece::falling_piece(piece Piece)
 game_state::game_state()
 {
 	this->SetStandardPieces();
-	this->FallingPiece = falling_piece(this->StandardPiece[2]);
+	this->FallingPiece = falling_piece(this->StandardPiece[1]);
 }
 
 void game_state::SetStandardPieces()
@@ -87,46 +87,45 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 {
 	KeyboardInfo->RepeatTimer = MAX(KeyboardInfo->RepeatTimer - 1.0f / TargetFPS, 0.0f);
 	intvec2 NewLocation{0,0};
+	bool RepeatTimerClear = (KeyboardInfo->RepeatTimer <= 0.0f);
 
 	for (int i = 0; i < KeyboardInfo->size(); ++i)
 	{
-		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		
+		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
-			//++this->FallingPiece.CenterLocation.y;
 			NewLocation = NewLocation + intvec2(0, 1);
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
 			NewLocation = NewLocation + intvec2(-1, 0);
-			//--this->FallingPiece.CenterLocation.x;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'S' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		if (KeyboardInfo->Key[i].VKey == 'S' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
 			NewLocation = NewLocation + intvec2(0, -1);
-			//--this->FallingPiece.CenterLocation.y;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
 			NewLocation = NewLocation + intvec2(1, 0);
-			//++this->FallingPiece.CenterLocation.x;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'J' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		if (KeyboardInfo->Key[i].VKey == 'J' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
 			this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
-			//this->FallingPiece.PieceOrientation = 1;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-		if (KeyboardInfo->Key[i].VKey == 'L' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->RepeatTimer == 0.0f)
+		if (KeyboardInfo->Key[i].VKey == 'L' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
 			this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
-			//this->FallingPiece.PieceOrientation = 1;
 			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 		}
-
+		if (KeyboardInfo->Key[i].VKey == VK_SPACE && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		{
+			this->FreezePiece();
+		}
 	}
 
 	// For now...
@@ -134,12 +133,30 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	{
 		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + NewLocation;
 	}
-	
-
-	//piece ProposedLocation;
-	//ProposedLocation
-	//this->FallingPiece.Piece.Center = ProposedLocation + NewLocation;
-	// **** Collision check
 
 	
+}
+
+void game_state::FreezePiece()
+{
+	falling_piece& FallingPiece = this->FallingPiece;
+	auto it = FallingPiece.Piece.Blocks->begin();
+	while (it != FallingPiece.Piece.Blocks->end())
+	{
+		intvec2 BlockLocation = FallingPiece.CenterLocation + *it;
+		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
+			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
+		{
+			this->GameBoard.GameBoard[BlockLocation.x][BlockLocation.y] = 1;
+		}
+		++it;
+	}
+
+}
+
+// I don't know if I'll need this anywhere anymore.
+intvec2 falling_piece::BlockPosition(int n)
+{
+	int PieceOrientation = this->PieceOrientation;
+	return this->Piece.Blocks[PieceOrientation][n] + this->CenterLocation;
 }

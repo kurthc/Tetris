@@ -288,6 +288,7 @@ keyboard_info::keyboard_info()
 	this->Key.push_back(key_state('D'));
 	this->Key.push_back(key_state('J'));
 	this->Key.push_back(key_state('L'));
+	this->Key.push_back(key_state(VK_SPACE));
 	this->Key.push_back(key_state(VK_UP));
 	this->Key.push_back(key_state(VK_LEFT));
 	this->Key.push_back(key_state(VK_DOWN));
