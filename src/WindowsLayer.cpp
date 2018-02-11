@@ -140,10 +140,13 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	HDC DeviceContext = GetDC(Window);
 	Win32SetUpMemoryDeviceContext(DeviceContext);
 
-	BitmapBlockPurple = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
+	//Win32LoadBitmaps()
+
 
 	bool GameLoopFinished = false;
 
+	BitmapManager = new bitmap_manager();
+	BitmapManager->LoadBitmaps(Instance);
 	GlobalGameState = new game_state();
 	KeyboardInfo = new keyboard_info();
 	
@@ -201,6 +204,7 @@ static void Win32AddConsole()
 
 static void Win32DrawClientArea(HDC DeviceContext)
 {
+	Win32DrawRectangle(MemoryDeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, 0, 0, 0);
 	Win32DrawGameMap();
 	Wind32DrawFallingPiece();
 	BitBlt(DeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, MemoryDeviceContext, 0, 0, SRCCOPY);
@@ -214,14 +218,23 @@ intvec2 MapToDisplayCoordinates(intvec2 MapPosition)
 	return { DisplayX, DisplayY };
 }
 
+void Win32DrawBitmap(HDC DC, int x, int y, int width, int height, HBITMAP Bitmap)
+{
+	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
+	SelectObject(BlockDC, Bitmap);
+	BitBlt(DC, x, y, width, height, BlockDC, 0, 0, SRCCOPY);
+	DeleteObject(BlockDC);
+
+}
+
 static void Win32DrawGameMap()
 {
 	game_board& GameBoard = GlobalGameState->GameBoard;
 
 	RECT r {};
 
-	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
-	SelectObject(BlockDC, BitmapBlockPurple);
+	//HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
+	//SelectObject(BlockDC, BitmapBlockPurple);
 
 	const static int BorderWidth = 4;
 	Win32DrawRectangle(MemoryDeviceContext, GAME_MAP_LEFT - BorderWidth, GAME_MAP_TOP - BorderWidth, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH + BorderWidth,
@@ -237,33 +250,36 @@ static void Win32DrawGameMap()
 			intvec2 LeftTop = MapToDisplayCoordinates(intvec2(x, y+1));
 			if (GameBoard.GameBoard[x][y] == 1)
 			{
-				BitBlt(MemoryDeviceContext, LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BlockDC, 0, 0, SRCCOPY);
+
+				int BitmapIndex = BitmapIndex::BlockBlue;
+				Win32DrawBitmap(MemoryDeviceContext, LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
+
+
+				//BitBlt(MemoryDeviceContext, LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BlockDC, 0, 0, SRCCOPY);
 			}
 		}
 	}
 
-	DeleteObject(BlockDC);
+	//DeleteObject(BlockDC);
 }
+
 
 static void Wind32DrawFallingPiece()
 {
 	falling_piece& FallingPiece = GlobalGameState->FallingPiece;
-
-	HDC BlockDC = CreateCompatibleDC(MemoryDeviceContext);
-	SelectObject(BlockDC, BitmapBlockPurple);
 
 	int PieceOrientation = FallingPiece.PieceOrientation;
 	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
 	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0,1));
-
-		BitBlt(MemoryDeviceContext, BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BlockDC, 0, 0, SRCCOPY);
+		//Win32DrawBitmap(MemoryDeviceContext, BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapBlockRed);
+		int BitmapIndex = BitmapIndex::BlockPurple;
+		Win32DrawBitmap(MemoryDeviceContext, BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
 		++it;
 	}
-
-	DeleteObject(BlockDC);
 }
+
 
 void Win32DrawRectangle(HDC DeviceContext, int x, int y, int x2, int y2, int R, int G, int B)
 {
@@ -293,4 +309,20 @@ keyboard_info::keyboard_info()
 	this->Key.push_back(key_state(VK_LEFT));
 	this->Key.push_back(key_state(VK_DOWN));
 	this->Key.push_back(key_state(VK_RIGHT));
+}
+
+//bitmap_manager::bitmap_manager(HINSTANCE Instance)
+void bitmap_manager::LoadBitmaps(HINSTANCE Instance)
+{
+	//this->Bitmap = std::vector<BITMAP>();
+	//BitmapIndex::BlockBlack
+	this->Bitmap[BitmapIndex::BlockBlack] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKBLACK));
+	this->Bitmap[BitmapIndex::BlockPurple] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
+	this->Bitmap[BitmapIndex::BlockBlue] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKBLUE));
+	this->Bitmap[BitmapIndex::BlockGreen] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKGREEN));
+	this->Bitmap[BitmapIndex::BlockRed] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKRED));
+	this->Bitmap[BitmapIndex::BlockYellow] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKYELLOW));
+
+	//BitmapBlockPurple = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
+	//BitmapBlockRed = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKRED));
 }

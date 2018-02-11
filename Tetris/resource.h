@@ -4,6 +4,12 @@
 //
 #define IDB_BITMAP1                     101
 #define IDB_BLOCKPURPLE                 101
+#define IDB_BLOCKRED                    102
+#define IDB_BLOCKBLUE                   103
+#define IDB_BLOCKYELLOW                 104
+#define IDB_BLOCKGREEN                  105
+#define IDB_BLOCKRED1                   106
+#define IDB_BLOCKBLACK                  106
 
 // Next default values for new objects
 // 

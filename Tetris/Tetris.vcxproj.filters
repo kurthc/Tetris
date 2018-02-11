@@ -51,5 +51,29 @@
     <Image Include="BlockPurple.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="blockpur.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="blockred.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp00002.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="BlockBlue.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="BlockYellow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="BlockGreen.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="BlockBlack.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
