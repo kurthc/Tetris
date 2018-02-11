@@ -35,7 +35,9 @@ class buffer
 public:
 	HDC MemoryDeviceContext;
 	HBITMAP MemoryDeviceContextBitmap;
+	game_state* GameState;   // Get rid of this later.
 
+	buffer(game_state*);
 	bool SetUpMemoryDeviceContext(HDC DeviceContext);
 	intvec2 MapToDisplayCoordinates(intvec2 MapPosition);
 };
@@ -57,7 +59,7 @@ static int CountsPerSecond;                // Used to convert the timer to secon
 static buffer* Buffer;
 										   //static HDC MemoryDeviceContext;
 //static HBITMAP MemoryDeviceContextBitmap;
-game_state* GlobalGameState;
+static game_state* GlobalGameState;
 static keyboard_info* KeyboardInfo;
 
 static bitmap_manager* BitmapManager;

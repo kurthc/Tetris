@@ -141,11 +141,11 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 	bool GameLoopFinished = false;
 
-	Buffer = new buffer();
+	GlobalGameState = new game_state();
+	Buffer = new buffer(GlobalGameState);
 	Buffer->SetUpMemoryDeviceContext(DeviceContext);
 	BitmapManager = new bitmap_manager();
 	BitmapManager->LoadBitmaps(Instance);
-	GlobalGameState = new game_state();
 	KeyboardInfo = new keyboard_info();
 	
 	
