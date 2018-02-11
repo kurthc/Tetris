@@ -30,6 +30,22 @@ public:
 	void LoadBitmaps(HINSTANCE);
 };
 
+class buffer
+{
+public:
+	HDC MemoryDeviceContext;
+	HBITMAP MemoryDeviceContextBitmap;
+
+	bool SetUpMemoryDeviceContext(HDC DeviceContext);
+	intvec2 MapToDisplayCoordinates(intvec2 MapPosition);
+};
+
+class windows_layer
+{
+public:
+
+};
+
 //constexpr int BLOCK_BLACK = 0;
 //constexpr int BLOCK_BLUE = 1;
 //constexpr int BLOCK_GREEN = 2;
@@ -38,14 +54,13 @@ public:
 //constexpr int BLOCK_YELLOW = 5;
 
 static int CountsPerSecond;                // Used to convert the timer to seconds.
-static HDC MemoryDeviceContext;
-static HBITMAP MemoryDeviceContextBitmap;
-static game_state* GlobalGameState;
+static buffer* Buffer;
+										   //static HDC MemoryDeviceContext;
+//static HBITMAP MemoryDeviceContextBitmap;
+game_state* GlobalGameState;
 static keyboard_info* KeyboardInfo;
 
 static bitmap_manager* BitmapManager;
-static HBITMAP BitmapBlockPurple;
-static HBITMAP BitmapBlockRed;
 
 struct timing_information
 {
@@ -56,9 +71,7 @@ struct timing_information
 
 
 
-//static key_mapping KeyMapping;
-
-bool Win32SetUpMemoryDeviceContext(HDC DeviceContext);
+//bool Win32SetUpMemoryDeviceContext(HDC DeviceContext);
 static void Win32AddConsole();
 timing_information GetSeconds();
 static void Win32DrawClientArea(HDC DeviceContext);
