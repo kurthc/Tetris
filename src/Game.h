@@ -20,7 +20,8 @@ public:
 	game_board();
 };
 
-// A tetris piece. Coordinates are not relative to the game map.
+// A tetris piece. Coordinates are not relative to the piece center.
+// 
 class piece
 {
 public:
@@ -52,6 +53,7 @@ public:
 	game_board GameBoard;
 	falling_piece FallingPiece;
 	piece StandardPiece[7];
+	bool ShowDebugOverlay = false;
 
 	game_state();
 	void SetStandardPieces();

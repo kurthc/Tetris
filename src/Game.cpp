@@ -126,6 +126,11 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		{
 			this->FreezePiece();
 		}
+		if (KeyboardInfo->Key[i].VKey == '1' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
+		{
+			this->ShowDebugOverlay = !this->ShowDebugOverlay;
+		}
+
 	}
 
 	// For now...

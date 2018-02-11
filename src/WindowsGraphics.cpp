@@ -68,6 +68,12 @@ void buffer::DrawFallingPiece()
 		this->DrawBitmap(BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
 		++it;
 	}
+
+	if (this->GameState->ShowDebugOverlay)
+	{
+		intvec2 CenterLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + intvec2(0, 1));
+		this->DrawRectangle(CenterLocation.x, CenterLocation.y, CenterLocation.x + BLOCK_WIDTH, CenterLocation.y + BLOCK_HEIGHT, 255, 255, 0);
+	}
 }
 
 

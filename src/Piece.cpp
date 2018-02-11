@@ -12,8 +12,8 @@ void piece::RotateBlocks90(const std::vector<intvec2>& vIn, std::vector<intvec2>
 	auto it = vIn.begin();
 	while (it != vIn.end())
 	{
-		//  [x] -> [-y]
-		//  [y]    [ x]
+		// Rotate 90 degrees counterclockwise:  [x] -> [-y]
+		//                                      [y]    [ x]
 		intvec2 RotatedLocation = intvec2(-1 * (*it).y, (*it).x);
 		vOut.push_back(RotatedLocation);
 		++it;

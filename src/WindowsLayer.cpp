@@ -192,21 +192,14 @@ static void Win32AddConsole()
 }
 
 
-
-
 keyboard_info::keyboard_info()
 {
-	this->Key.push_back(key_state('W'));
-	this->Key.push_back(key_state('A'));
-	this->Key.push_back(key_state('S'));
-	this->Key.push_back(key_state('D'));
-	this->Key.push_back(key_state('J'));
-	this->Key.push_back(key_state('L'));
-	this->Key.push_back(key_state(VK_SPACE));
-	this->Key.push_back(key_state(VK_UP));
-	this->Key.push_back(key_state(VK_LEFT));
-	this->Key.push_back(key_state(VK_DOWN));
-	this->Key.push_back(key_state(VK_RIGHT));
+	WPARAM KeysToAdd[] = { 'W', 'A', 'S', 'D', 'J', 'L', '1', VK_SPACE };
+	int NumberOfKeys = sizeof(KeysToAdd) / sizeof(*KeysToAdd);
+	for (int i = 0; i < NumberOfKeys; ++i)
+	{
+		this->Key.push_back(key_state(KeysToAdd[i]));
+	}
 }
 
 //bitmap_manager::bitmap_manager(HINSTANCE Instance)
