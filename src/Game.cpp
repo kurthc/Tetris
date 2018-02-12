@@ -1,5 +1,5 @@
 #include "Game.h"
-
+#include <cstdlib>
 
 
 game_board::game_board()
@@ -8,15 +8,15 @@ game_board::game_board()
 	{
 		for (int x = 0; x < this->GameBoardWidth; ++x)
 		{
-			if (y == 0 || y == GameBoardHeight - 1 || x == 0 || x == GameBoardWidth - 1)
-			{
-				this->GameBoard[x][y] = 1;
-			}
-			else
-			{
-				this->GameBoard[x][y] = 0;
-			}
-			
+			//if (y == 0 || y == GameBoardHeight - 1 || x == 0 || x == GameBoardWidth - 1)
+			//{
+			//	this->GameBoard[x][y] = 1;
+			//}
+			//else
+			//{
+			//	this->GameBoard[x][y] = 0;
+			//}
+			this->GameBoard[x][y] = 0;
 		}
 	}
 	
@@ -30,7 +30,8 @@ falling_piece::falling_piece()
 falling_piece::falling_piece(piece Piece)
 {
 	this->Piece = Piece;    //copy
-	this->CenterLocation = intvec2(4, 7);
+	int Height = Piece.GetBottom();
+	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 	
 }
 
@@ -50,7 +51,6 @@ void game_state::SetStandardPieces()
 	this->StandardPiece[0].Center = intvec2(0, 0);
 	this->StandardPiece[0].CenterType = piece_center_type::Center;
 	this->StandardPiece[0].GetRotatedPiecesFrom0();
-	
 
 	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[1].Blocks[0].push_back(intvec2(1, 0));
@@ -61,20 +61,68 @@ void game_state::SetStandardPieces()
 	this->StandardPiece[1].GetRotatedPiecesFrom0();
 
 	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -1));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -2));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, -1));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(2, 0));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -1));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -2));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(4, 0));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -1));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -2));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, 0));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(-1, 0));
+	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, 1));
 	this->StandardPiece[2].Center = intvec2(0, 0);
 	this->StandardPiece[2].CenterType = piece_center_type::Center;
 	this->StandardPiece[2].GetRotatedPiecesFrom0();
 
+	this->StandardPiece[3].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[3].Blocks[0].push_back(intvec2(1, 0));
+	this->StandardPiece[3].Blocks[0].push_back(intvec2(-1, 0));
+	this->StandardPiece[3].Blocks[0].push_back(intvec2(-1, 1));
+	this->StandardPiece[3].Center = intvec2(0, 0);
+	this->StandardPiece[3].CenterType = piece_center_type::Center;
+	this->StandardPiece[3].GetRotatedPiecesFrom0();
 
+	this->StandardPiece[4].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[4].Blocks[0].push_back(intvec2(-1, 0));
+	this->StandardPiece[4].Blocks[0].push_back(intvec2(0, 1));
+	this->StandardPiece[4].Blocks[0].push_back(intvec2(1, 1));
+	this->StandardPiece[4].Center = intvec2(0, 0);
+	this->StandardPiece[4].CenterType = piece_center_type::Center;
+	this->StandardPiece[4].GetRotatedPiecesFrom0();
+
+	this->StandardPiece[5].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[5].Blocks[0].push_back(intvec2(1, 0));
+	this->StandardPiece[5].Blocks[0].push_back(intvec2(0, 1));
+	this->StandardPiece[5].Blocks[0].push_back(intvec2(-1, 1));
+	this->StandardPiece[5].Center = intvec2(0, 0);
+	this->StandardPiece[5].CenterType = piece_center_type::Center;
+	this->StandardPiece[5].GetRotatedPiecesFrom0();
+
+	this->StandardPiece[6].Blocks[0].push_back(intvec2(0, 0));
+	this->StandardPiece[6].Blocks[0].push_back(intvec2(-1, 0));
+	this->StandardPiece[6].Blocks[0].push_back(intvec2(1, 0));
+	this->StandardPiece[6].Blocks[0].push_back(intvec2(2, 0));
+	this->StandardPiece[6].Center = intvec2(0, 0);
+	this->StandardPiece[6].CenterType = piece_center_type::Center;
+	this->StandardPiece[6].GetRotatedPiecesFrom0();
+
+	//this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 0));
+	//this->StandardPiece[1].Blocks[0].push_back(intvec2(1, 0));
+	//this->StandardPiece[1].Blocks[0].push_back(intvec2(-1, 0));
+	//this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 1));
+	//this->StandardPiece[1].Center = intvec2(0, 0);
+	//this->StandardPiece[1].CenterType = piece_center_type::Center;
+	//this->StandardPiece[1].GetRotatedPiecesFrom0();
+
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(0, 0));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -1));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -2));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(1, -1));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(2, 0));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -1));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -2));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(4, 0));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -1));
+	//this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -2));
+	//this->StandardPiece[2].Center = intvec2(0, 0);
+	//this->StandardPiece[2].CenterType = piece_center_type::Center;
+	//this->StandardPiece[2].GetRotatedPiecesFrom0();
+
+	this->StandardPieceCount = sizeof(this->StandardPiece) / sizeof(*(this->StandardPiece));
 	//this->StandardPiece[0].Blocks
 }
 
@@ -91,7 +139,7 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 
 	for (int i = 0; i < KeyboardInfo->size(); ++i)
 	{
-		
+		//TODO: I think each key needs its own RepeatTimer.
 		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
 		{
 			NewLocation = NewLocation + intvec2(0, 1);
@@ -125,6 +173,7 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		if (KeyboardInfo->Key[i].VKey == VK_SPACE && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
 		{
 			this->FreezePiece();
+			this->NewFallingPieceAtTop();
 		}
 		if (KeyboardInfo->Key[i].VKey == '1' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
 		{
@@ -138,8 +187,6 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	{
 		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + NewLocation;
 	}
-
-	
 }
 
 void game_state::FreezePiece()
@@ -165,4 +212,10 @@ intvec2 falling_piece::BlockPosition(int n)
 {
 	int PieceOrientation = this->PieceOrientation;
 	return this->Piece.Blocks[PieceOrientation][n] + this->CenterLocation;
+}
+
+void game_state::NewFallingPieceAtTop()
+{
+	int PieceIndex = (rand() % this->StandardPieceCount);
+	this->FallingPiece = falling_piece(this->StandardPiece[PieceIndex]);
 }

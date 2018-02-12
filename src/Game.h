@@ -31,6 +31,7 @@ public:
 	piece();
 	void GetRotatedPiecesFrom0();
 	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
+	int GetBottom();
 };
 
 class falling_piece
@@ -53,6 +54,7 @@ public:
 	game_board GameBoard;
 	falling_piece FallingPiece;
 	piece StandardPiece[7];
+	int StandardPieceCount;
 	bool ShowDebugOverlay = false;
 
 	game_state();
@@ -60,5 +62,6 @@ public:
 	void HandleKeyboard(keyboard_info*);
 	void UpdateGame(keyboard_info*);
 	void FreezePiece();
+	void NewFallingPieceAtTop();
 };
 

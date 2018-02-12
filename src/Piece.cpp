@@ -28,4 +28,17 @@ void piece::GetRotatedPiecesFrom0()
 	this->RotateBlocks90(Blocks[2], Blocks[3]);
 }
 
+int piece::GetBottom()
+{
+	auto it = this->Blocks->begin();
+	int Low = 100;
+	while (it != this->Blocks->end())
+	{
+		if (it->y < Low)
+			Low = it->y;
+		++it;
+	}
+	return Low;
+}
+
 
