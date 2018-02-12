@@ -28,6 +28,7 @@ public:
 	intvec2 Center;
 	piece_center_type CenterType;
 	std::vector<intvec2> Blocks[4];
+
 	piece();
 	void GetRotatedPiecesFrom0();
 	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
@@ -45,7 +46,9 @@ public:
 	falling_piece();
 	falling_piece(piece Piece);
 	intvec2 BlockPosition(int n);
-
+	bool HitSomething(const game_board&);
+	intvec2 operator[](const int& n);
+	std::vector<intvec2>& Blocks() { return this->Piece.Blocks[this->PieceOrientation]; }
 };
 
 class game_state
@@ -56,6 +59,7 @@ public:
 	piece StandardPiece[7];
 	int StandardPieceCount;
 	bool ShowDebugOverlay = false;
+	float DropTimer = 0.0f;
 
 	game_state();
 	void SetStandardPieces();
@@ -63,5 +67,6 @@ public:
 	void UpdateGame(keyboard_info*);
 	void FreezePiece();
 	void NewFallingPieceAtTop();
+	void ProcessFallingPiece();
 };
 

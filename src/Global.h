@@ -26,8 +26,11 @@ public:
 	intvec2() : x(0), y(0) {}
 	intvec2(int x, int y) : x(x), y(y) {}
 
+
 	intvec2 operator+(const intvec2& v);
 };
+
+
 
 class key_state
 {
@@ -40,13 +43,29 @@ public:
 	key_state(WPARAM wParam) : VKey(wParam) {};
 };
 
+
 class keyboard_info
 {
 public:
 	std::vector<key_state> Key;
+	int IndexRight = 0;
+	int IndexLeft = 0;
+	int IndexTurnRight = 0;
+	int IndexTurnLeft = 0;
+	int IndexDrop = 0;
+	int IndexDebug = 0;
+
+	enum KeyFunction { Unmapped, Right, Left, TurnRight, TurnLeft, Debug, Drop };
+
 	keyboard_info();
 	float RepeatTimer;
 	size_t size() { return Key.size(); }
+	key_state& KeyRight() { return this->Key[this->IndexRight]; }
+	key_state& KeyLeft() { return this->Key[this->IndexLeft]; }
+	key_state& KeyTurnRight() { return this->Key[this->IndexTurnRight]; }
+	key_state& KeyTurnLeft() { return this->Key[this->IndexTurnLeft]; }
+	key_state& KeyDrop() { return this->Key[this->IndexDrop]; }
+	key_state& KeyDebug() { return this->Key[this->IndexDebug]; }
 };
 
 

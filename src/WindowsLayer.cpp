@@ -194,11 +194,44 @@ static void Win32AddConsole()
 
 keyboard_info::keyboard_info()
 {
-	WPARAM KeysToAdd[] = { 'W', 'A', 'S', 'D', 'J', 'L', '1', VK_SPACE };
+	
+	std::pair<WPARAM, KeyFunction> KeysToAdd[] = {
+		{'W', KeyFunction::Unmapped},
+		{'A', KeyFunction::Left},
+		{'S', KeyFunction::Unmapped},
+		{'D', KeyFunction::Right},
+		{'J', KeyFunction::TurnLeft},
+		{'L', KeyFunction::TurnRight},
+		{'1', KeyFunction::Debug},
+		{VK_SPACE, KeyFunction::Drop}
+
+	};
+
 	int NumberOfKeys = sizeof(KeysToAdd) / sizeof(*KeysToAdd);
 	for (int i = 0; i < NumberOfKeys; ++i)
 	{
-		this->Key.push_back(key_state(KeysToAdd[i]));
+		this->Key.push_back(key_state(KeysToAdd[i].first));
+		switch (KeysToAdd[i].second)
+		{
+		case KeyFunction::Left:
+			this->IndexLeft = this->Key.size() - 1;
+			break;
+		case KeyFunction::Right:
+			this->IndexRight = this->Key.size() - 1;
+			break;
+		case KeyFunction::TurnLeft:
+			this->IndexTurnLeft = this->Key.size() - 1;
+			break;
+		case KeyFunction::TurnRight:
+			this->IndexTurnRight = this->Key.size() - 1;
+			break;
+		case KeyFunction::Drop:
+			this->IndexDrop = this->Key.size() - 1;
+			break;
+		case KeyFunction::Debug:
+			this->IndexDebug = this->Key.size() - 1;
+			break;
+		}
 	}
 }
 

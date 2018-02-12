@@ -8,14 +8,6 @@ game_board::game_board()
 	{
 		for (int x = 0; x < this->GameBoardWidth; ++x)
 		{
-			//if (y == 0 || y == GameBoardHeight - 1 || x == 0 || x == GameBoardWidth - 1)
-			//{
-			//	this->GameBoard[x][y] = 1;
-			//}
-			//else
-			//{
-			//	this->GameBoard[x][y] = 0;
-			//}
 			this->GameBoard[x][y] = 0;
 		}
 	}
@@ -100,28 +92,6 @@ void game_state::SetStandardPieces()
 	this->StandardPiece[6].CenterType = piece_center_type::Center;
 	this->StandardPiece[6].GetRotatedPiecesFrom0();
 
-	//this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 0));
-	//this->StandardPiece[1].Blocks[0].push_back(intvec2(1, 0));
-	//this->StandardPiece[1].Blocks[0].push_back(intvec2(-1, 0));
-	//this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 1));
-	//this->StandardPiece[1].Center = intvec2(0, 0);
-	//this->StandardPiece[1].CenterType = piece_center_type::Center;
-	//this->StandardPiece[1].GetRotatedPiecesFrom0();
-
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(0, 0));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -1));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(0, -2));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(1, -1));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(2, 0));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -1));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(2, -2));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(4, 0));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -1));
-	//this->StandardPiece[2].Blocks[0].push_back(intvec2(4, -2));
-	//this->StandardPiece[2].Center = intvec2(0, 0);
-	//this->StandardPiece[2].CenterType = piece_center_type::Center;
-	//this->StandardPiece[2].GetRotatedPiecesFrom0();
-
 	this->StandardPieceCount = sizeof(this->StandardPiece) / sizeof(*(this->StandardPiece));
 	//this->StandardPiece[0].Blocks
 }
@@ -129,6 +99,22 @@ void game_state::SetStandardPieces()
 void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 {
 	this->HandleKeyboard(KeyboardInfo);
+	this->ProcessFallingPiece();
+}
+
+void game_state::ProcessFallingPiece()
+{
+	if (DropTimer > 0.0f)
+	{
+		DropTimer -= 5.0f / TargetFPS;    // TODO: Speed parameter.
+	}
+	else
+	{
+		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
+		DropTimer = 1.0f;
+	}
+	
+	
 }
 
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
@@ -137,6 +123,43 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	intvec2 NewLocation{0,0};
 	bool RepeatTimerClear = (KeyboardInfo->RepeatTimer <= 0.0f);
 
+
+	if (KeyboardInfo->KeyLeft().IsDown == true && RepeatTimerClear)
+	{
+		NewLocation = NewLocation + intvec2(-1, 0);
+		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+	}
+
+	if (KeyboardInfo->KeyRight().IsDown == true && RepeatTimerClear)
+	{
+		NewLocation = NewLocation + intvec2(1, 0);
+		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+	}
+
+	if (KeyboardInfo->KeyTurnLeft().IsDown == true && RepeatTimerClear)
+	{
+		this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
+		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+	}
+
+	if (KeyboardInfo->KeyTurnRight().IsDown == true && RepeatTimerClear)
+	{
+		this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
+		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+	}
+
+	if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
+	{
+		this->FreezePiece();
+		this->NewFallingPieceAtTop();
+	}
+	
+	if (KeyboardInfo->KeyDebug().IsDown == true && KeyboardInfo->KeyDebug().WasDown == false)
+	{
+		this->ShowDebugOverlay = !this->ShowDebugOverlay;
+	}
+
+	/*
 	for (int i = 0; i < KeyboardInfo->size(); ++i)
 	{
 		//TODO: I think each key needs its own RepeatTimer.
@@ -179,8 +202,8 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		{
 			this->ShowDebugOverlay = !this->ShowDebugOverlay;
 		}
-
 	}
+	*/
 
 	// For now...
 	if (NewLocation.x != 0 || NewLocation.y != 0)
@@ -218,4 +241,29 @@ void game_state::NewFallingPieceAtTop()
 {
 	int PieceIndex = (rand() % this->StandardPieceCount);
 	this->FallingPiece = falling_piece(this->StandardPiece[PieceIndex]);
+	this->DropTimer = 1.0f;
+}
+
+bool falling_piece::HitSomething(const game_board& GameBoard)
+{
+	bool IsOverlapping;
+	for (int i = 0; i < this->Blocks().size(); ++i)
+	{
+		intvec2 b = this->Blocks()[i];
+		if (GameBoard.GameBoard[b.x][b.y] != 0)
+		{
+			IsOverlapping = true;
+		}
+		
+	}
+	
+	return IsOverlapping;
+
+}
+
+intvec2 falling_piece::operator[](const int& n)
+{
+	//intvec2 a = (this->Piece.Blocks)[this->PieceOrientation][n];
+	//return (this->Piece.Blocks)[this->PieceOrientation][n] + this->CenterLocation;
+	return (this->Blocks())[n] + this->CenterLocation;
 }
