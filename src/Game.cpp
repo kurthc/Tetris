@@ -122,17 +122,31 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	
-	if (KeyboardInfo->KeyTurnLeft().IsDown == true && RepeatTimerClear)
+	falling_piece NewFallingPiece(FallingPiece);
+	NewFallingPiece.CenterLocation = NewFallingPiece.CenterLocation + NewLocation;
+	if (!NewFallingPiece.HitSomething(this->GameBoard))
 	{
-		this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
+		FallingPiece.CenterLocation = FallingPiece.CenterLocation + NewLocation;
+	}
+
+	int NewOrientation = this->FallingPiece.PieceOrientation;
+	if (KeyboardInfo->KeyTurnLeft().IsDown == true && KeyboardInfo->KeyTurnLeft().WasDown == false)
+	{
+		NewOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	if (KeyboardInfo->KeyTurnRight().IsDown == true && RepeatTimerClear)
+	if (KeyboardInfo->KeyTurnRight().IsDown == true && KeyboardInfo->KeyTurnRight().WasDown == false)
 	{
-		this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
+		NewOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
+	}
+
+	falling_piece NewFallingPiece2(FallingPiece);
+	NewFallingPiece2.PieceOrientation = NewOrientation;
+	if (!NewFallingPiece2.HitSomething(this->GameBoard))
+	{
+		FallingPiece.PieceOrientation = NewOrientation;
 	}
 
 	if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
@@ -192,11 +206,11 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	}
 	*/
 
-	// For now...
-	if (NewLocation.x != 0 || NewLocation.y != 0)
-	{
-		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + NewLocation;
-	}
+	//// For now...
+	//if (NewLocation.x != 0 || NewLocation.y != 0)
+	//{
+	//	this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + NewLocation;
+	//}
 }
 
 void game_state::ProcessFallingPiece()
@@ -231,6 +245,34 @@ void game_state::ProcessFallingPiece()
 		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		DropTimer = 1.0f;
 	}
+
+	for (int i = 0; i < GAME_BOARD_PLAYABLE_HEIGHT; ++i)
+	{
+		bool FoundHole = false;
+		for (int j = 0; j < GAME_BOARD_WIDTH; ++j)
+		{
+			//TODO: Why is Width the first value here?
+			if (GameBoard.GameBoard[j][i] == 0)
+			{
+				//TODO: break
+				FoundHole = true;
+			}
+		}
+		if (!FoundHole)
+		{
+			for (int k = i; k < GAME_BOARD_PLAYABLE_HEIGHT - 1; ++k)
+			{
+				for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
+				{
+					GameBoard.GameBoard[l][k] = GameBoard.GameBoard[l][k + 1];
+				}
+				
+			}
+		}
+
+	}
+
+
 }
 
 
