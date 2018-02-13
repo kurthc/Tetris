@@ -4,6 +4,11 @@
 
 game_board::game_board()
 {
+	this->ClearBoard();
+}
+
+void game_board::ClearBoard()
+{
 	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
 	{
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
@@ -11,7 +16,11 @@ game_board::game_board()
 			this->GameBoard[x][y] = 0;
 		}
 	}
-	
+}
+
+BitmapIndex game_board::GetColor(int x, int y)
+{
+	return (BitmapIndex)GameBoard[x][y];
 }
 
 falling_piece::falling_piece()
@@ -35,61 +44,81 @@ game_state::game_state()
 
 void game_state::SetStandardPieces()
 {
-	//piece Piece {};
+	// **   (Square)
+	// **
 	this->StandardPiece[0].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[0].Blocks[0].push_back(intvec2(1, 0));
 	this->StandardPiece[0].Blocks[0].push_back(intvec2(1, 1));
 	this->StandardPiece[0].Blocks[0].push_back(intvec2(0, 1));
 	this->StandardPiece[0].Center = intvec2(0, 0);
 	this->StandardPiece[0].CenterType = piece_center_type::Center;
+	this->StandardPiece[0].Color = BitmapIndex::BlockWhite;
 	this->StandardPiece[0].GetRotatedPiecesFrom0();
 
+	//  *   (T)
+	// ***
 	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[1].Blocks[0].push_back(intvec2(1, 0));
 	this->StandardPiece[1].Blocks[0].push_back(intvec2(-1, 0));
 	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 1));
 	this->StandardPiece[1].Center = intvec2(0, 0);
 	this->StandardPiece[1].CenterType = piece_center_type::Center;
+	this->StandardPiece[1].Color = BitmapIndex::BlockCyan;
 	this->StandardPiece[1].GetRotatedPiecesFrom0();
 
+	//   *  (L)
+	// ***
 	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, 0));
 	this->StandardPiece[2].Blocks[0].push_back(intvec2(-1, 0));
 	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, 1));
 	this->StandardPiece[2].Center = intvec2(0, 0);
 	this->StandardPiece[2].CenterType = piece_center_type::Center;
+	this->StandardPiece[2].Color = BitmapIndex::BlockRed;
 	this->StandardPiece[2].GetRotatedPiecesFrom0();
 
+	// *    (Backwards L)
+	// ***
 	this->StandardPiece[3].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[3].Blocks[0].push_back(intvec2(1, 0));
 	this->StandardPiece[3].Blocks[0].push_back(intvec2(-1, 0));
 	this->StandardPiece[3].Blocks[0].push_back(intvec2(-1, 1));
 	this->StandardPiece[3].Center = intvec2(0, 0);
 	this->StandardPiece[3].CenterType = piece_center_type::Center;
+	this->StandardPiece[3].Color = BitmapIndex::BlockBlue;
 	this->StandardPiece[3].GetRotatedPiecesFrom0();
 
+	//  **  (S)
+	// **
 	this->StandardPiece[4].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[4].Blocks[0].push_back(intvec2(-1, 0));
 	this->StandardPiece[4].Blocks[0].push_back(intvec2(0, 1));
 	this->StandardPiece[4].Blocks[0].push_back(intvec2(1, 1));
 	this->StandardPiece[4].Center = intvec2(0, 0);
 	this->StandardPiece[4].CenterType = piece_center_type::Center;
+	this->StandardPiece[4].Color = BitmapIndex::BlockGreen;
 	this->StandardPiece[4].GetRotatedPiecesFrom0();
 
+	// **  (Backwards S)
+	//  **
 	this->StandardPiece[5].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[5].Blocks[0].push_back(intvec2(1, 0));
 	this->StandardPiece[5].Blocks[0].push_back(intvec2(0, 1));
 	this->StandardPiece[5].Blocks[0].push_back(intvec2(-1, 1));
 	this->StandardPiece[5].Center = intvec2(0, 0);
 	this->StandardPiece[5].CenterType = piece_center_type::Center;
+	this->StandardPiece[5].Color = BitmapIndex::BlockPurple;
 	this->StandardPiece[5].GetRotatedPiecesFrom0();
 
+	// ****  (Bar)
+	// 
 	this->StandardPiece[6].Blocks[0].push_back(intvec2(0, 0));
 	this->StandardPiece[6].Blocks[0].push_back(intvec2(-1, 0));
 	this->StandardPiece[6].Blocks[0].push_back(intvec2(1, 0));
 	this->StandardPiece[6].Blocks[0].push_back(intvec2(2, 0));
 	this->StandardPiece[6].Center = intvec2(0, 0);
 	this->StandardPiece[6].CenterType = piece_center_type::Center;
+	this->StandardPiece[6].Color = BitmapIndex::BlockYellow;
 	this->StandardPiece[6].GetRotatedPiecesFrom0();
 
 	this->StandardPieceCount = sizeof(this->StandardPiece) / sizeof(*(this->StandardPiece));
@@ -98,8 +127,11 @@ void game_state::SetStandardPieces()
 
 void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 {
-	this->HandleKeyboard(KeyboardInfo);
-	this->ProcessFallingPiece();
+	if (!GameOver)
+	{
+		this->HandleKeyboard(KeyboardInfo);
+		this->ProcessFallingPiece();
+	}
 }
 
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
@@ -132,13 +164,13 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	int NewOrientation = this->FallingPiece.PieceOrientation;
 	if (KeyboardInfo->KeyTurnLeft().IsDown == true && KeyboardInfo->KeyTurnLeft().WasDown == false)
 	{
-		NewOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
+		NewOrientation = MathMod(this->FallingPiece.PieceOrientation + 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
 	if (KeyboardInfo->KeyTurnRight().IsDown == true && KeyboardInfo->KeyTurnRight().WasDown == false)
 	{
-		NewOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
+		NewOrientation = MathMod(this->FallingPiece.PieceOrientation - 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
@@ -216,10 +248,10 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 void game_state::ProcessFallingPiece()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
-	float Speed = 5.0f;
+	float Speed = 10.0f;
 	if (this->UserIsPressingDown)
 	{
-		Speed = 20.0f;
+		Speed = DROP_SPEED;
 	}
 
 	if (DropTimer > 0.0f)
@@ -280,6 +312,8 @@ void game_state::FreezePiece()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
 	int PieceOrientation = FallingPiece.PieceOrientation;
+	
+	bool BlockAboveLineOfDeath = false;
 	auto it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
 	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
@@ -287,11 +321,14 @@ void game_state::FreezePiece()
 		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
 			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
 		{
-			this->GameBoard.GameBoard[BlockLocation.x][BlockLocation.y] = 1;
+			this->GameBoard.GameBoard[BlockLocation.x][BlockLocation.y] = FallingPiece.Color();
+		}
+		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
+		{
+			this->GameOver = true;
 		}
 		++it;
 	}
-
 }
 
 // I don't know if I'll need this anywhere anymore.

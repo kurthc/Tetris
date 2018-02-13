@@ -245,4 +245,6 @@ void bitmap_manager::LoadBitmaps(HINSTANCE Instance)
 	this->Bitmap[BitmapIndex::BlockGreen] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKGREEN));
 	this->Bitmap[BitmapIndex::BlockRed] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKRED));
 	this->Bitmap[BitmapIndex::BlockYellow] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKYELLOW));
+	this->Bitmap[BitmapIndex::BlockCyan] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKCYAN));
+	this->Bitmap[BitmapIndex::BlockWhite] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKWHITE));
 }

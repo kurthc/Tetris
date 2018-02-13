@@ -64,7 +64,8 @@ void buffer::DrawFallingPiece()
 	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0, 1));
-		int BitmapIndex = BitmapIndex::BlockPurple;
+		//int BitmapIndex = BitmapIndex::BlockPurple;
+		int BitmapIndex = FallingPiece.Color();
 		this->DrawBitmap(BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
 		++it;
 	}
@@ -96,11 +97,10 @@ void buffer::DrawGameMap()
 		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
 		{
 			intvec2 LeftTop = this->MapToDisplayCoordinates(intvec2(x, y + 1));
-			if (GameBoard.GameBoard[x][y] == 1)
+			BitmapIndex Color = GameBoard.GetColor(x, y);
+			if (Color != 0)
 			{
-
-				int BitmapIndex = BitmapIndex::BlockBlue;
-				this->DrawBitmap(LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
+				this->DrawBitmap(LeftTop.x, LeftTop.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[Color]);
 			}
 		}
 	}

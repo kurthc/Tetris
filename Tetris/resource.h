@@ -8,8 +8,10 @@
 #define IDB_BLOCKBLUE                   103
 #define IDB_BLOCKYELLOW                 104
 #define IDB_BLOCKGREEN                  105
-#define IDB_BLOCKRED1                   106
 #define IDB_BLOCKBLACK                  106
+#define IDB_BLOCKWHITE                  107
+#define IDB_BLOCKWHITE1                 108
+#define IDB_BLOCKCYAN                   108
 
 // Next default values for new objects
 // 

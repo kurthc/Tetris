@@ -133,10 +133,12 @@
   <ItemGroup>
     <Image Include="BlockBlack.bmp" />
     <Image Include="BlockBlue.bmp" />
+    <Image Include="BlockCyan.bmp" />
     <Image Include="BlockGreen.bmp" />
     <Image Include="blockpur.bmp" />
     <Image Include="BlockPurple.bmp" />
     <Image Include="blockred.bmp" />
+    <Image Include="BlockWhite.bmp" />
     <Image Include="BlockYellow.bmp" />
     <Image Include="bmp00001.bmp" />
     <Image Include="bmp00002.bmp" />

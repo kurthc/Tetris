@@ -3,6 +3,17 @@
 #include <Windows.h>
 #include <vector>
 
+/*
+TODO:
+Left/Right movement is too slow when the pieces are falling fast
+Change the colors to a proper color enum and not a bitmap index.
+Checking of game board bounds in game_board.
+Swap the indices in game_board
+Implement game_board[][]
+Get rid of globals.
+Seed the random number generator
+*/
+
 constexpr float TargetFPS = 60.0f;
 
 template <typename T> inline T const& MAX(T const& X, T const& Y)
@@ -15,7 +26,12 @@ template <typename T> inline T const& MIN(T const& X, T const& Y)
 	return X > Y ? Y : X;
 }
 
-int ProperMod(int a, int b);
+int MathMod(int a, int b);
+
+enum BitmapIndex {
+	BlockBlack = 0, BlockBlue = 1, BlockGreen = 2, BlockPurple = 3, BlockRed = 4, BlockYellow = 5,
+	BlockCyan = 6, BlockWhite = 7, Count = 8
+};
 
 
 class intvec2

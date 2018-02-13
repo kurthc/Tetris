@@ -6,7 +6,8 @@
 constexpr int GAME_BOARD_WIDTH = 10;
 constexpr int GAME_BOARD_HEIGHT = 20;
 constexpr int GAME_BOARD_PLAYABLE_HEIGHT = GAME_BOARD_HEIGHT + 4;
-constexpr float KEYBOARD_REPEAT_TIME = .1f;
+constexpr float KEYBOARD_REPEAT_TIME = 0.1f;
+constexpr float DROP_SPEED = 40.0f;
 
 enum piece_center_type { Center, Corner };
 
@@ -18,6 +19,9 @@ public:
 	const int PlayableHeight = GAME_BOARD_PLAYABLE_HEIGHT;
 	int GameBoard[GAME_BOARD_WIDTH][GAME_BOARD_PLAYABLE_HEIGHT];
 	game_board();
+	void ClearBoard();
+	BitmapIndex GetColor(int x, int y);
+	bool BlockHere(int x, int y) { return this->GetColor(x, y) != 0; };
 };
 
 // A tetris piece. Coordinates are not relative to the piece center.
@@ -28,6 +32,7 @@ public:
 	intvec2 Center;
 	piece_center_type CenterType;
 	std::vector<intvec2> Blocks[4];
+	BitmapIndex Color = BitmapIndex::BlockWhite;
 
 	piece();
 	void GetRotatedPiecesFrom0();
@@ -49,6 +54,7 @@ public:
 	bool HitSomething(const game_board&);
 	intvec2 operator[](const int& n);
 	std::vector<intvec2>& Blocks() { return this->Piece.Blocks[this->PieceOrientation]; }
+	BitmapIndex Color() { return Piece.Color; }
 };
 
 class game_state
@@ -61,6 +67,7 @@ public:
 	bool ShowDebugOverlay = false;
 	float DropTimer = 0.0f;
 	bool UserIsPressingDown = false;
+	bool GameOver = false;
 
 	game_state();
 	void SetStandardPieces();

@@ -78,5 +78,11 @@
     <Image Include="BlockBlack.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="BlockWhite.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="BlockCyan.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -7,9 +7,10 @@ intvec2 intvec2::operator+(const intvec2& v)
 	return {ResultX, ResultY};
 }
 
-int ProperMod(int a, int b)
+// A mathematical mod function, since  -1 mod 4 evaluates to -1 in C++ (!?)
+int MathMod(int a, int b)
 {
 	//Assumes b > 0
-	// Works for a positive or negative.
+	// Works for positive or negative a.
 	return (a % b + b) % b;
 }

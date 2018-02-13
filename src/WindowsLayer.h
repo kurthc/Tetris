@@ -16,14 +16,12 @@ constexpr int GAME_MAP_TOP = 20;
 constexpr int BLOCK_WIDTH = 25;
 constexpr int BLOCK_HEIGHT = BLOCK_WIDTH;
 
-enum BitmapIndex {
-	BlockBlack = 0, BlockBlue = 1, BlockGreen = 2, BlockPurple = 3, BlockRed = 4, BlockYellow = 5, Count = 6
-};
+
 
 class bitmap_manager
 {
 public:
-	HBITMAP Bitmap[6];
+	HBITMAP Bitmap[BitmapIndex::Count];
 	void LoadBitmaps(HINSTANCE);
 };
 
