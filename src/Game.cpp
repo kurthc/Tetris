@@ -104,13 +104,32 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 
 void game_state::ProcessFallingPiece()
 {
+	falling_piece& FallingPiece = this->FallingPiece;
+	float Speed = 5.0f;
+	if (this->UserIsPressingDown)
+	{
+		Speed = 20.0f;
+	}
+
 	if (DropTimer > 0.0f)
 	{
-		DropTimer -= 5.0f / TargetFPS;    // TODO: Speed parameter.
+		DropTimer -= Speed / TargetFPS;    // TODO: Speed parameter.
 	}
 	else
 	{
-		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
+		falling_piece FPiece(FallingPiece.Piece);
+		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
+ 		if (FPiece.HitSomething(this->GameBoard))
+		{
+			this->FreezePiece();
+			this->NewFallingPieceAtTop();
+		}
+		else
+		{
+			FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
+		}
+
+		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		DropTimer = 1.0f;
 	}
 }
@@ -134,6 +153,10 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
+	this->UserIsPressingDown = KeyboardInfo->KeyDown().IsDown;
+	
+		
+	
 	if (KeyboardInfo->KeyTurnLeft().IsDown == true && RepeatTimerClear)
 	{
 		this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
@@ -244,7 +267,7 @@ void game_state::NewFallingPieceAtTop()
 
 bool falling_piece::HitSomething(const game_board& GameBoard)
 {
-	bool IsOverlapping;
+	bool IsOverlapping = false;
 	for (int i = 0; i < this->Blocks().size(); ++i)
 	{
 		intvec2 b = this->Blocks()[i];

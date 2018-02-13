@@ -60,6 +60,7 @@ public:
 	int StandardPieceCount;
 	bool ShowDebugOverlay = false;
 	float DropTimer = 0.0f;
+	bool UserIsPressingDown = false;
 
 	game_state();
 	void SetStandardPieces();

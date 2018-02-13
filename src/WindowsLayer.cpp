@@ -194,11 +194,10 @@ static void Win32AddConsole()
 
 keyboard_info::keyboard_info()
 {
-	
 	std::pair<WPARAM, KeyFunction> KeysToAdd[] = {
 		{'W', KeyFunction::Unmapped},
 		{'A', KeyFunction::Left},
-		{'S', KeyFunction::Unmapped},
+		{'S', KeyFunction::Down},
 		{'D', KeyFunction::Right},
 		{'J', KeyFunction::TurnLeft},
 		{'L', KeyFunction::TurnRight},
@@ -219,6 +218,9 @@ keyboard_info::keyboard_info()
 		case KeyFunction::Right:
 			this->IndexRight = this->Key.size() - 1;
 			break;
+		case KeyFunction::Down:
+			this->IndexDown = this->Key.size() - 1;
+			break;
 		case KeyFunction::TurnLeft:
 			this->IndexTurnLeft = this->Key.size() - 1;
 			break;
@@ -235,18 +237,12 @@ keyboard_info::keyboard_info()
 	}
 }
 
-//bitmap_manager::bitmap_manager(HINSTANCE Instance)
 void bitmap_manager::LoadBitmaps(HINSTANCE Instance)
 {
-	//this->Bitmap = std::vector<BITMAP>();
-	//BitmapIndex::BlockBlack
 	this->Bitmap[BitmapIndex::BlockBlack] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKBLACK));
 	this->Bitmap[BitmapIndex::BlockPurple] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
 	this->Bitmap[BitmapIndex::BlockBlue] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKBLUE));
 	this->Bitmap[BitmapIndex::BlockGreen] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKGREEN));
 	this->Bitmap[BitmapIndex::BlockRed] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKRED));
 	this->Bitmap[BitmapIndex::BlockYellow] = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKYELLOW));
-
-	//BitmapBlockPurple = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKPURPLE));
-	//BitmapBlockRed = LoadBitmap(Instance, MAKEINTRESOURCE(IDB_BLOCKRED));
 }
