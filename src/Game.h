@@ -20,8 +20,9 @@ public:
 	int GameBoard[GAME_BOARD_WIDTH][GAME_BOARD_PLAYABLE_HEIGHT];
 	game_board();
 	void ClearBoard();
-	BitmapIndex GetColor(int x, int y);
-	bool BlockHere(int x, int y) { return this->GetColor(x, y) != 0; };
+	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[x][y]; };
+	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[x][y] = Color; };
+	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
 };
 
 // A tetris piece. Coordinates are not relative to the piece center.

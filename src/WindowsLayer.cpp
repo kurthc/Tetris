@@ -213,25 +213,25 @@ keyboard_info::keyboard_info()
 		switch (KeysToAdd[i].second)
 		{
 		case KeyFunction::Left:
-			this->IndexLeft = this->Key.size() - 1;
+			this->IndexLeft = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::Right:
-			this->IndexRight = this->Key.size() - 1;
+			this->IndexRight = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::Down:
-			this->IndexDown = this->Key.size() - 1;
+			this->IndexDown = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::TurnLeft:
-			this->IndexTurnLeft = this->Key.size() - 1;
+			this->IndexTurnLeft = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::TurnRight:
-			this->IndexTurnRight = this->Key.size() - 1;
+			this->IndexTurnRight = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::Drop:
-			this->IndexDrop = this->Key.size() - 1;
+			this->IndexDrop = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::Debug:
-			this->IndexDebug = this->Key.size() - 1;
+			this->IndexDebug = (int)this->Key.size() - 1;
 			break;
 		}
 	}

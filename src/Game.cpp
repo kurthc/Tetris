@@ -14,13 +14,11 @@ void game_board::ClearBoard()
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
 			this->GameBoard[x][y] = 0;
+
+			// There's not really any good reason to do it like this:
+			//this->SetColor(x, y, BitmapIndex::BlockBlack;
 		}
 	}
-}
-
-BitmapIndex game_board::GetColor(int x, int y)
-{
-	return (BitmapIndex)GameBoard[x][y];
 }
 
 falling_piece::falling_piece()
@@ -39,7 +37,8 @@ falling_piece::falling_piece(piece Piece)
 game_state::game_state()
 {
 	this->SetStandardPieces();
-	this->FallingPiece = falling_piece(this->StandardPiece[1]);
+	this->NewFallingPieceAtTop();
+	//this->FallingPiece = falling_piece(this->StandardPiece[1]);
 }
 
 void game_state::SetStandardPieces()
@@ -284,7 +283,8 @@ void game_state::ProcessFallingPiece()
 		for (int j = 0; j < GAME_BOARD_WIDTH; ++j)
 		{
 			//TODO: Why is Width the first value here?
-			if (GameBoard.GameBoard[j][i] == 0)
+			//if (GameBoard.GameBoard[j][i] == 0)
+			if (!GameBoard.BlockHere(j,i))
 			{
 				//TODO: break
 				FoundHole = true;
@@ -296,9 +296,15 @@ void game_state::ProcessFallingPiece()
 			{
 				for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
 				{
-					GameBoard.GameBoard[l][k] = GameBoard.GameBoard[l][k + 1];
+					//GameBoard.GameBoard[l][k] = GameBoard.GameBoard[l][k + 1];
+					// Set each block to the block above it.
+					GameBoard.SetColor(l, k, GameBoard.GetColor(l, k + 1));
 				}
 				
+			}
+			for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
+			{
+				GameBoard.SetColor(l, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
 			}
 		}
 
@@ -348,23 +354,18 @@ void game_state::NewFallingPieceAtTop()
 bool falling_piece::HitSomething(const game_board& GameBoard)
 {
 	bool IsOverlapping = false;
-	//for (int i = 0; i < this->Blocks().size(); ++i)
-	//{
-	//	intvec2 b = this->Blocks()[i];
-	//	if (GameBoard.GameBoard[b.x][b.y] != 0)
-	//	{
-	//		IsOverlapping = true;
-	//	}
-	//}
 
 	for (int i = 0; i < this->Blocks().size(); ++i)
 	{
+		// For each block in the piece, check if it goes out of bounds...
 		intvec2 b = (*this)[i];
 		if (b.x < 0 || b.x >= GAME_BOARD_WIDTH || b.y < 0)
 		{
 			IsOverlapping = true;
 		}
-		else if (GameBoard.GameBoard[b.x][b.y] != 0)
+		// ...or if it hits another block.
+		//else if (GameBoard.GameBoard[b.x][b.y] != 0)
+		else if (GameBoard.BlockHere(b.x, b.y))
 		{
 			IsOverlapping = true;
 		}
