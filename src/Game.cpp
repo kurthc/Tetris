@@ -113,8 +113,6 @@ void game_state::ProcessFallingPiece()
 		this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		DropTimer = 1.0f;
 	}
-	
-	
 }
 
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
@@ -254,16 +252,13 @@ bool falling_piece::HitSomething(const game_board& GameBoard)
 		{
 			IsOverlapping = true;
 		}
-		
 	}
 	
 	return IsOverlapping;
-
 }
 
+// GameMap coordinates of the nth block.
 intvec2 falling_piece::operator[](const int& n)
 {
-	//intvec2 a = (this->Piece.Blocks)[this->PieceOrientation][n];
-	//return (this->Piece.Blocks)[this->PieceOrientation][n] + this->CenterLocation;
 	return (this->Blocks())[n] + this->CenterLocation;
 }
