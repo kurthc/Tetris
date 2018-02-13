@@ -8,10 +8,9 @@ TODO:
 Left/Right movement is too slow when the pieces are falling fast
 Change the colors to a proper color enum and not a bitmap index.
 Checking of game board bounds in game_board.
-Swap the indices in game_board
-Implement game_board[][]
 Get rid of globals.
 Seed the random number generator
+Separate out Game.cpp
 */
 
 constexpr float TargetFPS = 60.0f;

@@ -28,6 +28,7 @@ void piece::GetRotatedPiecesFrom0()
 	this->RotateBlocks90(Blocks[2], Blocks[3]);
 }
 
+// Get the y value of the lowest block.
 int piece::GetBottom()
 {
 	auto it = this->Blocks->begin();

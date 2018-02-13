@@ -11,17 +11,25 @@ constexpr float DROP_SPEED = 40.0f;
 
 enum piece_center_type { Center, Corner };
 
+// class: game_board
+// The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom up:
+//
+//    2
+//    1
+//  y 0
+//     0123
+//      x
 class game_board
 {
 public:
 	const int GameBoardWidth = GAME_BOARD_WIDTH;
 	const int GameBoardHeight = GAME_BOARD_HEIGHT;
-	const int PlayableHeight = GAME_BOARD_PLAYABLE_HEIGHT;
-	int GameBoard[GAME_BOARD_WIDTH][GAME_BOARD_PLAYABLE_HEIGHT];
+	const int PlayableHeight = GAME_BOARD_PLAYABLE_HEIGHT;      // The highest point that blocks can be be dropped without triggering game over.
+	int GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH];
 	game_board();
 	void ClearBoard();
-	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[x][y]; };
-	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[x][y] = Color; };
+	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
+	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
 	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
 };
 
@@ -31,9 +39,9 @@ class piece
 {
 public:
 	intvec2 Center;
-	piece_center_type CenterType;
-	std::vector<intvec2> Blocks[4];
-	BitmapIndex Color = BitmapIndex::BlockWhite;
+	//piece_center_type CenterType;     // Currently not used. The idea was that pieces could be rotated about either a corner or a fixed block.
+	std::vector<intvec2> Blocks[4];     // Index n corresponds to a rotation of 2PI*n/4
+	BitmapIndex Color;
 
 	piece();
 	void GetRotatedPiecesFrom0();

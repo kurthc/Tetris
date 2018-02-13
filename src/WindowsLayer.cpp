@@ -199,8 +199,10 @@ keyboard_info::keyboard_info()
 		{'A', KeyFunction::Left},
 		{'S', KeyFunction::Down},
 		{'D', KeyFunction::Right},
-		{'J', KeyFunction::TurnLeft},
-		{'L', KeyFunction::TurnRight},
+		//{'J', KeyFunction::TurnLeft},
+		{ VK_LEFT, KeyFunction::TurnLeft },
+		//{'L', KeyFunction::TurnRight},
+		{ VK_RIGHT, KeyFunction::TurnRight },
 		{'1', KeyFunction::Debug},
 		{VK_SPACE, KeyFunction::Drop}
 

@@ -64,7 +64,6 @@ void buffer::DrawFallingPiece()
 	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0, 1));
-		//int BitmapIndex = BitmapIndex::BlockPurple;
 		int BitmapIndex = FallingPiece.Color();
 		this->DrawBitmap(BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
 		++it;
@@ -81,8 +80,6 @@ void buffer::DrawFallingPiece()
 void buffer::DrawGameMap()
 {
 	game_board& GameBoard = this->GameState->GameBoard;
-
-	RECT r{};
 
 	//TODO: Make this a constant somewhere.
 	const static int BorderWidth = 4;  
