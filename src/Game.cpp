@@ -4,9 +4,9 @@
 
 game_board::game_board()
 {
-	for (int y = 0; y < this->GameBoardHeight; ++y)
+	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
 	{
-		for (int x = 0; x < this->GameBoardWidth; ++x)
+		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
 			this->GameBoard[x][y] = 0;
 		}
@@ -102,44 +102,13 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 	this->ProcessFallingPiece();
 }
 
-void game_state::ProcessFallingPiece()
-{
-	falling_piece& FallingPiece = this->FallingPiece;
-	float Speed = 5.0f;
-	if (this->UserIsPressingDown)
-	{
-		Speed = 20.0f;
-	}
-
-	if (DropTimer > 0.0f)
-	{
-		DropTimer -= Speed / TargetFPS;    // TODO: Speed parameter.
-	}
-	else
-	{
-		falling_piece FPiece(FallingPiece.Piece);
-		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
- 		if (FPiece.HitSomething(this->GameBoard))
-		{
-			this->FreezePiece();
-			this->NewFallingPieceAtTop();
-		}
-		else
-		{
-			FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
-		}
-
-		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
-		DropTimer = 1.0f;
-	}
-}
-
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 {
 	KeyboardInfo->RepeatTimer = MAX(KeyboardInfo->RepeatTimer - 1.0f / TargetFPS, 0.0f);
 	intvec2 NewLocation{0,0};
 	bool RepeatTimerClear = (KeyboardInfo->RepeatTimer <= 0.0f);
 
+	this->UserIsPressingDown = KeyboardInfo->KeyDown().IsDown;
 
 	if (KeyboardInfo->KeyLeft().IsDown == true && RepeatTimerClear)
 	{
@@ -153,9 +122,6 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	this->UserIsPressingDown = KeyboardInfo->KeyDown().IsDown;
-	
-		
 	
 	if (KeyboardInfo->KeyTurnLeft().IsDown == true && RepeatTimerClear)
 	{
@@ -233,6 +199,41 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	}
 }
 
+void game_state::ProcessFallingPiece()
+{
+	falling_piece& FallingPiece = this->FallingPiece;
+	float Speed = 5.0f;
+	if (this->UserIsPressingDown)
+	{
+		Speed = 20.0f;
+	}
+
+	if (DropTimer > 0.0f)
+	{
+		// It isn't time to push the piece down yet.
+		DropTimer -= Speed / TargetFPS;    // TODO: Speed parameter.
+	}
+	else
+	{
+		//falling_piece FPiece(FallingPiece.Piece);
+		falling_piece FPiece(FallingPiece);
+		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
+		if (FPiece.HitSomething(this->GameBoard))
+		{
+			this->FreezePiece();
+			this->NewFallingPieceAtTop();
+		}
+		else
+		{
+			FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
+		}
+
+		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
+		DropTimer = 1.0f;
+	}
+}
+
+
 void game_state::FreezePiece()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
@@ -268,14 +269,28 @@ void game_state::NewFallingPieceAtTop()
 bool falling_piece::HitSomething(const game_board& GameBoard)
 {
 	bool IsOverlapping = false;
+	//for (int i = 0; i < this->Blocks().size(); ++i)
+	//{
+	//	intvec2 b = this->Blocks()[i];
+	//	if (GameBoard.GameBoard[b.x][b.y] != 0)
+	//	{
+	//		IsOverlapping = true;
+	//	}
+	//}
+
 	for (int i = 0; i < this->Blocks().size(); ++i)
 	{
-		intvec2 b = this->Blocks()[i];
-		if (GameBoard.GameBoard[b.x][b.y] != 0)
+		intvec2 b = (*this)[i];
+		if (b.x < 0 || b.x >= GAME_BOARD_WIDTH || b.y < 0)
+		{
+			IsOverlapping = true;
+		}
+		else if (GameBoard.GameBoard[b.x][b.y] != 0)
 		{
 			IsOverlapping = true;
 		}
 	}
+
 	
 	return IsOverlapping;
 }
