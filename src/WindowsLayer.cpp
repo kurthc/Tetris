@@ -124,6 +124,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	QueryPerformanceFrequency(&CountsPerSecondLarge);
 	CountsPerSecond = (int)CountsPerSecondLarge.QuadPart;
 
+	srand(time(NULL));
+
 	Win32AddConsole();
 
 	WNDCLASSEXA WindowClass = {};

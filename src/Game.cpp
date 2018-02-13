@@ -127,112 +127,58 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 {
 	KeyboardInfo->RepeatTimer = MAX(KeyboardInfo->RepeatTimer - 1.0f / TargetFPS, 0.0f);
-	intvec2 NewLocation{0,0};
+	
+	falling_piece ProposedLocation(FallingPiece);  // Copy the current falling_piece
+
+	//intvec2 NewLocation{0,0};
 	bool RepeatTimerClear = (KeyboardInfo->RepeatTimer <= 0.0f);
 
 	this->UserIsPressingDown = KeyboardInfo->KeyDown().IsDown;
 
 	if (KeyboardInfo->KeyLeft().IsDown == true && RepeatTimerClear)
 	{
-		NewLocation = NewLocation + intvec2(-1, 0);
+		ProposedLocation.CenterLocation = ProposedLocation.CenterLocation + intvec2(-1, 0);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
 	if (KeyboardInfo->KeyRight().IsDown == true && RepeatTimerClear)
 	{
-		NewLocation = NewLocation + intvec2(1, 0);
+		ProposedLocation.CenterLocation = ProposedLocation.CenterLocation + intvec2(1, 0);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	falling_piece NewFallingPiece(FallingPiece);
-	NewFallingPiece.CenterLocation = NewFallingPiece.CenterLocation + NewLocation;
-	if (!NewFallingPiece.HitSomething(this->GameBoard))
-	{
-		FallingPiece.CenterLocation = FallingPiece.CenterLocation + NewLocation;
-	}
+	if (!ProposedLocation.HitSomething(this->GameBoard))
+		FallingPiece.CenterLocation = ProposedLocation.CenterLocation;
+	else
+		ProposedLocation.CenterLocation = FallingPiece.CenterLocation;
 
-	int NewOrientation = this->FallingPiece.PieceOrientation;
 	if (KeyboardInfo->KeyTurnLeft().IsDown == true && KeyboardInfo->KeyTurnLeft().WasDown == false)
 	{
-		NewOrientation = MathMod(this->FallingPiece.PieceOrientation + 1, 4);
+		ProposedLocation.PieceOrientation = MathMod(this->FallingPiece.PieceOrientation + 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
 	if (KeyboardInfo->KeyTurnRight().IsDown == true && KeyboardInfo->KeyTurnRight().WasDown == false)
 	{
-		NewOrientation = MathMod(this->FallingPiece.PieceOrientation - 1, 4);
+		ProposedLocation.PieceOrientation = MathMod(this->FallingPiece.PieceOrientation - 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	falling_piece NewFallingPiece2(FallingPiece);
-	NewFallingPiece2.PieceOrientation = NewOrientation;
-	if (!NewFallingPiece2.HitSomething(this->GameBoard))
+	if (!ProposedLocation.HitSomething(this->GameBoard))
 	{
-		FallingPiece.PieceOrientation = NewOrientation;
+		FallingPiece.PieceOrientation = ProposedLocation.PieceOrientation;
 	}
 
-	if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
-	{
-		this->FreezePiece();
-		this->NewFallingPieceAtTop();
-	}
+	//if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
+	//{
+	//	this->FreezePiece();
+	//	this->NewFallingPieceAtTop();
+	//}
 	
 	if (KeyboardInfo->KeyDebug().IsDown == true && KeyboardInfo->KeyDebug().WasDown == false)
 	{
 		this->ShowDebugOverlay = !this->ShowDebugOverlay;
 	}
-
-	/*
-	for (int i = 0; i < KeyboardInfo->size(); ++i)
-	{
-		//TODO: I think each key needs its own RepeatTimer.
-		if (KeyboardInfo->Key[i].VKey == 'W' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
-		{
-			NewLocation = NewLocation + intvec2(0, 1);
-			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
-		}
-		if (KeyboardInfo->Key[i].VKey == 'A' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
-		{
-			NewLocation = NewLocation + intvec2(-1, 0);
-			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
-		}
-		if (KeyboardInfo->Key[i].VKey == 'S' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
-		{
-			NewLocation = NewLocation + intvec2(0, -1);
-			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
-		}
-		if (KeyboardInfo->Key[i].VKey == 'D' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
-		{
-			NewLocation = NewLocation + intvec2(1, 0);
-			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
-		}
-		if (KeyboardInfo->Key[i].VKey == 'J' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
-		{
-			this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation + 1, 4);
-			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
-		}
-		if (KeyboardInfo->Key[i].VKey == 'L' && KeyboardInfo->Key[i].IsDown == true && RepeatTimerClear)
-		{
-			this->FallingPiece.PieceOrientation = ProperMod(this->FallingPiece.PieceOrientation - 1, 4);
-			KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
-		}
-		if (KeyboardInfo->Key[i].VKey == VK_SPACE && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
-		{
-			this->FreezePiece();
-			this->NewFallingPieceAtTop();
-		}
-		if (KeyboardInfo->Key[i].VKey == '1' && KeyboardInfo->Key[i].IsDown == true && KeyboardInfo->Key[i].WasDown == false)
-		{
-			this->ShowDebugOverlay = !this->ShowDebugOverlay;
-		}
-	}
-	*/
-
-	//// For now...
-	//if (NewLocation.x != 0 || NewLocation.y != 0)
-	//{
-	//	this->FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + NewLocation;
-	//}
 }
 
 void game_state::ProcessFallingPiece()
