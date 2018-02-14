@@ -15,8 +15,8 @@ enum piece_center_type { Center, Corner };
 // The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom up:
 //
 //    2
-//    1
-//  y 0
+//  y 1
+//    0
 //     0123
 //      x
 class game_board
@@ -77,6 +77,7 @@ public:
 	float DropTimer = 0.0f;
 	bool UserIsPressingDown = false;
 	bool GameOver = false;
+	int LineCount = 0;
 
 	game_state();
 	void SetStandardPieces();

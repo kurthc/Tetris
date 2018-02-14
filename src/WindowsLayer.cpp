@@ -116,7 +116,6 @@ bool Win32HandleMessages()
 	return GameLoopFinished;
 }
 
-
 // Program entry point.
 int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int Show)
 {
@@ -155,13 +154,12 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	{
 		timing_information TimeFrameStart = GetSeconds();
 
+		// Message Loop
 		GameLoopFinished = Win32HandleMessages();
 
 		GlobalGameState->UpdateGame(KeyboardInfo);
 
-
 		Buffer->DrawClientArea(DeviceContext);
-
 
 		timing_information TimeAfterProcess = GetSeconds();
 		double ProcessingTime = TimeAfterProcess.Seconds - TimeFrameStart.Seconds;

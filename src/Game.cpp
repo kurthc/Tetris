@@ -135,13 +135,13 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 
 	this->UserIsPressingDown = KeyboardInfo->KeyDown().IsDown;
 
-	if (KeyboardInfo->KeyLeft().IsDown == true && RepeatTimerClear)
+	if (KeyboardInfo->KeyLeft().IsDown == true && (RepeatTimerClear || KeyboardInfo->KeyLeft().WasDown == false))
 	{
 		ProposedLocation.CenterLocation = ProposedLocation.CenterLocation + intvec2(-1, 0);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	if (KeyboardInfo->KeyRight().IsDown == true && RepeatTimerClear)
+	if (KeyboardInfo->KeyRight().IsDown == true && (RepeatTimerClear || KeyboardInfo->KeyRight().WasDown == false))
 	{
 		ProposedLocation.CenterLocation = ProposedLocation.CenterLocation + intvec2(1, 0);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
