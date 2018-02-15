@@ -45,8 +45,6 @@ public:
 	intvec2 operator+(const intvec2& v);
 };
 
-
-
 class key_state
 {
 public:
