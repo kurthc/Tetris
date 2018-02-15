@@ -233,7 +233,6 @@ void game_state::ProcessFallingPiece()
 			{
 				for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
 				{
-					//GameBoard.GameBoard[l][k] = GameBoard.GameBoard[l][k + 1];
 					// Set each block to the block above it.
 					GameBoard.SetColor(l, k, GameBoard.GetColor(l, k + 1));
 				}
