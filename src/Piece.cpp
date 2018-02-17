@@ -53,8 +53,8 @@ falling_piece::falling_piece(const piece& Piece)
 
 	//this->Piece = Piece;    //copy
 	this->Piece = new piece(Piece);
-	int Height = this->Piece->GetBottom();
-	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+	//int Height = this->Piece->GetBottom();
+	//this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 
 }
 
@@ -86,4 +86,14 @@ bool falling_piece::HitSomething(const game_board& GameBoard)
 intvec2 falling_piece::operator[](const int& n)
 {
 	return (this->CurrentBlocks())[n] + this->CenterLocation;
+}
+
+void falling_piece::ReplacePiece(piece* NewPiece)
+{
+	if (this->Piece)
+	{
+		delete this->Piece;
+	}
+	this->Piece = NewPiece;
+	return;
 }

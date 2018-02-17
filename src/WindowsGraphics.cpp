@@ -16,7 +16,8 @@ bool buffer::SetUpMemoryDeviceContext(HDC WindowDeviceContext)
 	MemoryDeviceContext = CreateCompatibleDC(WindowDeviceContext);                             // Get a memory DC the same size/attributes as the Window one.
 	MemoryDeviceContextBitmap = CreateCompatibleBitmap(WindowDeviceContext, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);  // The memory DC needs a bitmap to write to.
 	Success = SelectObject(MemoryDeviceContext, MemoryDeviceContextBitmap);                                      // Attach the bitmap to the memory DC.
-	if (!Success) std::cout << "Failure setting up Device Context\n";
+	if (!Success)
+		std::cout << "Failure setting up Device Context\n";
 	return Success;
 }
 

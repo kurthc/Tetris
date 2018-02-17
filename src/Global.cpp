@@ -10,7 +10,7 @@ intvec2 intvec2::operator+(const intvec2& v)
 // A mathematical mod function, since  -1 mod 4 evaluates to -1 in C++ (!?)
 int MathMod(int a, int b)
 {
-	//Assumes b > 0
+	// Assumes b > 0
 	// Works for positive or negative a.
 	return (a % b + b) % b;
 }

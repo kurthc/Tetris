@@ -58,11 +58,11 @@ public:
 	
 	falling_piece() : Piece(nullptr) {}
 	falling_piece(const piece&);
-	//falling_piece(piece Piece);
 	bool HitSomething(const game_board&);
 	intvec2 operator[](const int& n);
 	std::vector<intvec2>& CurrentBlocks() { return this->Piece->Blocks[this->PieceOrientation]; }
 	BitmapIndex Color() { return Piece->Color; }
+	void ReplacePiece(piece*);
 };
 
 class game_state
@@ -85,5 +85,6 @@ public:
 	void FreezePiece();
 	void NewFallingPieceAtTop();
 	void ProcessFallingPiece();
+	void ProcessLinesAfterDrop();
 };
 

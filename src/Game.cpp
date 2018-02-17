@@ -186,7 +186,6 @@ void game_state::ProcessFallingPiece()
 	}
 	else
 	{
-		//falling_piece FPiece(FallingPiece.Piece);
 		falling_piece FPiece(FallingPiece);
 		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
 		if (FPiece.HitSomething(this->GameBoard))
@@ -202,15 +201,17 @@ void game_state::ProcessFallingPiece()
 		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		DropTimer = 1.0f;
 	}
+	this->ProcessLinesAfterDrop();
+}
 
+void game_state::ProcessLinesAfterDrop()
+{
 	for (int i = 0; i < GAME_BOARD_PLAYABLE_HEIGHT; ++i)
 	{
 		bool FoundHole = false;
 		for (int j = 0; j < GAME_BOARD_WIDTH; ++j)
 		{
-			//TODO: Why is Width the first value here?
-			//if (GameBoard.GameBoard[j][i] == 0)
-			if (!GameBoard.BlockHere(j,i))
+			if (!GameBoard.BlockHere(j, i))
 			{
 				//TODO: break
 				FoundHole = true;
@@ -225,19 +226,20 @@ void game_state::ProcessFallingPiece()
 					// Set each block to the block above it.
 					GameBoard.SetColor(l, k, GameBoard.GetColor(l, k + 1));
 				}
-				
+
 			}
 			for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
 			{
 				GameBoard.SetColor(l, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
 			}
 		}
-
 	}
 
-
 }
-
+// i -> BlockX
+// j -> BlockY
+// k -> DroppingBlockY
+// l -> DroppingX
 
 void game_state::FreezePiece()
 {
@@ -262,11 +264,17 @@ void game_state::FreezePiece()
 	}
 }
 
-
-
 void game_state::NewFallingPieceAtTop()
 {
+	falling_piece& FallingPiece = this->FallingPiece;
+
+	// Generate a new piece and put it in the FallingPiece.
 	int PieceIndex = (rand() % this->StandardPieceCount);
-	this->FallingPiece = falling_piece(this->StandardPiece[PieceIndex]);
+	piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
+	FallingPiece.ReplacePiece(NewPiece);
+
+	int Height = FallingPiece.Piece->GetBottom();
+	FallingPiece.CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+	FallingPiece.PieceOrientation = 0;
 	this->DropTimer = 1.0f;
 }
