@@ -60,11 +60,11 @@ void buffer::DrawFallingPiece()
 	falling_piece& FallingPiece = this->GameState->FallingPiece;
 
 	int PieceOrientation = FallingPiece.PieceOrientation;
-	std::vector<intvec2>::iterator it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
-	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
+	std::vector<intvec2>::iterator it = FallingPiece.Blocks[PieceOrientation].begin();
+	while (it != FallingPiece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0, 1));
-		int BitmapIndex = FallingPiece.Color();
+		int BitmapIndex = FallingPiece.Color;
 		this->DrawBitmap(BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
 		++it;
 	}

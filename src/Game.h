@@ -38,32 +38,29 @@ public:
 class piece
 {
 public:
-	intvec2 Center;
+	intvec2 Center{0,0};
 	//piece_center_type CenterType;     // Currently not used. The idea was that pieces could be rotated about either a corner or a fixed block.
 	std::vector<intvec2> Blocks[4];     // Index n corresponds to a rotation of 2PI*n/4
 	BitmapIndex Color;
 
-	piece();
 	void GetRotatedPiecesFrom0();
 	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
 	int GetBottom();
 };
 
-class falling_piece
+class falling_piece : public piece
 {
 public:
 	intvec2 CenterLocation;
-	piece Piece;
 	bool Visible = true;
 	int PieceOrientation = 0;
 	
-	falling_piece();
+	//falling_piece() {}
 	falling_piece(piece Piece);
-	intvec2 BlockPosition(int n);
 	bool HitSomething(const game_board&);
 	intvec2 operator[](const int& n);
-	std::vector<intvec2>& Blocks() { return this->Piece.Blocks[this->PieceOrientation]; }
-	BitmapIndex Color() { return Piece.Color; }
+	std::vector<intvec2>& CurrentBlocks() { return this->Blocks[this->PieceOrientation]; }
+	//BitmapIndex Color() { return Piece.Color; }
 };
 
 class game_state

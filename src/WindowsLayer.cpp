@@ -12,7 +12,7 @@ timing_information GetSeconds()
 	QueryPerformanceCounter(&LICounts);
 	Counts = (int)LICounts.QuadPart;
 	Seconds = (double)Counts / CountsPerSecond;
-	std::cout << "LiCounts = " << LICounts.HighPart << " and " << LICounts.LowPart << "\n";
+	//std::cout << "LiCounts = " << LICounts.HighPart << " and " << LICounts.LowPart << "\n";
 	return { Seconds, Counts, LICounts };
 }
 
@@ -179,8 +179,6 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 	}
 }
-
-
 
 // Attach a console window for debugging.
 static void Win32AddConsole()

@@ -21,18 +21,7 @@ void game_board::ClearBoard()
 	}
 }
 
-falling_piece::falling_piece()
-{
-	
-}
 
-falling_piece::falling_piece(piece Piece)
-{
-	this->Piece = Piece;    //copy
-	int Height = Piece.GetBottom();
-	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
-	
-}
 
 game_state::game_state()
 {
@@ -256,14 +245,14 @@ void game_state::FreezePiece()
 	int PieceOrientation = FallingPiece.PieceOrientation;
 	
 	bool BlockAboveLineOfDeath = false;
-	auto it = FallingPiece.Piece.Blocks[PieceOrientation].begin();
-	while (it != FallingPiece.Piece.Blocks[PieceOrientation].end())
+	auto it = FallingPiece.Blocks[PieceOrientation].begin();
+	while (it != FallingPiece.Blocks[PieceOrientation].end())
 	{
 		intvec2 BlockLocation = FallingPiece.CenterLocation + *it;
 		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
 			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
 		{
-			this->GameBoard.SetColor(BlockLocation.x, BlockLocation.y, FallingPiece.Color());
+			this->GameBoard.SetColor(BlockLocation.x, BlockLocation.y, FallingPiece.Color);
 		}
 		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
 		{
@@ -273,46 +262,11 @@ void game_state::FreezePiece()
 	}
 }
 
-// I don't know if I'll need this anywhere anymore.
-intvec2 falling_piece::BlockPosition(int n)
-{
-	int PieceOrientation = this->PieceOrientation;
-	return this->Piece.Blocks[PieceOrientation][n] + this->CenterLocation;
-}
+
 
 void game_state::NewFallingPieceAtTop()
 {
 	int PieceIndex = (rand() % this->StandardPieceCount);
 	this->FallingPiece = falling_piece(this->StandardPiece[PieceIndex]);
 	this->DropTimer = 1.0f;
-}
-
-bool falling_piece::HitSomething(const game_board& GameBoard)
-{
-	bool IsOverlapping = false;
-
-	for (int i = 0; i < this->Blocks().size(); ++i)
-	{
-		// For each block in the piece, check if it goes out of bounds...
-		intvec2 b = (*this)[i];
-		if (b.x < 0 || b.x >= GAME_BOARD_WIDTH || b.y < 0)
-		{
-			IsOverlapping = true;
-		}
-		// ...or if it hits another block.
-		//else if (GameBoard.GameBoard[b.x][b.y] != 0)
-		else if (GameBoard.BlockHere(b.x, b.y))
-		{
-			IsOverlapping = true;
-		}
-	}
-
-	
-	return IsOverlapping;
-}
-
-// GameMap coordinates of the nth block.
-intvec2 falling_piece::operator[](const int& n)
-{
-	return (this->Blocks())[n] + this->CenterLocation;
 }

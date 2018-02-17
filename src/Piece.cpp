@@ -1,9 +1,9 @@
 #include "Game.h"
 
-piece::piece()
-{
-	this->Center = intvec2(0, 0);
-}
+//piece::piece()
+//{
+//	this->Center = intvec2(0, 0);
+//}
 
 // Given the set of blocks in the first parameter, rotate them 90 degrees and put the result in the second parameter.
 // Used to set the three other rotated forms, given the initial one.
@@ -42,4 +42,47 @@ int piece::GetBottom()
 	return Low;
 }
 
+falling_piece::falling_piece(piece Piece)
+{
+	this->Center = intvec2(0, 0);
+	for (int i = 0; i < 4; ++i)
+	{
+		this->Blocks[i] = Piece.Blocks[i];
+	}
+	this->Color = Piece.Color;
 
+	//this->Piece = Piece;    //copy
+	int Height = Piece.GetBottom();
+	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+
+}
+
+
+bool falling_piece::HitSomething(const game_board& GameBoard)
+{
+	bool IsOverlapping = false;
+
+	for (int i = 0; i < this->CurrentBlocks().size(); ++i)
+	{
+		// For each block in the piece, check if it goes out of bounds...
+		intvec2 b = (*this)[i];
+		if (b.x < 0 || b.x >= GAME_BOARD_WIDTH || b.y < 0)
+		{
+			IsOverlapping = true;
+		}
+		// ...or if it hits another block.
+		else if (GameBoard.BlockHere(b.x, b.y))
+		{
+			IsOverlapping = true;
+		}
+	}
+
+
+	return IsOverlapping;
+}
+
+// GameMap coordinates of the nth block.
+intvec2 falling_piece::operator[](const int& n)
+{
+	return (this->CurrentBlocks())[n] + this->CenterLocation;
+}
