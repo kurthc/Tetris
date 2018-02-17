@@ -3,7 +3,9 @@
 #include <Windows.h>
 #include <cstdio>
 #include <ctime>
+#include <cstring>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <map>
 #include "Global.h"
@@ -12,7 +14,7 @@
 
 constexpr int GAME_WINDOW_WIDTH = 800;
 constexpr int GAME_WINDOW_HEIGHT = 800;
-constexpr int GAME_MAP_LEFT = 100;
+constexpr int GAME_MAP_LEFT = 200;
 constexpr int GAME_MAP_TOP = 20;
 constexpr int BLOCK_WIDTH = 25;
 constexpr int BLOCK_HEIGHT = BLOCK_WIDTH;
@@ -41,6 +43,7 @@ public:
 	void DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B);
 	void DrawFallingPiece();
 	void DrawGameMap();
+	void DrawStats();
 	void DrawClientArea(HDC DeviceContext);
 };
 

@@ -53,9 +53,9 @@ falling_piece::falling_piece(const piece& Piece)
 
 	//this->Piece = Piece;    //copy
 	this->Piece = new piece(Piece);
-	//int Height = this->Piece->GetBottom();
-	//this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
-
+	int Height = this->Piece->GetBottom();
+	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+	this->PieceOrientation = 0;
 }
 
 

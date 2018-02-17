@@ -171,12 +171,14 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 		timing_information TimeFrameEnd = GetSeconds();
 
-		std::stringstream ss{""};
-		ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
+		GlobalGameState->FPSObserved = 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
 
 		if (LOG_FPS)
+		{
+			std::stringstream ss{""};
+			ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
 			std::cout << ss.str() << "\n";
-
+		}
 	}
 }
 

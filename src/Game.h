@@ -76,7 +76,10 @@ public:
 	float DropTimer = 0.0f;
 	bool UserIsPressingDown = false;
 	bool GameOver = false;
+	float FPSObserved = 0.0f;
+	int Score = 0;
 	int LineCount = 0;
+	float FallSpeed = 5.0f;
 
 	game_state();
 	void SetStandardPieces();

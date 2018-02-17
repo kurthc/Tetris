@@ -173,7 +173,7 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 void game_state::ProcessFallingPiece()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
-	float Speed = 10.0f;
+	float Speed = this->FallSpeed;
 	if (this->UserIsPressingDown)
 	{
 		Speed = DROP_SPEED;
@@ -192,6 +192,7 @@ void game_state::ProcessFallingPiece()
 		{
 			this->FreezePiece();
 			this->NewFallingPieceAtTop();
+			this->ProcessLinesAfterDrop();
 		}
 		else
 		{
@@ -201,45 +202,55 @@ void game_state::ProcessFallingPiece()
 		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		DropTimer = 1.0f;
 	}
-	this->ProcessLinesAfterDrop();
 }
 
 void game_state::ProcessLinesAfterDrop()
 {
-	for (int i = 0; i < GAME_BOARD_PLAYABLE_HEIGHT; ++i)
+	int LinesMade = 0;
+	int PointsToAdd = 0;
+	for (int BlockY = 0; BlockY < GAME_BOARD_PLAYABLE_HEIGHT; ++BlockY)
 	{
 		bool FoundHole = false;
-		for (int j = 0; j < GAME_BOARD_WIDTH; ++j)
+		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)
 		{
-			if (!GameBoard.BlockHere(j, i))
+			if (!GameBoard.BlockHere(BlockX, BlockY))
 			{
-				//TODO: break
 				FoundHole = true;
+				break;
 			}
 		}
+
 		if (!FoundHole)
 		{
-			for (int k = i; k < GAME_BOARD_PLAYABLE_HEIGHT - 1; ++k)
+			// A row is complete. Drop all the blocks above it.
+			for (int DroppingBlockY = BlockY; DroppingBlockY < GAME_BOARD_PLAYABLE_HEIGHT - 1; ++DroppingBlockY)
 			{
-				for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
+				for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 				{
 					// Set each block to the block above it.
-					GameBoard.SetColor(l, k, GameBoard.GetColor(l, k + 1));
+					GameBoard.SetColor(DroppingBlockX, DroppingBlockY, GameBoard.GetColor(DroppingBlockX, DroppingBlockY + 1));
 				}
 
 			}
-			for (int l = 0; l < GAME_BOARD_WIDTH; ++l)
+
+			// Clear the top row.
+			for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 			{
-				GameBoard.SetColor(l, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
+				GameBoard.SetColor(DroppingBlockX, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
 			}
+
+			++LinesMade;
+			if (LinesMade == 1)
+				PointsToAdd = 100;
+			else
+				PointsToAdd = PointsToAdd * 3;
+			
 		}
 	}
+	this->LineCount += LinesMade;
+	this->Score += PointsToAdd;
 
 }
-// i -> BlockX
-// j -> BlockY
-// k -> DroppingBlockY
-// l -> DroppingX
 
 void game_state::FreezePiece()
 {
