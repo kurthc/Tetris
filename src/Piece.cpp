@@ -42,17 +42,18 @@ int piece::GetBottom()
 	return Low;
 }
 
-falling_piece::falling_piece(piece Piece)
+falling_piece::falling_piece(const piece& Piece)
 {
-	this->Center = intvec2(0, 0);
-	for (int i = 0; i < 4; ++i)
-	{
-		this->Blocks[i] = Piece.Blocks[i];
-	}
-	this->Color = Piece.Color;
+	//this->Center = intvec2(0, 0);
+	//for (int i = 0; i < 4; ++i)
+	//{
+	//	this->Blocks[i] = Piece.Blocks[i];
+	//}
+	//this->Color = Piece.Color;
 
 	//this->Piece = Piece;    //copy
-	int Height = Piece.GetBottom();
+	this->Piece = new piece(Piece);
+	int Height = this->Piece->GetBottom();
 	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 
 }

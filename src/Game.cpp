@@ -245,14 +245,14 @@ void game_state::FreezePiece()
 	int PieceOrientation = FallingPiece.PieceOrientation;
 	
 	bool BlockAboveLineOfDeath = false;
-	auto it = FallingPiece.Blocks[PieceOrientation].begin();
-	while (it != FallingPiece.Blocks[PieceOrientation].end())
+	auto it = FallingPiece.CurrentBlocks().begin();
+	while (it != FallingPiece.CurrentBlocks().end())
 	{
 		intvec2 BlockLocation = FallingPiece.CenterLocation + *it;
 		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
 			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
 		{
-			this->GameBoard.SetColor(BlockLocation.x, BlockLocation.y, FallingPiece.Color);
+			this->GameBoard.SetColor(BlockLocation.x, BlockLocation.y, FallingPiece.Color());
 		}
 		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
 		{

@@ -48,19 +48,21 @@ public:
 	int GetBottom();
 };
 
-class falling_piece : public piece
+class falling_piece
 {
 public:
 	intvec2 CenterLocation;
 	bool Visible = true;
 	int PieceOrientation = 0;
+	piece* Piece;
 	
-	//falling_piece() {}
-	falling_piece(piece Piece);
+	falling_piece() : Piece(nullptr) {}
+	falling_piece(const piece&);
+	//falling_piece(piece Piece);
 	bool HitSomething(const game_board&);
 	intvec2 operator[](const int& n);
-	std::vector<intvec2>& CurrentBlocks() { return this->Blocks[this->PieceOrientation]; }
-	//BitmapIndex Color() { return Piece.Color; }
+	std::vector<intvec2>& CurrentBlocks() { return this->Piece->Blocks[this->PieceOrientation]; }
+	BitmapIndex Color() { return Piece->Color; }
 };
 
 class game_state
