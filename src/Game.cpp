@@ -99,12 +99,6 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		FallingPiece.PieceOrientation = ProposedLocation.PieceOrientation;
 	}
 
-	//if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
-	//{
-	//	this->FreezePiece();
-	//	this->NewFallingPieceAtTop();
-	//}
-	
 	if (KeyboardInfo->KeyDebug().IsDown == true && KeyboardInfo->KeyDebug().WasDown == false)
 	{
 		this->ShowDebugOverlay = !this->ShowDebugOverlay;
@@ -129,11 +123,11 @@ void game_state::ProcessFallingPiece()
 	if (DropTimer > 0.0f)
 	{
 		// It isn't time to push the piece down yet.
-		DropTimer -= Speed / TargetFPS;    // TODO: Speed parameter.
+		DropTimer -= Speed / TargetFPS;
 	}
 	else
 	{
-		falling_piece FPiece(FallingPiece);
+		falling_piece FPiece(FallingPiece);   //TODO: This is probably leaking.
 		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
 		if (FPiece.HitSomething(this->GameBoard))
 		{
@@ -146,7 +140,6 @@ void game_state::ProcessFallingPiece()
 			FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		}
 
-		//FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
 		DropTimer = 1.0f;
 	}
 }

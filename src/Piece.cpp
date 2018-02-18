@@ -44,13 +44,6 @@ int piece::GetBottom()
 
 falling_piece::falling_piece(const piece& Piece)
 {
-	//this->Center = intvec2(0, 0);
-	//for (int i = 0; i < 4; ++i)
-	//{
-	//	this->Blocks[i] = Piece.Blocks[i];
-	//}
-	//this->Color = Piece.Color;
-
 	//this->Piece = Piece;    //copy
 	this->Piece = new piece(Piece);
 	int Height = this->Piece->GetBottom();
