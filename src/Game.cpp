@@ -208,7 +208,9 @@ void game_state::ProcessLinesAfterDrop()
 {
 	int LinesMade = 0;
 	int PointsToAdd = 0;
-	for (int BlockY = 0; BlockY < GAME_BOARD_PLAYABLE_HEIGHT; ++BlockY)
+
+	// Search from top to bottom for completed rows.
+	for (int BlockY = GAME_BOARD_PLAYABLE_HEIGHT - 1; BlockY >= 0; --BlockY)
 	{
 		bool FoundHole = false;
 		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)
