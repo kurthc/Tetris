@@ -123,7 +123,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	QueryPerformanceFrequency(&CountsPerSecondLarge);
 	CountsPerSecond = (int)CountsPerSecondLarge.QuadPart;
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	Win32AddConsole();
 
@@ -172,7 +172,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 		timing_information TimeFrameEnd = GetSeconds();
 
 		if ((++LoopCount % 8) == 0)
-			GlobalGameState->FPSObserved = 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
+			GlobalGameState->FPSObserved = 1.0f / (float)(TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
 
 		//if (LOG_FPS && (++LoopCount % 100) == 0)
 		//{

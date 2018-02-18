@@ -94,20 +94,25 @@ public:
 	void ProcessLinesAfterDrop();
 	void UpdateLevel();
 };
-//
-//const int a[2] = { 1,1 };
-//const int b[4][2] = { { 1,1 },{ 1,1 },{ 1,1 },{ 1,1 } };
-// intarray4(intarray2) 
-//const int c[2][4] = { { 1,1,1,1 },{ 1,1,1,1 } };
 
-enum StandardPieceName {};
+enum StandardPieceName { O = 0, I = 1, T = 2, L = 3, J = 4, S = 5, Z = 6 };
 
-const int StandardPieceData[7][4][2] = {
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },  
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },
-	{ { 0,0 },{ 0,1 },{ 1,0 },{ 1,1 } },
+const int StandardPieceBlockData[7][4][2] = {
+	{ { 0,0 },{  1,0 },{  1,1 },{  0,1 } },  // O
+	{ { 0,0 },{ -1,0 },{  1,0 },{  2,0 } },  // I
+	{ { 0,0 },{  1,0 },{ -1,0 },{  0,1 } },  // T
+	{ { 0,0 },{  1,0 },{ -1,0 },{  1,1 } },  // L
+	{ { 0,0 },{  1,0 },{ -1,0 },{ -1,1 } },  // J
+	{ { 0,0 },{ -1,0 },{  0,1 },{  1,1 } },  // S
+	{ { 0,0 },{  1,0 },{  0,1 },{ -1,1 } },  // Z
 } ;
+//
+const static BitmapIndex StandardPieceColor[7] = {
+	BitmapIndex::BlockWhite,  // O
+	BitmapIndex::BlockYellow, // I
+	BitmapIndex::BlockCyan,   // T
+	BitmapIndex::BlockRed,    // L
+	BitmapIndex::BlockBlue,   // J
+	BitmapIndex::BlockGreen,  // S
+	BitmapIndex::BlockPurple  // Z
+};

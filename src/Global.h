@@ -32,7 +32,6 @@ enum BitmapIndex {
 	BlockCyan = 6, BlockWhite = 7, Count = 8
 };
 
-
 class intvec2
 {
 public:
@@ -40,6 +39,7 @@ public:
 	int y;
 	intvec2() : x(0), y(0) {}
 	intvec2(int x, int y) : x(x), y(y) {}
+	intvec2(int* a) : x(a[0]), y(a[1]) {}
 
 	intvec2 operator+(const intvec2& v);
 	intvec2 operator-(const intvec2& v);

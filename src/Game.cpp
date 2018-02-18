@@ -27,77 +27,21 @@ game_state::game_state()
 
 void game_state::SetStandardPieces()
 {
-	// **   (Square)
-	// **
-	this->StandardPiece[0].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[0].Blocks[0].push_back(intvec2(1, 0));
-	this->StandardPiece[0].Blocks[0].push_back(intvec2(1, 1));
-	this->StandardPiece[0].Blocks[0].push_back(intvec2(0, 1));
-	this->StandardPiece[0].Center = intvec2(0, 0);
-	this->StandardPiece[0].Color = BitmapIndex::BlockWhite;
-	this->StandardPiece[0].GetRotatedPiecesFrom0();
-
-	//  *   (T)
-	// ***
-	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[1].Blocks[0].push_back(intvec2(1, 0));
-	this->StandardPiece[1].Blocks[0].push_back(intvec2(-1, 0));
-	this->StandardPiece[1].Blocks[0].push_back(intvec2(0, 1));
-	this->StandardPiece[1].Center = intvec2(0, 0);
-	this->StandardPiece[1].Color = BitmapIndex::BlockCyan;
-	this->StandardPiece[1].GetRotatedPiecesFrom0();
-
-	//   *  (L)
-	// ***
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, 0));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(-1, 0));
-	this->StandardPiece[2].Blocks[0].push_back(intvec2(1, 1));
-	this->StandardPiece[2].Center = intvec2(0, 0);
-	this->StandardPiece[2].Color = BitmapIndex::BlockRed;
-	this->StandardPiece[2].GetRotatedPiecesFrom0();
-
-	// *    (Backwards L)
-	// ***
-	this->StandardPiece[3].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[3].Blocks[0].push_back(intvec2(1, 0));
-	this->StandardPiece[3].Blocks[0].push_back(intvec2(-1, 0));
-	this->StandardPiece[3].Blocks[0].push_back(intvec2(-1, 1));
-	this->StandardPiece[3].Center = intvec2(0, 0);
-	this->StandardPiece[3].Color = BitmapIndex::BlockBlue;
-	this->StandardPiece[3].GetRotatedPiecesFrom0();
-
-	//  **  (S)
-	// **
-	this->StandardPiece[4].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[4].Blocks[0].push_back(intvec2(-1, 0));
-	this->StandardPiece[4].Blocks[0].push_back(intvec2(0, 1));
-	this->StandardPiece[4].Blocks[0].push_back(intvec2(1, 1));
-	this->StandardPiece[4].Center = intvec2(0, 0);
-	this->StandardPiece[4].Color = BitmapIndex::BlockGreen;
-	this->StandardPiece[4].GetRotatedPiecesFrom0();
-
-	// **  (Backwards S)
-	//  **
-	this->StandardPiece[5].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[5].Blocks[0].push_back(intvec2(1, 0));
-	this->StandardPiece[5].Blocks[0].push_back(intvec2(0, 1));
-	this->StandardPiece[5].Blocks[0].push_back(intvec2(-1, 1));
-	this->StandardPiece[5].Center = intvec2(0, 0);
-	this->StandardPiece[5].Color = BitmapIndex::BlockPurple;
-	this->StandardPiece[5].GetRotatedPiecesFrom0();
-
-	// ****  (Bar)
-	// 
-	this->StandardPiece[6].Blocks[0].push_back(intvec2(0, 0));
-	this->StandardPiece[6].Blocks[0].push_back(intvec2(-1, 0));
-	this->StandardPiece[6].Blocks[0].push_back(intvec2(1, 0));
-	this->StandardPiece[6].Blocks[0].push_back(intvec2(2, 0));
-	this->StandardPiece[6].Center = intvec2(0, 0);
-	this->StandardPiece[6].Color = BitmapIndex::BlockYellow;
-	this->StandardPiece[6].GetRotatedPiecesFrom0();
-
+	for (int PieceIndex = 0; PieceIndex < 7; ++PieceIndex)
+	{
+		piece& Piece = this->StandardPiece[PieceIndex];
+		for (int BlockIndex = 0; BlockIndex < 4; ++BlockIndex)
+		{
+			int* a = (int*)StandardPieceBlockData[PieceIndex][BlockIndex];
+			Piece.Blocks[0].push_back(intvec2(a));
+		}
+		Piece.Center = intvec2(0, 0);
+		Piece.Color = StandardPieceColor[PieceIndex];
+		Piece.GetRotatedPiecesFrom0();
+	}
+	
 	this->StandardPieceCount = sizeof(this->StandardPiece) / sizeof(*(this->StandardPiece));
+		
 }
 
 void game_state::UpdateGame(keyboard_info* KeyboardInfo)
