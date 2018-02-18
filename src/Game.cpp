@@ -1,7 +1,6 @@
 #include "Game.h"
 #include <cstdlib>
 
-
 game_board::game_board()
 {
 	this->ClearBoard();
@@ -14,17 +13,13 @@ void game_board::ClearBoard()
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
 			this->GameBoard[y][x] = 0;
-
-			// There's not really any good reason to do it like this:
-			//this->SetColor(x, y, BitmapIndex::BlockBlack;
 		}
 	}
 }
 
-
-
 game_state::game_state()
 {
+
 	this->SetStandardPieces();
 	this->AddNextPiece();
 	this->NewFallingPieceAtTop();
