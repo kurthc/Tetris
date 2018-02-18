@@ -205,6 +205,7 @@ keyboard_info::keyboard_info()
 		//{'L', KeyFunction::TurnRight},
 		{ VK_RIGHT, KeyFunction::TurnRight },
 		{'1', KeyFunction::Debug},
+		{'2', KeyFunction::NextPiece },
 		{VK_SPACE, KeyFunction::Drop}
 
 	};
@@ -232,6 +233,9 @@ keyboard_info::keyboard_info()
 			break;
 		case KeyFunction::Drop:
 			this->IndexDrop = (int)this->Key.size() - 1;
+			break;
+		case KeyFunction::NextPiece:
+			this->IndexNextPiece = (int)this->Key.size() - 1;
 			break;
 		case KeyFunction::Debug:
 			this->IndexDebug = (int)this->Key.size() - 1;

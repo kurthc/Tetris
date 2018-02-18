@@ -170,6 +170,12 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 	{
 		this->ShowDebugOverlay = !this->ShowDebugOverlay;
 	}
+
+	if (KeyboardInfo->KeyNextPiece().IsDown == true && KeyboardInfo->KeyNextPiece().WasDown == false)
+	{
+		this->NewFallingPieceAtTop();
+	}
+
 }
 
 void game_state::ProcessFallingPiece()

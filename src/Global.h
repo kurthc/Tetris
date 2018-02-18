@@ -67,9 +67,10 @@ public:
 	int IndexTurnRight = 0;
 	int IndexTurnLeft = 0;
 	int IndexDrop = 0;
+	int IndexNextPiece = 0;
 	int IndexDebug = 0;
 
-	enum KeyFunction { Unmapped, Right, Left, Down, TurnRight, TurnLeft, Debug, Drop };
+	enum KeyFunction { Unmapped, Right, Left, Down, TurnRight, TurnLeft, Debug, NextPiece, Drop };
 
 	keyboard_info();
 	float RepeatTimer;
@@ -80,6 +81,7 @@ public:
 	key_state& KeyTurnRight() { return this->Key[this->IndexTurnRight]; }
 	key_state& KeyTurnLeft() { return this->Key[this->IndexTurnLeft]; }
 	key_state& KeyDrop() { return this->Key[this->IndexDrop]; }
+	key_state& KeyNextPiece() { return this->Key[this->IndexNextPiece]; }
 	key_state& KeyDebug() { return this->Key[this->IndexDebug]; }
 };
 
