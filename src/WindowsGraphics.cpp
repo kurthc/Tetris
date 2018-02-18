@@ -31,19 +31,18 @@ intvec2 buffer::MapToDisplayCoordinates(intvec2 MapPosition)
 	return { DisplayX, DisplayY };
 }
 
+void buffer::DrawRectangle(RECT Rect, int R, int G, int B)
+{
+	HBRUSH Brush;
+	Brush = CreateSolidBrush(RGB(R, G, B));
+	FillRect(this->MemoryDeviceContext, &Rect, Brush);
+	DeleteObject(Brush);
+}
 
 void buffer::DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B)
 {
-	RECT r{};
-	HBRUSH Brush;
-
-	Brush = CreateSolidBrush(RGB(R, G, B));
-	r.left = x;
-	r.top = y;
-	r.right = x2;
-	r.bottom = y2;
-	FillRect(this->MemoryDeviceContext, &r, Brush);
-	DeleteObject(Brush);
+	RECT Rect{ x,y,x2,y2 };
+	this->DrawRectangle(Rect, R, G, B);
 }
 
 
@@ -90,6 +89,9 @@ void buffer::DrawGameMap()
 	this->DrawRectangle(GAME_MAP_LEFT, GAME_MAP_TOP - 4, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH,
 		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT, 0, 0, 0);
 
+	this->DrawRectangle(NextPieceRegion.left - BorderWidth, NextPieceRegion.top - BorderWidth, NextPieceRegion.right + BorderWidth, NextPieceRegion.bottom + BorderWidth, 255, 255, 255);
+	this->DrawRectangle(NextPieceRegion, 0, 0, 0);
+
 	intvec2 TopLineLeft = this->MapToDisplayCoordinates(intvec2(0, GAME_BOARD_HEIGHT + 1));
 	intvec2 TopLineRight = this->MapToDisplayCoordinates(intvec2(GAME_BOARD_WIDTH, GAME_BOARD_HEIGHT + 1));
 	this->DrawRectangle(TopLineLeft.x, TopLineLeft.y, TopLineRight.x, TopLineLeft.y+1, 255, 255, 255);
@@ -118,21 +120,13 @@ void buffer::DrawStats()
 		char LineCountString[128];
 		char FPSString[128];
 
-		RECT LinesRect;
-		LinesRect.left = 10;
-		LinesRect.top = 200;
-		LinesRect.right = 100;
-		LinesRect.bottom = 250;
+		// Score section:
 		StringBuilder << "Lines: " << this->GameState->LineCount << std::endl;
+		StringBuilder << "Level: " << this->GameState->Level << std::endl;
 		StringBuilder << "Score: " << this->GameState->Score << std::endl;
 		strcpy_s(LineCountString, 128, StringBuilder.str().c_str());
 
-		// Add an FPS indicator to the screen.
-		RECT FPSRect;
-		FPSRect.left = 10;
-		FPSRect.top = 700;
-		FPSRect.right = 100;
-		FPSRect.bottom = 750;
+		// Status section: 
 		StringBuilder.str("");
 		StringBuilder << "Speed: " << std::setprecision(3) << GameState->FallSpeed << std::endl;
 		StringBuilder << "FPS: " << std::setprecision(3) << GameState->FPSObserved << std::endl;
@@ -143,21 +137,40 @@ void buffer::DrawStats()
 		int DCState = SaveDC(this->MemoryDeviceContext);
 		SetTextColor(this->MemoryDeviceContext, RGB(255, 255, 255));
 		SetBkColor(this->MemoryDeviceContext, RGB(0, 0, 0));
-		DrawText(this->MemoryDeviceContext, LineCountString, -1, &LinesRect, DT_LEFT);
-		DrawText(this->MemoryDeviceContext, FPSString, -1, &FPSRect, DT_LEFT);
+		DrawText(this->MemoryDeviceContext, LineCountString, -1, (LPRECT)&ScoreRegion, DT_LEFT);
+		DrawText(this->MemoryDeviceContext, FPSString, -1, (LPRECT)&StatsRegion, DT_LEFT);
 		RestoreDC(this->MemoryDeviceContext, DCState);
-
-		
-
 	}
-
-
 
 	return;
 }
 
 
+void buffer::DrawNextPiece()
+{
+	const game_board& GameBoard = this->GameState->GameBoard;
+	const piece& NextPiece = *(this->GameState->NextPiece);
+	int BitmapIndex = NextPiece.Color;
+	std::vector<intvec2> v = ((NextPiece.Blocks)[0]);
+	 
+	auto it = (((NextPiece.Blocks)[0]).begin());
+	while (it != (((NextPiece.Blocks)[0]).end()))
+	{
+		
+		intvec2 BlockLocation = this->MapToDisplayCoordinates(*it)
+			- intvec2(GAME_MAP_LEFT, GAME_MAP_TOP + (GameBoard.PlayableHeight) * BLOCK_HEIGHT);
+		intvec2 DisplayLocation = BlockLocation + intvec2((NextPieceRegion.left + NextPieceRegion.right)/2, (NextPieceRegion.top + NextPieceRegion.bottom)/2);
+		this->DrawBitmap(DisplayLocation.x, DisplayLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, this->BitmapManager->Bitmap[BitmapIndex]);
+		++it;
+	}
 
+}
+
+void buffer::DrawDebugOverlay()
+{
+	this->DrawRectangle(ScoreRegion, 63, 0, 0);
+	this->DrawRectangle(StatsRegion, 0, 63, 0);
+}
 
 
 void buffer::DrawClientArea(HDC DeviceContext)
@@ -167,7 +180,12 @@ void buffer::DrawClientArea(HDC DeviceContext)
 		this->DrawRectangle(0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, 0, 0, 0);    // Clear the client area.
 		this->DrawGameMap();
 		this->DrawFallingPiece();
+		this->DrawNextPiece();
 		this->DrawStats();
+		if (this->GameState->ShowDebugOverlay)
+		{
+			this->DrawDebugOverlay();
+		}
 		BitBlt(DeviceContext, 0, 0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT, this->MemoryDeviceContext, 0, 0, SRCCOPY);
 	}
 	else

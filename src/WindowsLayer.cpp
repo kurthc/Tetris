@@ -86,7 +86,7 @@ LRESULT Win32ProcessKeyboardMessage(HWND Window, UINT Message, WPARAM wParam, LP
 	{
 		if (wParam == KeyboardInfo->Key[i].VKey)
 		{
-			std::cout << "Setting IsKeyDown for: " << KeyboardInfo->Key[i].VKey << "\n";
+			//std::cout << "Setting IsKeyDown for: " << KeyboardInfo->Key[i].VKey << "\n";
 			KeyboardInfo->Key[i].IsDown = IsKeyDown;
 		}
 	}
@@ -149,7 +149,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	Buffer->SetUpMemoryDeviceContext(DeviceContext);
 	KeyboardInfo = new keyboard_info();
 	
-	
+	int LoopCount = 0;
 	while (!GameLoopFinished)
 	{
 		timing_information TimeFrameStart = GetSeconds();
@@ -171,14 +171,15 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 		timing_information TimeFrameEnd = GetSeconds();
 
-		GlobalGameState->FPSObserved = 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
+		if ((++LoopCount % 8) == 0)
+			GlobalGameState->FPSObserved = 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
 
-		if (LOG_FPS)
-		{
-			std::stringstream ss{""};
-			ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
-			std::cout << ss.str() << "\n";
-		}
+		//if (LOG_FPS && (++LoopCount % 100) == 0)
+		//{
+		//	std::stringstream ss{""};
+		//	ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
+		//	std::cout << ss.str() << "\n";
+		//}
 	}
 }
 

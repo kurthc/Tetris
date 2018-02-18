@@ -70,6 +70,7 @@ class game_state
 public:
 	game_board GameBoard;
 	falling_piece FallingPiece;
+	piece* NextPiece;
 	piece StandardPiece[7];
 	int StandardPieceCount;
 	bool ShowDebugOverlay = false;
@@ -77,6 +78,7 @@ public:
 	bool UserIsPressingDown = false;
 	bool GameOver = false;
 	float FPSObserved = 0.0f;
+	int Level = 1;
 	int Score = 0;
 	int LineCount = 0;
 	float FallSpeed = 5.0f;
@@ -87,7 +89,9 @@ public:
 	void UpdateGame(keyboard_info*);
 	void FreezePiece();
 	void NewFallingPieceAtTop();
+	void AddNextPiece();
 	void ProcessFallingPiece();
 	void ProcessLinesAfterDrop();
+	void UpdateLevel();
 };
 

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <map>
+#include <vector>
 #include "Global.h"
 #include "Game.h"
 #include "..\Tetris\resource.h"
@@ -19,7 +19,9 @@ constexpr int GAME_MAP_TOP = 20;
 constexpr int BLOCK_WIDTH = 25;
 constexpr int BLOCK_HEIGHT = BLOCK_WIDTH;
 
-
+const RECT ScoreRegion{ 10, 200, 100, 250 };
+const RECT StatsRegion{ 10, 600, 100, 650 };
+const RECT NextPieceRegion{ 500, 100, 700, 200 };
 
 class bitmap_manager
 {
@@ -41,9 +43,12 @@ public:
 	intvec2 MapToDisplayCoordinates(intvec2 MapPosition);
 	void DrawBitmap(int x, int y, int width, int height, HBITMAP Bitmap);
 	void DrawRectangle(int x, int y, int x2, int y2, int R, int G, int B);
+	void DrawRectangle(RECT Rect, int R, int G, int B);
 	void DrawFallingPiece();
+	void DrawNextPiece();
 	void DrawGameMap();
 	void DrawStats();
+	void DrawDebugOverlay();
 	void DrawClientArea(HDC DeviceContext);
 };
 

@@ -26,6 +26,7 @@ void game_board::ClearBoard()
 game_state::game_state()
 {
 	this->SetStandardPieces();
+	this->AddNextPiece();
 	this->NewFallingPieceAtTop();
 }
 
@@ -110,6 +111,7 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 	{
 		this->HandleKeyboard(KeyboardInfo);
 		this->ProcessFallingPiece();
+		this->UpdateLevel();
 	}
 }
 
@@ -277,17 +279,35 @@ void game_state::FreezePiece()
 	}
 }
 
+void game_state::AddNextPiece()
+{
+	int PieceIndex = (rand() % this->StandardPieceCount);
+	piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
+	this->NextPiece = NewPiece;
+	//FallingPiece.ReplacePiece(NewPiece);
+
+}
+
 void game_state::NewFallingPieceAtTop()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
 
 	// Generate a new piece and put it in the FallingPiece.
-	int PieceIndex = (rand() % this->StandardPieceCount);
-	piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
-	FallingPiece.ReplacePiece(NewPiece);
-
+	//int PieceIndex = (rand() % this->StandardPieceCount);
+	//piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
+	//FallingPiece.ReplacePiece(NewPiece);
+	FallingPiece.ReplacePiece(this->NextPiece);
 	int Height = FallingPiece.Piece->GetBottom();
 	FallingPiece.CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 	FallingPiece.PieceOrientation = 0;
+
+	this->AddNextPiece();
 	this->DropTimer = 1.0f;
 }
+
+void game_state::UpdateLevel()
+{
+	this->Level = (this->LineCount / 5 + 1);
+	this->FallSpeed = this->Level * 4;
+}
+
