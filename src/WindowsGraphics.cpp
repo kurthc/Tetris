@@ -172,6 +172,19 @@ void buffer::DrawDebugOverlay()
 	this->DrawRectangle(StatsRegion, 0, 63, 0);
 }
 
+void buffer::DrawGameOver()
+{
+	SaveDC(this->MemoryDeviceContext);
+	int DCState = SaveDC(this->MemoryDeviceContext);
+	SetTextColor(this->MemoryDeviceContext, RGB(255, 0, 0));
+	SetBkColor(this->MemoryDeviceContext, RGB(0, 0, 0));
+
+	RECT r{ 0,0,300,300 };
+	char GameOverMessage[] = "GAME OVER!";
+	DrawText(this->MemoryDeviceContext, GameOverMessage, -1, &r, DT_LEFT);
+	RestoreDC(this->MemoryDeviceContext, DCState);
+
+}
 
 void buffer::DrawClientArea(HDC DeviceContext)
 {
@@ -182,6 +195,10 @@ void buffer::DrawClientArea(HDC DeviceContext)
 		this->DrawFallingPiece();
 		this->DrawNextPiece();
 		this->DrawStats();
+		if (this->GameState->GameOver)
+		{
+			this->DrawGameOver();
+		}
 		if (this->GameState->ShowDebugOverlay)
 		{
 			this->DrawDebugOverlay();

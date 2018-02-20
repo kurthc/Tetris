@@ -48,6 +48,7 @@ public:
 	void DrawNextPiece();
 	void DrawGameMap();
 	void DrawStats();
+	void DrawGameOver();
 	void DrawDebugOverlay();
 	void DrawClientArea(HDC DeviceContext);
 };
