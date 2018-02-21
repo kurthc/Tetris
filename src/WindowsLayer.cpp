@@ -171,6 +171,9 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 		timing_information TimeFrameEnd = GetSeconds();
 
+		float SleepTime = 1000.0f*(TimeFrameEnd.Seconds - TimeAfterProcess.Seconds);
+		std::cout << "Requested Sleep time: " << 1000* TimeToSleep << ", Sleep time: " << SleepTime << std::endl;
+
 		if ((++LoopCount % 8) == 0)
 			GlobalGameState->FPSObserved = 1.0f / (float)(TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
 
