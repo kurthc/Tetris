@@ -1,7 +1,7 @@
 #include "WindowsLayer.h"
 
 static constexpr bool LOGMESSAGES = false;
-static constexpr bool LOG_FPS = false;
+static constexpr bool LOG_FPS = true;
 
 // Get the current time from QueryPerformanceCounter().
 timing_information GetSeconds()
@@ -171,18 +171,21 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 
 		timing_information TimeFrameEnd = GetSeconds();
 
-		float SleepTime = 1000.0f*(TimeFrameEnd.Seconds - TimeAfterProcess.Seconds);
-		std::cout << "Requested Sleep time: " << 1000* TimeToSleep << ", Sleep time: " << SleepTime << std::endl;
 
 		if ((++LoopCount % 8) == 0)
+		{
 			GlobalGameState->FPSObserved = 1.0f / (float)(TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
+		}
 
-		//if (LOG_FPS && (++LoopCount % 100) == 0)
-		//{
-		//	std::stringstream ss{""};
-		//	ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds);
-		//	std::cout << ss.str() << "\n";
-		//}
+		if (LOG_FPS && (++LoopCount % 100) == 0)
+		{
+			float SleepTime = 1000.0f*(TimeFrameEnd.Seconds - TimeAfterProcess.Seconds);
+			std::stringstream ss{ "" };
+			ss << "Requested Sleep time: " << 1000 * TimeToSleep << ", Sleep time: " << SleepTime << std::endl;
+			ss << "FPS: " << 1.0f / (TimeFrameEnd.Seconds - TimeFrameStart.Seconds) << std::endl;
+			std::cout << ss.str();
+		}
+
 	}
 }
 
