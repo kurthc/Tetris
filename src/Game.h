@@ -3,13 +3,16 @@
 #include <iostream>
 #include "Global.h"
 
+class game_state;
+
 constexpr int GAME_BOARD_WIDTH = 10;
 constexpr int GAME_BOARD_HEIGHT = 20;
 constexpr int GAME_BOARD_PLAYABLE_HEIGHT = GAME_BOARD_HEIGHT + 4;
 constexpr float KEYBOARD_REPEAT_TIME = 0.1f;
-constexpr float DROP_SPEED = 40.0f;
+constexpr float DROP_SPEED = 50.0f;
 
 enum piece_center_type { Center, Corner };
+enum player {User, Computer};
 
 // class: game_board
 // The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom up:
@@ -65,6 +68,17 @@ public:
 	void ReplacePiece(piece*);
 };
 
+
+class computer_player
+{
+public:
+	game_state* GameState;
+
+	computer_player(game_state* GameState) : GameState(GameState) {};
+	double MapScore();
+
+};
+
 class game_state
 {
 public:
@@ -82,6 +96,8 @@ public:
 	int Score = 0;
 	int LineCount = 0;
 	float FallSpeed = 5.0f;
+	player Player = player::User;
+	computer_player* ComputerPlayer;
 
 	game_state();
 	void SetStandardPieces();
@@ -93,7 +109,11 @@ public:
 	void ProcessFallingPiece();
 	void ProcessLinesAfterDrop();
 	void UpdateLevel();
+	void HandleComputerKeyboard();
 };
+
+
+
 
 enum StandardPieceName { O = 0, I = 1, T = 2, L = 3, J = 4, S = 5, Z = 6 };
 

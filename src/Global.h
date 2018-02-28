@@ -13,7 +13,8 @@ Separate out Game.cpp
 Show FPS, Score, Lines, etc. on screen
 */
 
-constexpr float TargetFPS = 60.0f;
+// I'd prefer this were 60, but that makes the frame length too short for Windows to reliably sleep.
+constexpr float TargetFPS = 30.0f;
 
 template <typename T> inline T const& MAX(T const& X, T const& Y)
 {

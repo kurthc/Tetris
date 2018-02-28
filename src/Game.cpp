@@ -48,9 +48,17 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 {
 	if (!GameOver)
 	{
-		this->HandleKeyboard(KeyboardInfo);
+		if (this->Player == player::User)
+		{
+			this->HandleKeyboard(KeyboardInfo);
+		}
+		else if (this->Player == player::Computer)
+		{
+			this->HandleComputerKeyboard();
+		}
 		this->ProcessFallingPiece();
 		this->UpdateLevel();
+
 	}
 }
 
@@ -248,4 +256,10 @@ void game_state::UpdateLevel()
 	this->Level = (this->LineCount / 5 + 1);
 	this->FallSpeed = this->Level * 4;
 }
+
+void game_state::HandleComputerKeyboard()
+{
+
+}
+
 
