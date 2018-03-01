@@ -72,9 +72,10 @@ public:
 class computer_player
 {
 public:
-	game_state* GameState;
+	game_board* GameBoard;
 
-	computer_player(game_state* GameState) : GameState(GameState) {};
+	computer_player(game_board* GameBoard) : GameBoard(GameBoard) {};
+	void FindBestLocation();
 	double MapScore();
 
 };
