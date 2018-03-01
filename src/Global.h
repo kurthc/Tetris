@@ -11,7 +11,7 @@ Checking of game board bounds in game_board.
 Get rid of globals.
 Separate out Game.cpp
 Show FPS, Score, Lines, etc. on screen
-...
+.....
 */
 
 // I'd prefer this were 60, but that makes the frame length too short for Windows to reliably sleep.
