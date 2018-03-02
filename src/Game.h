@@ -15,7 +15,7 @@ enum piece_center_type { Center, Corner };
 enum player {User, Computer};
 
 // class: game_board
-// The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom up:
+// The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom to top:
 //
 //    2
 //  y 1
@@ -44,11 +44,19 @@ public:
 	intvec2 Center{0,0};
 	//piece_center_type CenterType;     // Currently not used. The idea was that pieces could be rotated about either a corner or a fixed block.
 	std::vector<intvec2> Blocks[4];     // Index n corresponds to a rotation of 2PI*n/4
+	enum BoundDirection{Bottom, Top, Left, Right, Count};
+	int Bound[4][BoundDirection::Count];
 	BitmapIndex Color;
+
+	//piece() :Center(0, 0) {};
 
 	void GetRotatedPiecesFrom0();
 	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
-	int GetBottom();
+	void FillBounds();
+	int GetBottom(int n) { return Bound[n][BoundDirection::Bottom]; }
+	int GetTop(int n) { return Bound[n][BoundDirection::Top]; }
+	int GetLeft(int n) { return Bound[n][BoundDirection::Left]; }
+	int GetRight(int n) { return Bound[n][BoundDirection::Right]; }
 };
 
 class falling_piece

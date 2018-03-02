@@ -38,6 +38,7 @@ void game_state::SetStandardPieces()
 		Piece.Center = intvec2(0, 0);
 		Piece.Color = StandardPieceColor[PieceIndex];
 		Piece.GetRotatedPiecesFrom0();
+		Piece.FillBounds();
 	}
 	
 	this->StandardPieceCount = sizeof(this->StandardPiece) / sizeof(*(this->StandardPiece));
@@ -243,7 +244,7 @@ void game_state::NewFallingPieceAtTop()
 	//piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
 	//FallingPiece.ReplacePiece(NewPiece);
 	FallingPiece.ReplacePiece(this->NextPiece);
-	int Height = FallingPiece.Piece->GetBottom();
+	int Height = FallingPiece.Piece->GetBottom(0);
 	FallingPiece.CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 	FallingPiece.PieceOrientation = 0;
 

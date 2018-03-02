@@ -27,30 +27,113 @@ void piece::GetRotatedPiecesFrom0()
 	this->RotateBlocks90(Blocks[1], Blocks[2]);
 	this->RotateBlocks90(Blocks[2], Blocks[3]);
 }
+//
+//// Get the y value of the lowest block.
+//int piece::GetBottom(int n)
+//{
+//	auto it = this->Blocks[n].begin();
+//	int Low = 100;
+//	while (it != this->Blocks[n].end())
+//	{
+//		if (it->y < Low)
+//			Low = it->y;
+//		++it;
+//	}
+//	return Low;
+//}
+//
+////TODO: Combine GetLeft(), GetRight() somehow. 
+//int piece::GetLeft(int n)
+//{
+//	int Left;
+//	
+//	//std::vector<intvec2> i = (this->Blocks)[n];
+//	
+//	if ((this->Blocks[n]).size() > 0)
+//	{
+//		auto it = this->Blocks[n].begin();
+//		Left = (*it).x;
+//		++it;
+//		while (it != this->Blocks[n].end())
+//		{
+//			if ((*it).x < Left)
+//				Left = (*it).x;
+//			++it;
+//		}
+//	}
+//	else
+//	{
+//		// TODO: Error
+//		Left = 0;
+//	}
+//	
+//	return Left;
+//}
+//
+//
+//int piece::GetRight(int n)
+//{
+//	int Right;
+//	if (this->Blocks[n].size() > 0)
+//	{
+//		auto it = this->Blocks[n].begin();
+//		Right = (*it).x;
+//		++it;
+//		while (it != this->Blocks[n].end())
+//		{
+//			if ((*it).x > Right)
+//				Right = (*it).x;
+//			++it;
+//		}
+//	}
+//	else
+//	{
+//		// TODO: Error
+//		Right = 0;
+//	}
+//
+//	return Right;
+//}
 
-// Get the y value of the lowest block.
-int piece::GetBottom()
+void piece::FillBounds()
 {
-	auto it = this->Blocks->begin();
-	int Low = 100;
-	while (it != this->Blocks->end())
+	if ((this->Blocks[0].size() > 0) && (this->Blocks[1].size() > 0) && (this->Blocks[2].size() > 0) && (this->Blocks[3].size() > 0))
 	{
-		if (it->y < Low)
-			Low = it->y;
-		++it;
+
+		for (int Orientation = 0; Orientation < 4; ++Orientation)
+		{
+			//int BestBound[BoundDirection::Count];
+			auto it = this->Blocks[Orientation].begin();
+			//this->Bound[Orientation][BoundDirection::Bottom] = 
+			this->Bound[Orientation][BoundDirection::Bottom] = this->Bound[Orientation][BoundDirection::Top] = (*it).y;
+			this->Bound[Orientation][BoundDirection::Left] = this->Bound[Orientation][BoundDirection::Right] = (*it).x;
+			++it;
+			while (it != this->Blocks[Orientation].end())
+			{
+				this->Bound[Orientation][BoundDirection::Bottom] = MIN((*it).y, this->Bound[Orientation][BoundDirection::Bottom]);
+				this->Bound[Orientation][BoundDirection::Top] = MAX((*it).y, this->Bound[Orientation][BoundDirection::Top]);
+				this->Bound[Orientation][BoundDirection::Left] = MIN((*it).x, this->Bound[Orientation][BoundDirection::Left]);
+				this->Bound[Orientation][BoundDirection::Right] = MAX((*it).x, this->Bound[Orientation][BoundDirection::Right]);
+				++it;
+			}
+
+		}
 	}
-	return Low;
+	else
+	{
+		// Something when wrong.
+
+	}
 }
 
 falling_piece::falling_piece(const piece& Piece)
 {
 	//this->Piece = Piece;    //copy
 	this->Piece = new piece(Piece);
-	int Height = this->Piece->GetBottom();
+	int Height = this->Piece->GetBottom(0);
 	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 	this->PieceOrientation = 0;
 }
-
 
 bool falling_piece::HitSomething(const game_board& GameBoard)
 {
