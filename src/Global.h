@@ -14,7 +14,7 @@ Show FPS, Score, Lines, etc. on screen
 .....
 */
 
-// I'd prefer this were 60, but that makes the frame length too short for Windows to reliably sleep.
+// I'd prefer this to be 60, but that makes the frame length too short for Windows to reliably sleep.
 constexpr float TargetFPS = 30.0f;
 
 template <typename T> inline T const& MAX(T const& X, T const& Y)

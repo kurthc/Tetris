@@ -1,5 +1,9 @@
 #include "Game.h"
 
+void computer_player::RecalculateStrategy()
+{
+
+}
 
 void computer_player::FindBestLocation()
 {

@@ -19,7 +19,7 @@ void game_board::ClearBoard()
 
 game_state::game_state()
 {
-
+	computer_player* ComputerPlayer = new computer_player(&this->GameBoard);
 	this->SetStandardPieces();
 	this->AddNextPiece();
 	this->NewFallingPieceAtTop();
@@ -238,11 +238,6 @@ void game_state::AddNextPiece()
 void game_state::NewFallingPieceAtTop()
 {
 	falling_piece& FallingPiece = this->FallingPiece;
-
-	// Generate a new piece and put it in the FallingPiece.
-	//int PieceIndex = (rand() % this->StandardPieceCount);
-	//piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
-	//FallingPiece.ReplacePiece(NewPiece);
 	FallingPiece.ReplacePiece(this->NextPiece);
 	int Height = FallingPiece.Piece->GetBottom(0);
 	FallingPiece.CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
@@ -250,6 +245,10 @@ void game_state::NewFallingPieceAtTop()
 
 	this->AddNextPiece();
 	this->DropTimer = 1.0f;
+	if (this->Player == player::Computer)
+	{
+		this->ComputerPlayer->RecalculateStrategy();
+	}
 }
 
 void game_state::UpdateLevel()

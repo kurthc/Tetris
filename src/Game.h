@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Global.h"
 
-class game_state;
+//class game_state;
 
 constexpr int GAME_BOARD_WIDTH = 10;
 constexpr int GAME_BOARD_HEIGHT = 20;
@@ -81,8 +81,11 @@ class computer_player
 {
 public:
 	game_board* GameBoard;
+	int StrategyOrientation;
+	int StrategyX;
 
 	computer_player(game_board* GameBoard) : GameBoard(GameBoard) {};
+	void RecalculateStrategy();
 	void FindBestLocation();
 	double MapScore();
 

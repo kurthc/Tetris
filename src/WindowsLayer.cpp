@@ -143,7 +143,8 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	bool GameLoopFinished = false;
 
 	GlobalGameState = new game_state();
-	GlobalGameState->ComputerPlayer = new computer_player(&GlobalGameState->GameBoard);
+	GlobalGameState->Player = player::Computer;
+
 	BitmapManager = new bitmap_manager();
 	BitmapManager->LoadBitmaps(Instance);
 	Buffer = new buffer(GlobalGameState, BitmapManager);
