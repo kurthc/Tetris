@@ -19,6 +19,20 @@ game_board::game_board(const game_board& InputGameBoard)
 }
 
 
+game_round::game_round(game_state* GameState)
+{
+	this->GameState = GameState;
+}
+
+//~game_round::game_round()
+//{
+//	if (this->FallingPiece)
+//	{
+//		delete FallingPiece;
+//	}
+//}
+
+
 void game_board::ClearBoard()
 {
 	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
@@ -53,10 +67,12 @@ bool game_board::FreezePiece(const piece& Piece, intvec2 CenterLocation, int Pie
 
 game_state::game_state()
 {
-	this->ComputerPlayer = new computer_player(&this->GameBoard);
+	this->GameRound[0] = new game_round(this);
+	this->ComputerPlayer = new computer_player(&this->GameRound[0]->GameBoard);  // This should probably be GameRound?
 	this->SetStandardPieces();
-	this->AddNextPiece();
-	this->NewFallingPieceAtTop();
+	//this->GameRound.
+	this->GameRound[0]->AddNextPiece();
+	this->GameRound[0]->NewFallingPieceAtTop();
 }
 
 void game_state::SetStandardPieces()
@@ -81,19 +97,22 @@ void game_state::SetStandardPieces()
 
 void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 {
-	if (!GameOver)
+	for (int i = 0; i < 1; ++i)
 	{
-		if (this->Player == player::User)
+		if (!GameOver)
 		{
-			this->HandleKeyboard(KeyboardInfo);
-		}
-		else if (this->Player == player::Computer)
-		{
-			this->HandleComputerKeyboard();
-		}
-		this->ProcessFallingPiece();
-		this->UpdateLevel();
+			if (this->Player == player::User)
+			{
+				this->HandleKeyboard(KeyboardInfo);
+			}
+			else if (this->Player == player::Computer)
+			{
+				this->HandleComputerKeyboard();
+			}
+			this->ProcessFallingPiece(this->GameRound[i]);
+			this->UpdateLevel();
 
+		}
 	}
 }
 
@@ -101,9 +120,10 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 {
 	KeyboardInfo->RepeatTimer = MAX(KeyboardInfo->RepeatTimer - 1.0f / TargetFPS, 0.0f);
 	
-	falling_piece ProposedLocation(FallingPiece);  // Copy the current falling_piece
+	game_round* GameRound = this->GameRound[0];
+	falling_piece* CurrentFallingPiece = GameRound->FallingPiece;
+	falling_piece ProposedLocation(*CurrentFallingPiece);  // Copy the current falling_piece
 
-	//intvec2 NewLocation{0,0};
 	bool RepeatTimerClear = (KeyboardInfo->RepeatTimer <= 0.0f);
 
 	this->UserIsPressingDown = KeyboardInfo->KeyDown().IsDown;
@@ -120,26 +140,26 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	if (!ProposedLocation.HitSomething(this->GameBoard))
-		FallingPiece.CenterLocation = ProposedLocation.CenterLocation;
+	if (!ProposedLocation.HitSomething(this->GameRound[0]->GameBoard))
+		CurrentFallingPiece->CenterLocation = ProposedLocation.CenterLocation;
 	else
-		ProposedLocation.CenterLocation = FallingPiece.CenterLocation;
+		ProposedLocation.CenterLocation = CurrentFallingPiece->CenterLocation;
 
 	if (KeyboardInfo->KeyTurnLeft().IsDown == true && KeyboardInfo->KeyTurnLeft().WasDown == false)
 	{
-		ProposedLocation.PieceOrientation = MathMod(this->FallingPiece.PieceOrientation + 1, 4);
+		ProposedLocation.PieceOrientation = MathMod(CurrentFallingPiece->PieceOrientation + 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
 	if (KeyboardInfo->KeyTurnRight().IsDown == true && KeyboardInfo->KeyTurnRight().WasDown == false)
 	{
-		ProposedLocation.PieceOrientation = MathMod(this->FallingPiece.PieceOrientation - 1, 4);
+		ProposedLocation.PieceOrientation = MathMod(CurrentFallingPiece->PieceOrientation - 1, 4);
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	if (!ProposedLocation.HitSomething(this->GameBoard))
+	if (!ProposedLocation.HitSomething(GameRound->GameBoard))
 	{
-		FallingPiece.PieceOrientation = ProposedLocation.PieceOrientation;
+		CurrentFallingPiece->PieceOrientation = ProposedLocation.PieceOrientation;
 	}
 
 	if (KeyboardInfo->KeyDebug().IsDown == true && KeyboardInfo->KeyDebug().WasDown == false)
@@ -149,41 +169,42 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 
 	if (KeyboardInfo->KeyNextPiece().IsDown == true && KeyboardInfo->KeyNextPiece().WasDown == false)
 	{
-		this->NewFallingPieceAtTop();
+		this->GameRound[0]->NewFallingPieceAtTop();
 	}
 
 }
 
-void game_state::ProcessFallingPiece()
+void game_state::ProcessFallingPiece(game_round* GameRound)
 {
-	falling_piece& FallingPiece = this->FallingPiece;
+	//falling_piece& FallingPiece = this->FallingPiece;
+	falling_piece* FallingPiece = GameRound->FallingPiece;
 	float Speed = this->FallSpeed;
 	if (this->UserIsPressingDown)
 	{
 		Speed = DROP_SPEED;
 	}
 
-	if (DropTimer > 0.0f)
+	if (GameRound->DropTimer > 0.0f)
 	{
 		// It isn't time to push the piece down yet.
-		DropTimer -= Speed / TargetFPS;
+		GameRound->DropTimer -= Speed / TargetFPS;
 	}
 	else
 	{
-		falling_piece FPiece(FallingPiece);   //TODO: This is probably leaking.
+		falling_piece FPiece(*FallingPiece);   //TODO: This is probably leaking.
 		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
-		if (FPiece.HitSomething(this->GameBoard))
+		if (FPiece.HitSomething(GameRound->GameBoard))
 		{
 			this->FreezePiece();
-			this->NewFallingPieceAtTop();
+			GameRound->NewFallingPieceAtTop();
 			this->ProcessLinesAfterDrop();
 		}
 		else
 		{
-			FallingPiece.CenterLocation = this->FallingPiece.CenterLocation + intvec2(0, -1);
+			FallingPiece->CenterLocation = FallingPiece->CenterLocation + intvec2(0, -1);
 		}
 
-		DropTimer = 1.0f;
+		GameRound->DropTimer = 1.0f;
 	}
 }
 
@@ -246,28 +267,29 @@ void game_state::FreezePiece()
 
 
 
-void game_state::AddNextPiece()
+//void game_state::AddNextPiece(game_round* GameRound)
+void game_round::AddNextPiece()
 {
-	int PieceIndex = (rand() % this->StandardPieceCount);
-	piece* NewPiece = new piece(this->StandardPiece[PieceIndex]);
+	int PieceIndex = (rand() % this->GameState->StandardPieceCount);
+	piece* NewPiece = new piece(this->GameState->StandardPiece[PieceIndex]);
 	this->NextPiece = NewPiece;
 	//FallingPiece.ReplacePiece(NewPiece);
 
 }
 
-void game_state::NewFallingPieceAtTop()
+void game_round::NewFallingPieceAtTop()
 {
-	falling_piece& FallingPiece = this->FallingPiece;
-	FallingPiece.ReplacePiece(this->NextPiece);
-	int Height = FallingPiece.Piece->GetBottom(0);
-	FallingPiece.CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
-	FallingPiece.PieceOrientation = 0;
+	//falling_piece& FallingPiece = this->FallingPiece;
+	this->FallingPiece->ReplacePiece(this->NextPiece);
+	int Height = this->FallingPiece->Piece->GetBottom(0);
+	this->FallingPiece->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+	this->FallingPiece->PieceOrientation = 0;
 
 	this->AddNextPiece();
 	this->DropTimer = 1.0f;
-	if (this->Player == player::Computer)
+	if (this->GameState->Player == player::Computer)
 	{
-		this->ComputerPlayer->RecalculateStrategy(this->FallingPiece.Piece, this->NextPiece);
+		this->GameState->ComputerPlayer->RecalculateStrategy(this->FallingPiece->Piece, this->NextPiece);
 	}
 }
 

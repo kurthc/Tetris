@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Global.h"
 
-//class game_state;
+class game_state;
 
 constexpr int GAME_BOARD_WIDTH = 10;
 constexpr int GAME_BOARD_HEIGHT = 20;
@@ -96,16 +96,34 @@ public:
 
 };
 
-class game_state
+
+class game_round
 {
 public:
 	game_board GameBoard;
-	falling_piece FallingPiece;
+	falling_piece* FallingPiece;
 	piece* NextPiece;
+	float DropTimer = 0.0f;
+	
+	game_state* GameState;
+
+	game_round(game_state* GameState);
+	void AddNextPiece();
+	void NewFallingPieceAtTop();
+	//~game_round();
+};
+
+class game_state
+{
+public:
+	game_round* GameRound[1];
+	//game_board GameBoard;
+	//falling_piece FallingPiece;
+	//piece* NextPiece;
 	piece StandardPiece[7];
 	int StandardPieceCount;
 	bool ShowDebugOverlay = false;
-	float DropTimer = 0.0f;
+	//float DropTimer = 0.0f;
 	bool UserIsPressingDown = false;
 	bool GameOver = false;
 	float FPSObserved = 0.0f;
@@ -122,9 +140,8 @@ public:
 	void HandleKeyboard(keyboard_info*);
 	void UpdateGame(keyboard_info*);
 	void FreezePiece();
-	void NewFallingPieceAtTop();
-	void AddNextPiece();
-	void ProcessFallingPiece();
+	//void AddNextPiece(game_round* GameRound);
+	void ProcessFallingPiece(game_round* GameRound);
 	void ProcessLinesAfterDrop();
 	void UpdateLevel();
 	void HandleComputerKeyboard();
