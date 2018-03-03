@@ -24,7 +24,7 @@ bool buffer::SetUpMemoryDeviceContext(HDC WindowDeviceContext)
 
 intvec2 buffer::MapToDisplayCoordinates(intvec2 MapPosition)
 {
-	game_board& GameBoard = this->GameState->GameBoard;
+	game_board& GameBoard = this->GameState->GameRound[0]->GameBoard;
 	//game_board& GameBoard = this->GameState.GameBoard;
 	int DisplayX = GAME_MAP_LEFT + MapPosition.x * BLOCK_WIDTH;
 	int DisplayY = GAME_MAP_TOP + (GameBoard.PlayableHeight - MapPosition.y) * BLOCK_HEIGHT;
@@ -57,21 +57,22 @@ void buffer::DrawBitmap(int x, int y, int width, int height, HBITMAP Bitmap)
 
 void buffer::DrawFallingPiece()
 {
-	falling_piece& FallingPiece = this->GameState->FallingPiece;
+	falling_piece* FallingPiece = this->GameState->GameRound[0]->FallingPiece;
+	//this->GameState->GameRound[0]->
 
-	int PieceOrientation = FallingPiece.PieceOrientation;
-	std::vector<intvec2>::iterator it = FallingPiece.CurrentBlocks().begin();
-	while (it != FallingPiece.CurrentBlocks().end())
+	int PieceOrientation = FallingPiece->PieceOrientation;
+	std::vector<intvec2>::iterator it = FallingPiece->CurrentBlocks().begin();
+	while (it != FallingPiece->CurrentBlocks().end())
 	{
-		intvec2 BlockLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + (*it) + intvec2(0, 1));
-		int BitmapIndex = FallingPiece.Color();
+		intvec2 BlockLocation = this->MapToDisplayCoordinates(FallingPiece->CenterLocation + (*it) + intvec2(0, 1));
+		int BitmapIndex = FallingPiece->Color();
 		this->DrawBitmap(BlockLocation.x, BlockLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, BitmapManager->Bitmap[BitmapIndex]);
 		++it;
 	}
 
 	if (this->GameState->ShowDebugOverlay)
 	{
-		intvec2 CenterLocation = this->MapToDisplayCoordinates(FallingPiece.CenterLocation + intvec2(0, 1));
+		intvec2 CenterLocation = this->MapToDisplayCoordinates(FallingPiece->CenterLocation + intvec2(0, 1));
 		this->DrawRectangle(CenterLocation.x, CenterLocation.y, CenterLocation.x + BLOCK_WIDTH, CenterLocation.y + BLOCK_HEIGHT, 255, 255, 0);
 	}
 }
@@ -79,7 +80,7 @@ void buffer::DrawFallingPiece()
 
 void buffer::DrawGameMap()
 {
-	game_board& GameBoard = this->GameState->GameBoard;
+	game_board& GameBoard = this->GameState->GameRound[0]->GameBoard;
 
 	//TODO: Make this a constant somewhere.
 	const static int BorderWidth = 4;  
@@ -148,8 +149,8 @@ void buffer::DrawStats()
 
 void buffer::DrawNextPiece()
 {
-	const game_board& GameBoard = this->GameState->GameBoard;
-	const piece& NextPiece = *(this->GameState->NextPiece);
+	const game_board& GameBoard = this->GameState->GameRound[0]->GameBoard;
+	const piece& NextPiece = *(this->GameState->GameRound[0]->NextPiece);
 	int BitmapIndex = NextPiece.Color;
 	std::vector<intvec2> v = ((NextPiece.Blocks)[0]);
 	 

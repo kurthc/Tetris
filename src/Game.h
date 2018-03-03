@@ -110,6 +110,7 @@ public:
 	game_round(game_state* GameState);
 	void AddNextPiece();
 	void NewFallingPieceAtTop();
+	void FreezePiece();
 	//~game_round();
 };
 
@@ -139,10 +140,9 @@ public:
 	void SetStandardPieces();
 	void HandleKeyboard(keyboard_info*);
 	void UpdateGame(keyboard_info*);
-	void FreezePiece();
 	//void AddNextPiece(game_round* GameRound);
 	void ProcessFallingPiece(game_round* GameRound);
-	void ProcessLinesAfterDrop();
+	void ProcessLinesAfterDrop(game_round* GameRound);
 	void UpdateLevel();
 	void HandleComputerKeyboard();
 };

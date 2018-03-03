@@ -70,7 +70,6 @@ game_state::game_state()
 	this->GameRound[0] = new game_round(this);
 	this->ComputerPlayer = new computer_player(&this->GameRound[0]->GameBoard);  // This should probably be GameRound?
 	this->SetStandardPieces();
-	//this->GameRound.
 	this->GameRound[0]->AddNextPiece();
 	this->GameRound[0]->NewFallingPieceAtTop();
 }
@@ -195,9 +194,10 @@ void game_state::ProcessFallingPiece(game_round* GameRound)
 		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
 		if (FPiece.HitSomething(GameRound->GameBoard))
 		{
-			this->FreezePiece();
+			//bool CrossedLine = GameRound->GameBoard.FreezePiece();
+			GameRound->FreezePiece();
 			GameRound->NewFallingPieceAtTop();
-			this->ProcessLinesAfterDrop();
+			this->ProcessLinesAfterDrop(GameRound);
 		}
 		else
 		{
@@ -208,7 +208,7 @@ void game_state::ProcessFallingPiece(game_round* GameRound)
 	}
 }
 
-void game_state::ProcessLinesAfterDrop()
+void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 {
 	int LinesMade = 0;
 	int PointsToAdd = 0;
@@ -219,7 +219,7 @@ void game_state::ProcessLinesAfterDrop()
 		bool FoundHole = false;
 		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)
 		{
-			if (!GameBoard.BlockHere(BlockX, BlockY))
+			if (!GameRound->GameBoard.BlockHere(BlockX, BlockY))
 			{
 				FoundHole = true;
 				break;
@@ -234,7 +234,7 @@ void game_state::ProcessLinesAfterDrop()
 				for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 				{
 					// Set each block to the block above it.
-					GameBoard.SetColor(DroppingBlockX, DroppingBlockY, GameBoard.GetColor(DroppingBlockX, DroppingBlockY + 1));
+					GameRound->GameBoard.SetColor(DroppingBlockX, DroppingBlockY, GameRound->GameBoard.GetColor(DroppingBlockX, DroppingBlockY + 1));
 				}
 
 			}
@@ -242,7 +242,7 @@ void game_state::ProcessLinesAfterDrop()
 			// Clear the top row.
 			for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 			{
-				GameBoard.SetColor(DroppingBlockX, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
+				GameRound->GameBoard.SetColor(DroppingBlockX, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
 			}
 
 			++LinesMade;
@@ -258,10 +258,10 @@ void game_state::ProcessLinesAfterDrop()
 
 }
 
-void game_state::FreezePiece()
+void game_round::FreezePiece()
 {
-	falling_piece& FallingPiece = this->FallingPiece;
-	this->GameOver = this->GameBoard.FreezePiece(*(FallingPiece.Piece), FallingPiece.CenterLocation, FallingPiece.PieceOrientation, FallingPiece.Color());
+	falling_piece* FallingPiece = this->FallingPiece;
+	this->GameState->GameOver = this->GameBoard.FreezePiece(*(FallingPiece->Piece), FallingPiece->CenterLocation, FallingPiece->PieceOrientation, FallingPiece->Color());
 }
 
 
@@ -280,7 +280,14 @@ void game_round::AddNextPiece()
 void game_round::NewFallingPieceAtTop()
 {
 	//falling_piece& FallingPiece = this->FallingPiece;
-	this->FallingPiece->ReplacePiece(this->NextPiece);
+	if (!this->FallingPiece)
+	{
+		this->FallingPiece = new falling_piece(*this->NextPiece);
+	}
+	else
+	{
+		this->FallingPiece->ReplacePiece(this->NextPiece);
+	}
 	int Height = this->FallingPiece->Piece->GetBottom(0);
 	this->FallingPiece->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
 	this->FallingPiece->PieceOrientation = 0;
@@ -301,21 +308,23 @@ void game_state::UpdateLevel()
 
 void game_state::HandleComputerKeyboard()
 {
+	game_round* GameRound = this->GameRound[0];
+	falling_piece* FallingPiece = GameRound->FallingPiece;
 	if (this->ComputerPlayerTimer <= 0.0f)
 	{
-		if (this->FallingPiece.PieceOrientation != this->ComputerPlayer->StrategyOrientation)
+		if (FallingPiece->PieceOrientation != this->ComputerPlayer->StrategyOrientation)
 		{
-			this->FallingPiece.PieceOrientation = (this->FallingPiece.PieceOrientation + 1) % 4;
+			FallingPiece->PieceOrientation = (FallingPiece->PieceOrientation + 1) % 4;
 			this->ComputerPlayerTimer = 1.0f;
 		}
-		else if (this->FallingPiece.CenterLocation.x < this->ComputerPlayer->StrategyX)
+		else if (FallingPiece->CenterLocation.x < this->ComputerPlayer->StrategyX)
 		{
-			this->FallingPiece.CenterLocation.x += 1;
+			FallingPiece->CenterLocation.x += 1;
 			this->ComputerPlayerTimer = 1.0f;
 		}
-		else if (this->FallingPiece.CenterLocation.x < this->ComputerPlayer->StrategyX)
+		else if (FallingPiece->CenterLocation.x < this->ComputerPlayer->StrategyX)
 		{
-			this->FallingPiece.CenterLocation.x -= 1;
+			FallingPiece->CenterLocation.x -= 1;
 			this->ComputerPlayerTimer = 1.0f;
 		}
 		this->UserIsPressingDown = false;
