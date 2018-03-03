@@ -6,6 +6,18 @@ game_board::game_board()
 	this->ClearBoard();
 }
 
+game_board::game_board(const game_board& InputGameBoard)
+{
+	for (int y = 0; y < GAME_BOARD_HEIGHT; ++y)
+	{
+		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
+		{
+			this->GameBoard[y][x] = InputGameBoard.GameBoard[y][x];
+		}
+	}
+	//GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH]
+}
+
 void game_board::ClearBoard()
 {
 	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
@@ -19,7 +31,7 @@ void game_board::ClearBoard()
 
 game_state::game_state()
 {
-	computer_player* ComputerPlayer = new computer_player(&this->GameBoard);
+	this->ComputerPlayer = new computer_player(&this->GameBoard);
 	this->SetStandardPieces();
 	this->AddNextPiece();
 	this->NewFallingPieceAtTop();
@@ -204,6 +216,10 @@ void game_state::ProcessLinesAfterDrop()
 }
 
 void game_state::FreezePiece()
+//{
+//	falling_piece& FallingPiece = this->FallingPiece;
+//	this->GameOver = this->GameBoard.FreezePiece(*(FallingPiece.Piece), FallingPiece.CenterLocation, FallingPiece.PieceOrientation, FallingPiece.Color());
+//}
 {
 	falling_piece& FallingPiece = this->FallingPiece;
 	int PieceOrientation = FallingPiece.PieceOrientation;
@@ -225,6 +241,32 @@ void game_state::FreezePiece()
 		++it;
 	}
 }
+//
+//bool game_board::FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color)
+bool game_board::FreezePiece(piece Piece)
+{
+//	//falling_piece& FallingPiece = this->FallingPiece;
+//	//int PieceOrientation = FallingPiece.PieceOrientation;
+//
+	bool BlockAboveLineOfDeath = false;
+//	auto it = Piece.Blocks[PieceOrientation].begin();
+//	while (it != Piece.Blocks[PieceOrientation].end())
+//	{
+//		intvec2 BlockLocation = CenterLocation + *it;
+//		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
+//			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
+//		{
+//			this->SetColor(BlockLocation.x, BlockLocation.y, Color);
+//		}
+//		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
+//		{
+//			BlockAboveLineOfDeath = true;
+//		}
+//		++it;
+//	}
+	return BlockAboveLineOfDeath;
+}
+
 
 void game_state::AddNextPiece()
 {
@@ -247,7 +289,7 @@ void game_state::NewFallingPieceAtTop()
 	this->DropTimer = 1.0f;
 	if (this->Player == player::Computer)
 	{
-		this->ComputerPlayer->RecalculateStrategy();
+		this->ComputerPlayer->RecalculateStrategy(this->FallingPiece.Piece, this->NextPiece);
 	}
 }
 
@@ -259,7 +301,30 @@ void game_state::UpdateLevel()
 
 void game_state::HandleComputerKeyboard()
 {
-
+	if (this->ComputerPlayerTimer <= 0.0f)
+	{
+		if (this->FallingPiece.PieceOrientation != this->ComputerPlayer->StrategyOrientation)
+		{
+			this->FallingPiece.PieceOrientation = (this->FallingPiece.PieceOrientation + 1) % 4;
+			this->ComputerPlayerTimer = 1.0f;
+		}
+		else if (this->FallingPiece.CenterLocation.x < this->ComputerPlayer->StrategyX)
+		{
+			this->FallingPiece.CenterLocation.x += 1;
+			this->ComputerPlayerTimer = 1.0f;
+		}
+		else if (this->FallingPiece.CenterLocation.x < this->ComputerPlayer->StrategyX)
+		{
+			this->FallingPiece.CenterLocation.x -= 1;
+			this->ComputerPlayerTimer = 1.0f;
+		}
+		this->UserIsPressingDown = false;
+	}
+	else
+	{
+		this->UserIsPressingDown = true;
+		this->ComputerPlayerTimer -= 1.0f / TargetFPS;
+	}
 }
 
 

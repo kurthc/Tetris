@@ -14,27 +14,6 @@ constexpr float DROP_SPEED = 50.0f;
 enum piece_center_type { Center, Corner };
 enum player {User, Computer};
 
-// class: game_board
-// The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom to top:
-//
-//    2
-//  y 1
-//    0
-//     0123
-//      x
-class game_board
-{
-public:
-	const int GameBoardWidth = GAME_BOARD_WIDTH;
-	const int GameBoardHeight = GAME_BOARD_HEIGHT;
-	const int PlayableHeight = GAME_BOARD_PLAYABLE_HEIGHT;      // The highest point that blocks can be be dropped without triggering game over.
-	int GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH];
-	game_board();
-	void ClearBoard();
-	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
-	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
-	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
-};
 
 // A tetris piece. Coordinates are not relative to the piece center.
 // 
@@ -53,10 +32,10 @@ public:
 	void GetRotatedPiecesFrom0();
 	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
 	void FillBounds();
-	int GetBottom(int n) { return Bound[n][BoundDirection::Bottom]; }
-	int GetTop(int n) { return Bound[n][BoundDirection::Top]; }
-	int GetLeft(int n) { return Bound[n][BoundDirection::Left]; }
-	int GetRight(int n) { return Bound[n][BoundDirection::Right]; }
+	int GetBottom(int n) const { return Bound[n][BoundDirection::Bottom]; }
+	int GetTop(int n) const { return Bound[n][BoundDirection::Top]; }
+	int GetLeft(int n) const { return Bound[n][BoundDirection::Left]; }
+	int GetRight(int n) const { return Bound[n][BoundDirection::Right]; }
 };
 
 class falling_piece
@@ -76,6 +55,31 @@ public:
 	void ReplacePiece(piece*);
 };
 
+// class: game_board
+// The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom to top:
+//
+//    2
+//  y 1
+//    0
+//     0123
+//      x
+class game_board
+{
+public:
+	//TODO: Why do you need these constants?
+	const int GameBoardWidth = GAME_BOARD_WIDTH;
+	const int GameBoardHeight = GAME_BOARD_HEIGHT;
+	const int PlayableHeight = GAME_BOARD_PLAYABLE_HEIGHT;      // The highest point that blocks can be be dropped without triggering game over.
+	int GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH];
+	game_board();
+	game_board(const game_board&);
+	void ClearBoard();
+	//bool FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color);
+	bool FreezePiece(piece Piece);
+	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
+	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
+	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
+};
 
 class computer_player
 {
@@ -85,8 +89,8 @@ public:
 	int StrategyX;
 
 	computer_player(game_board* GameBoard) : GameBoard(GameBoard) {};
-	void RecalculateStrategy();
-	void FindBestLocation();
+	void RecalculateStrategy(const piece* CurrentPiece, const piece* NextPiece);
+	//void FindBestLocation();
 	double MapScore();
 
 };
@@ -110,6 +114,7 @@ public:
 	float FallSpeed = 5.0f;
 	player Player = player::User;
 	computer_player* ComputerPlayer;
+	float ComputerPlayerTimer = 0.0f;
 
 	game_state();
 	void SetStandardPieces();
