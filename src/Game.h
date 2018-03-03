@@ -38,23 +38,6 @@ public:
 	int GetRight(int n) const { return Bound[n][BoundDirection::Right]; }
 };
 
-class falling_piece
-{
-public:
-	intvec2 CenterLocation;
-	bool Visible = true;
-	int PieceOrientation = 0;
-	piece* Piece;
-	
-	falling_piece() : Piece(nullptr) {}
-	falling_piece(const piece&);
-	bool HitSomething(const game_board&);
-	intvec2 operator[](const int& n);
-	std::vector<intvec2>& CurrentBlocks() { return this->Piece->Blocks[this->PieceOrientation]; }
-	BitmapIndex Color() { return Piece->Color; }
-	void ReplacePiece(piece*);
-};
-
 // class: game_board
 // The blocks currently on the game board are stored in GameBoard[y][x], with y ordered bottom to top:
 //
@@ -74,12 +57,30 @@ public:
 	game_board();
 	game_board(const game_board&);
 	void ClearBoard();
-	//bool FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color);
-	bool FreezePiece(piece Piece);
+	bool FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color);
 	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
 	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
 	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
 };
+
+
+class falling_piece
+{
+public:
+	intvec2 CenterLocation;
+	bool Visible = true;
+	int PieceOrientation = 0;
+	piece* Piece;
+	
+	falling_piece() : Piece(nullptr) {}
+	falling_piece(const piece&);
+	bool HitSomething(const game_board&);
+	intvec2 operator[](const int& n);
+	std::vector<intvec2>& CurrentBlocks() { return this->Piece->Blocks[this->PieceOrientation]; }
+	BitmapIndex Color() { return Piece->Color; }
+	void ReplacePiece(piece*);
+};
+
 
 class computer_player
 {

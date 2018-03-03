@@ -18,6 +18,7 @@ game_board::game_board(const game_board& InputGameBoard)
 	//GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH]
 }
 
+
 void game_board::ClearBoard()
 {
 	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
@@ -27,6 +28,27 @@ void game_board::ClearBoard()
 			this->GameBoard[y][x] = 0;
 		}
 	}
+}
+
+bool game_board::FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color)
+{
+	bool BlockAboveLineOfDeath = false;
+	auto it = Piece.Blocks[PieceOrientation].begin();
+	while (it != Piece.Blocks[PieceOrientation].end())
+	{
+		intvec2 BlockLocation = CenterLocation + *it;
+		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
+			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
+		{
+			this->SetColor(BlockLocation.x, BlockLocation.y, Color);
+		}
+		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
+		{
+			BlockAboveLineOfDeath = true;
+		}
+		++it;
+	}
+	return BlockAboveLineOfDeath;
 }
 
 game_state::game_state()
@@ -216,56 +238,12 @@ void game_state::ProcessLinesAfterDrop()
 }
 
 void game_state::FreezePiece()
-//{
-//	falling_piece& FallingPiece = this->FallingPiece;
-//	this->GameOver = this->GameBoard.FreezePiece(*(FallingPiece.Piece), FallingPiece.CenterLocation, FallingPiece.PieceOrientation, FallingPiece.Color());
-//}
 {
 	falling_piece& FallingPiece = this->FallingPiece;
-	int PieceOrientation = FallingPiece.PieceOrientation;
-	
-	bool BlockAboveLineOfDeath = false;
-	auto it = FallingPiece.CurrentBlocks().begin();
-	while (it != FallingPiece.CurrentBlocks().end())
-	{
-		intvec2 BlockLocation = FallingPiece.CenterLocation + *it;
-		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
-			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
-		{
-			this->GameBoard.SetColor(BlockLocation.x, BlockLocation.y, FallingPiece.Color());
-		}
-		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
-		{
-			this->GameOver = true;
-		}
-		++it;
-	}
+	this->GameOver = this->GameBoard.FreezePiece(*(FallingPiece.Piece), FallingPiece.CenterLocation, FallingPiece.PieceOrientation, FallingPiece.Color());
 }
-//
-//bool game_board::FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color)
-bool game_board::FreezePiece(piece Piece)
-{
-//	//falling_piece& FallingPiece = this->FallingPiece;
-//	//int PieceOrientation = FallingPiece.PieceOrientation;
-//
-	bool BlockAboveLineOfDeath = false;
-//	auto it = Piece.Blocks[PieceOrientation].begin();
-//	while (it != Piece.Blocks[PieceOrientation].end())
-//	{
-//		intvec2 BlockLocation = CenterLocation + *it;
-//		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
-//			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
-//		{
-//			this->SetColor(BlockLocation.x, BlockLocation.y, Color);
-//		}
-//		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
-//		{
-//			BlockAboveLineOfDeath = true;
-//		}
-//		++it;
-//	}
-	return BlockAboveLineOfDeath;
-}
+
+
 
 
 void game_state::AddNextPiece()
