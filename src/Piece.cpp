@@ -68,6 +68,7 @@ falling_piece::falling_piece(const piece& Piece)
 	this->PieceOrientation = 0;
 }
 
+
 bool falling_piece::HitSomething(const game_board& GameBoard)
 {
 	bool IsOverlapping = false;

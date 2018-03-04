@@ -57,6 +57,7 @@ public:
 	game_board();
 	game_board(const game_board&);
 	void ClearBoard();
+	void CopyBoard(game_board* GameBoardToCopy);
 	bool FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color);
 	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
 	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
@@ -82,19 +83,6 @@ public:
 };
 
 
-class computer_player
-{
-public:
-	game_board* GameBoard;
-	int StrategyOrientation;
-	int StrategyX;
-
-	computer_player(game_board* GameBoard) : GameBoard(GameBoard) {};
-	void RecalculateStrategy(const piece* CurrentPiece, const piece* NextPiece);
-	//void FindBestLocation();
-	double MapScore();
-
-};
 
 
 class game_round
@@ -111,7 +99,21 @@ public:
 	void AddNextPiece();
 	void NewFallingPieceAtTop();
 	void FreezePiece();
-	//~game_round();
+	~game_round();
+};
+
+class computer_player
+{
+public:
+	game_round* GameRound;
+	int StrategyOrientation;
+	int StrategyX;
+
+	computer_player(game_round* GameRound) : GameRound(GameRound) {};
+	void RecalculateStrategy(const piece* CurrentPiece, const piece* NextPiece);
+	//void FindBestLocation();
+	double MapScore();
+
 };
 
 class game_state
@@ -144,6 +146,7 @@ public:
 	void ProcessFallingPiece(game_round* GameRound);
 	void ProcessLinesAfterDrop(game_round* GameRound);
 	void UpdateLevel();
+	void DropPiece(game_round* GameRound);
 	void HandleComputerKeyboard();
 };
 

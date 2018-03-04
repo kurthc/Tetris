@@ -8,6 +8,7 @@ game_board::game_board()
 
 game_board::game_board(const game_board& InputGameBoard)
 {
+	// Make a copy of the GameBoard array.
 	for (int y = 0; y < GAME_BOARD_HEIGHT; ++y)
 	{
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
@@ -15,22 +16,7 @@ game_board::game_board(const game_board& InputGameBoard)
 			this->GameBoard[y][x] = InputGameBoard.GameBoard[y][x];
 		}
 	}
-	//GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH]
 }
-
-
-game_round::game_round(game_state* GameState)
-{
-	this->GameState = GameState;
-}
-
-//~game_round::game_round()
-//{
-//	if (this->FallingPiece)
-//	{
-//		delete FallingPiece;
-//	}
-//}
 
 
 void game_board::ClearBoard()
@@ -40,6 +26,18 @@ void game_board::ClearBoard()
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
 			this->GameBoard[y][x] = 0;
+		}
+	}
+}
+
+void game_board::CopyBoard(game_board* GameBoardToCopy)
+{
+	//TODO: Would it be better to do this with memcpy?
+	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
+	{
+		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
+		{
+			this->GameBoard[y][x] = GameBoardToCopy->GameBoard[y][x];
 		}
 	}
 }
@@ -65,10 +63,23 @@ bool game_board::FreezePiece(const piece& Piece, intvec2 CenterLocation, int Pie
 	return BlockAboveLineOfDeath;
 }
 
+game_round::game_round(game_state* GameState)
+{
+	this->GameState = GameState;
+}
+
+game_round::~game_round()
+{
+	if (this->FallingPiece)
+	{
+		delete FallingPiece;
+	}
+}
+
 game_state::game_state()
 {
 	this->GameRound[0] = new game_round(this);
-	this->ComputerPlayer = new computer_player(&this->GameRound[0]->GameBoard);  // This should probably be GameRound?
+	this->ComputerPlayer = new computer_player(this->GameRound[0]);  // This should probably be GameRound?
 	this->SetStandardPieces();
 	this->GameRound[0]->AddNextPiece();
 	this->GameRound[0]->NewFallingPieceAtTop();
@@ -111,6 +122,25 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 			this->ProcessFallingPiece(this->GameRound[i]);
 			this->UpdateLevel();
 
+		}
+	}
+}
+
+void game_state::DropPiece(game_round* GameRound)
+{
+	falling_piece FallenPiece(*GameRound->FallingPiece->Piece);   // TODO: Make a proper copy constructor.
+	FallenPiece.PieceOrientation = GameRound->FallingPiece->PieceOrientation;
+	FallenPiece.CenterLocation = GameRound->FallingPiece->CenterLocation;
+
+	while (true)
+	{
+		FallenPiece.CenterLocation = FallenPiece.CenterLocation + intvec2(0, -1);
+		if (FallenPiece.HitSomething(GameRound->GameBoard))
+		{
+			GameRound->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
+			GameRound->FreezePiece();
+			GameRound->NewFallingPieceAtTop();
+			break;
 		}
 	}
 }
@@ -161,6 +191,11 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		CurrentFallingPiece->PieceOrientation = ProposedLocation.PieceOrientation;
 	}
 
+	if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
+	{
+		this->DropPiece(this->GameRound[0]);
+	}
+
 	if (KeyboardInfo->KeyDebug().IsDown == true && KeyboardInfo->KeyDebug().WasDown == false)
 	{
 		this->ShowDebugOverlay = !this->ShowDebugOverlay;
@@ -190,7 +225,7 @@ void game_state::ProcessFallingPiece(game_round* GameRound)
 	}
 	else
 	{
-		falling_piece FPiece(*FallingPiece);   //TODO: This is probably leaking.
+		falling_piece FPiece(*FallingPiece);
 		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
 		if (FPiece.HitSomething(GameRound->GameBoard))
 		{
@@ -264,22 +299,15 @@ void game_round::FreezePiece()
 	this->GameState->GameOver = this->GameBoard.FreezePiece(*(FallingPiece->Piece), FallingPiece->CenterLocation, FallingPiece->PieceOrientation, FallingPiece->Color());
 }
 
-
-
-
-//void game_state::AddNextPiece(game_round* GameRound)
 void game_round::AddNextPiece()
 {
 	int PieceIndex = (rand() % this->GameState->StandardPieceCount);
 	piece* NewPiece = new piece(this->GameState->StandardPiece[PieceIndex]);
 	this->NextPiece = NewPiece;
-	//FallingPiece.ReplacePiece(NewPiece);
-
 }
 
 void game_round::NewFallingPieceAtTop()
 {
-	//falling_piece& FallingPiece = this->FallingPiece;
 	if (!this->FallingPiece)
 	{
 		this->FallingPiece = new falling_piece(*this->NextPiece);
@@ -288,8 +316,8 @@ void game_round::NewFallingPieceAtTop()
 	{
 		this->FallingPiece->ReplacePiece(this->NextPiece);
 	}
-	int Height = this->FallingPiece->Piece->GetBottom(0);
-	this->FallingPiece->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+	int Height = this->FallingPiece->Piece->GetBottom(0) + GAME_BOARD_HEIGHT;
+	this->FallingPiece->CenterLocation = intvec2(4, Height);
 	this->FallingPiece->PieceOrientation = 0;
 
 	this->AddNextPiece();
