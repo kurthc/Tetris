@@ -16,6 +16,8 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 			falling_piece FP(*CurrentPiece);
 			FP.PieceOrientation = OIndex;
 			FP.CenterLocation = intvec2(XIndex, CurrentPiece->GetBottom(OIndex) + GAME_BOARD_HEIGHT);
+			//this->GameRound->DropPiece();
+
 			//GameBoardTemp->
 			//for (auto it = CurrentPiece->Blocks[OIndex].begin(); it != CurrentPiece->Blocks[OIndex].end(); ++it)
 			//{

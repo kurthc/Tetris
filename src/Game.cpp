@@ -126,20 +126,40 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 	}
 }
 
-void game_state::DropPiece(game_round* GameRound)
+void game_board::DropPiece(const falling_piece& FallingPiece)
 {
-	falling_piece FallenPiece(*GameRound->FallingPiece->Piece);   // TODO: Make a proper copy constructor.
-	FallenPiece.PieceOrientation = GameRound->FallingPiece->PieceOrientation;
-	FallenPiece.CenterLocation = GameRound->FallingPiece->CenterLocation;
+	piece* Piece = FallingPiece.Piece;
+	//falling_piece FallenPiece(FallingPiece.Piece);   // TODO: Make a proper copy constructor.
+	//FallenPiece.PieceOrientation = this->FallingPiece->PieceOrientation;
+	//FallenPiece.CenterLocation = this->FallingPiece->CenterLocation;
+
+	//while (true)
+	//{
+	//	FallenPiece.CenterLocation = FallenPiece.CenterLocation + intvec2(0, -1);
+	//	if (FallenPiece.HitSomething(this->GameBoard))
+	//	{
+	//		this->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
+	//		this->FreezePiece();
+	//		this->NewFallingPieceAtTop();
+	//		break;
+	//	}
+	//}
+}
+
+void game_round::DropPiece()
+{
+	falling_piece FallenPiece(*this->FallingPiece->Piece);   // TODO: Make a proper copy constructor.
+	FallenPiece.PieceOrientation = this->FallingPiece->PieceOrientation;
+	FallenPiece.CenterLocation = this->FallingPiece->CenterLocation;
 
 	while (true)
 	{
 		FallenPiece.CenterLocation = FallenPiece.CenterLocation + intvec2(0, -1);
-		if (FallenPiece.HitSomething(GameRound->GameBoard))
+		if (FallenPiece.HitSomething(this->GameBoard))
 		{
-			GameRound->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
-			GameRound->FreezePiece();
-			GameRound->NewFallingPieceAtTop();
+			this->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
+			this->FreezePiece();
+			this->NewFallingPieceAtTop();
 			break;
 		}
 	}
@@ -193,7 +213,9 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 
 	if (KeyboardInfo->KeyDrop().IsDown == true && KeyboardInfo->KeyDrop().WasDown == false)
 	{
-		this->DropPiece(this->GameRound[0]);
+		//this->DropPiece(this->GameRound[0]);
+		this->GameRound[0]->DropPiece();
+		//this->DropPiece(this->GameRound[0]);
 	}
 
 	if (KeyboardInfo->KeyDebug().IsDown == true && KeyboardInfo->KeyDebug().WasDown == false)

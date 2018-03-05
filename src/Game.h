@@ -62,6 +62,7 @@ public:
 	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
 	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
 	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
+	void DropPiece(const falling_piece& FallingPiece);
 };
 
 
@@ -99,6 +100,7 @@ public:
 	void AddNextPiece();
 	void NewFallingPieceAtTop();
 	void FreezePiece();
+	void DropPiece();
 	~game_round();
 };
 
@@ -146,7 +148,7 @@ public:
 	void ProcessFallingPiece(game_round* GameRound);
 	void ProcessLinesAfterDrop(game_round* GameRound);
 	void UpdateLevel();
-	void DropPiece(game_round* GameRound);
+	//void DropPiece(game_round* GameRound);
 	void HandleComputerKeyboard();
 };
 
