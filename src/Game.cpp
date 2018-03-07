@@ -127,10 +127,9 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 	}
 }
 
-//void game_board::DropPiece(const falling_piece& FallingPiece)
-void game_board::DropPiece(falling_piece* FallingPiece)
-{
-	piece* Piece = FallingPiece->Piece;
+//void game_board::DropPiece(falling_piece* FallingPiece)
+//{
+//	piece* Piece = FallingPiece->Piece;
 	//falling_piece FallenPiece(FallingPiece.Piece);   // TODO: Make a proper copy constructor.
 	//FallenPiece.PieceOrientation = this->FallingPiece->PieceOrientation;
 	//FallenPiece.CenterLocation = this->FallingPiece->CenterLocation;
@@ -146,7 +145,16 @@ void game_board::DropPiece(falling_piece* FallingPiece)
 	//		break;
 	//	}
 	//}
+//}
+
+void falling_piece::DropToBottom(const game_board* GameBoard)
+{
+	while (!this->HitSomething(GameBoard))
+	{
+		this->CenterLocation = this->CenterLocation + intvec2(0, -1);
+	}
 }
+
 
 void game_round::DropPiece()
 {

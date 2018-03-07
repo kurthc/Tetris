@@ -63,7 +63,7 @@ public:
 	BitmapIndex GetColor(const int x, const int y) const { return (BitmapIndex)GameBoard[y][x]; };
 	void SetColor(const int x, const int y, const BitmapIndex Color) { GameBoard[y][x] = Color; };
 	bool BlockHere(const int x, const int y) const { return this->GetColor(x, y) != 0; };
-	void DropPiece(falling_piece* FallingPiece);
+	//void DropPiece(falling_piece* FallingPiece);
 };
 
 
@@ -82,6 +82,7 @@ public:
 	std::vector<intvec2>& CurrentBlocks() { return this->Piece->Blocks[this->PieceOrientation]; }
 	BitmapIndex Color() { return Piece->Color; }
 	void ReplacePiece(piece*);
+	void DropToBottom(const game_board*);
 };
 
 
