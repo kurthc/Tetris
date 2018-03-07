@@ -43,8 +43,8 @@ public:
 	intvec2(int x, int y) : x(x), y(y) {}
 	intvec2(int* a) : x(a[0]), y(a[1]) {}
 
-	intvec2 operator+(const intvec2& v);
-	intvec2 operator-(const intvec2& v);
+	intvec2 operator+(const intvec2& v) const;
+	intvec2 operator-(const intvec2& v) const;
 };
 
 class key_state

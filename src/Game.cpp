@@ -42,7 +42,8 @@ void game_board::CopyBoard(game_board* GameBoardToCopy)
 	}
 }
 
-bool game_board::FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color)
+// Add the blocks of a piece to the game_board data.
+bool game_board::FreezePiece(const piece& Piece, const intvec2 CenterLocation, const int PieceOrientation, const BitmapIndex Color)
 {
 	bool BlockAboveLineOfDeath = false;
 	auto it = Piece.Blocks[PieceOrientation].begin();
@@ -126,9 +127,10 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 	}
 }
 
-void game_board::DropPiece(const falling_piece& FallingPiece)
+//void game_board::DropPiece(const falling_piece& FallingPiece)
+void game_board::DropPiece(falling_piece* FallingPiece)
 {
-	piece* Piece = FallingPiece.Piece;
+	piece* Piece = FallingPiece->Piece;
 	//falling_piece FallenPiece(FallingPiece.Piece);   // TODO: Make a proper copy constructor.
 	//FallenPiece.PieceOrientation = this->FallingPiece->PieceOrientation;
 	//FallenPiece.CenterLocation = this->FallingPiece->CenterLocation;
@@ -155,7 +157,7 @@ void game_round::DropPiece()
 	while (true)
 	{
 		FallenPiece.CenterLocation = FallenPiece.CenterLocation + intvec2(0, -1);
-		if (FallenPiece.HitSomething(this->GameBoard))
+		if (FallenPiece.HitSomething(&this->GameBoard))
 		{
 			this->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
 			this->FreezePiece();
@@ -189,7 +191,7 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	if (!ProposedLocation.HitSomething(this->GameRound[0]->GameBoard))
+	if (!ProposedLocation.HitSomething(&this->GameRound[0]->GameBoard))
 		CurrentFallingPiece->CenterLocation = ProposedLocation.CenterLocation;
 	else
 		ProposedLocation.CenterLocation = CurrentFallingPiece->CenterLocation;
@@ -206,7 +208,7 @@ void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 		KeyboardInfo->RepeatTimer = KEYBOARD_REPEAT_TIME;
 	}
 
-	if (!ProposedLocation.HitSomething(GameRound->GameBoard))
+	if (!ProposedLocation.HitSomething(&GameRound->GameBoard))
 	{
 		CurrentFallingPiece->PieceOrientation = ProposedLocation.PieceOrientation;
 	}
@@ -249,7 +251,7 @@ void game_state::ProcessFallingPiece(game_round* GameRound)
 	{
 		falling_piece FPiece(*FallingPiece);
 		FPiece.CenterLocation = FPiece.CenterLocation + intvec2(0, -1);
-		if (FPiece.HitSomething(GameRound->GameBoard))
+		if (FPiece.HitSomething(&GameRound->GameBoard))
 		{
 			//bool CrossedLine = GameRound->GameBoard.FreezePiece();
 			GameRound->FreezePiece();
@@ -353,7 +355,7 @@ void game_round::NewFallingPieceAtTop()
 void game_state::UpdateLevel()
 {
 	this->Level = (this->LineCount / 5 + 1);
-	this->FallSpeed = this->Level * 4;
+	this->FallSpeed = this->Level * 4.0f;
 }
 
 void game_state::HandleComputerKeyboard()

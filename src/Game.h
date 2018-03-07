@@ -4,6 +4,7 @@
 #include "Global.h"
 
 class game_state;
+class falling_piece;
 
 constexpr int GAME_BOARD_WIDTH = 10;
 constexpr int GAME_BOARD_HEIGHT = 20;
@@ -32,10 +33,10 @@ public:
 	void GetRotatedPiecesFrom0();
 	void RotateBlocks90(const std::vector<intvec2>&, std::vector<intvec2>&);
 	void FillBounds();
-	int GetBottom(int n) const { return Bound[n][BoundDirection::Bottom]; }
-	int GetTop(int n) const { return Bound[n][BoundDirection::Top]; }
-	int GetLeft(int n) const { return Bound[n][BoundDirection::Left]; }
-	int GetRight(int n) const { return Bound[n][BoundDirection::Right]; }
+	int GetBottom(const int n) const { return Bound[n][BoundDirection::Bottom]; }
+	int GetTop(const int n) const { return Bound[n][BoundDirection::Top]; }
+	int GetLeft(const int n) const { return Bound[n][BoundDirection::Left]; }
+	int GetRight(const int n) const { return Bound[n][BoundDirection::Right]; }
 };
 
 // class: game_board
@@ -58,11 +59,11 @@ public:
 	game_board(const game_board&);
 	void ClearBoard();
 	void CopyBoard(game_board* GameBoardToCopy);
-	bool FreezePiece(const piece& Piece, intvec2 CenterLocation, int PieceOrientation, BitmapIndex Color);
-	BitmapIndex GetColor(int x, int y) const { return (BitmapIndex)GameBoard[y][x]; };
-	void SetColor(int x, int y, BitmapIndex Color) { GameBoard[y][x] = Color; };
-	bool BlockHere(int x, int y) const { return this->GetColor(x, y) != 0; };
-	void DropPiece(const falling_piece& FallingPiece);
+	bool FreezePiece(const piece& Piece, const intvec2 CenterLocation, const int PieceOrientation, const BitmapIndex Color);
+	BitmapIndex GetColor(const int x, const int y) const { return (BitmapIndex)GameBoard[y][x]; };
+	void SetColor(const int x, const int y, const BitmapIndex Color) { GameBoard[y][x] = Color; };
+	bool BlockHere(const int x, const int y) const { return this->GetColor(x, y) != 0; };
+	void DropPiece(falling_piece* FallingPiece);
 };
 
 
@@ -74,9 +75,9 @@ public:
 	int PieceOrientation = 0;
 	piece* Piece;
 	
-	falling_piece() : Piece(nullptr) {}
+	//falling_piece() : Piece(nullptr) {}
 	falling_piece(const piece&);
-	bool HitSomething(const game_board&);
+	bool HitSomething(const game_board*);
 	intvec2 operator[](const int& n);
 	std::vector<intvec2>& CurrentBlocks() { return this->Piece->Blocks[this->PieceOrientation]; }
 	BitmapIndex Color() { return Piece->Color; }
@@ -122,13 +123,9 @@ class game_state
 {
 public:
 	game_round* GameRound[1];
-	//game_board GameBoard;
-	//falling_piece FallingPiece;
-	//piece* NextPiece;
 	piece StandardPiece[7];
 	int StandardPieceCount;
 	bool ShowDebugOverlay = false;
-	//float DropTimer = 0.0f;
 	bool UserIsPressingDown = false;
 	bool GameOver = false;
 	float FPSObserved = 0.0f;
@@ -144,16 +141,11 @@ public:
 	void SetStandardPieces();
 	void HandleKeyboard(keyboard_info*);
 	void UpdateGame(keyboard_info*);
-	//void AddNextPiece(game_round* GameRound);
 	void ProcessFallingPiece(game_round* GameRound);
 	void ProcessLinesAfterDrop(game_round* GameRound);
 	void UpdateLevel();
-	//void DropPiece(game_round* GameRound);
 	void HandleComputerKeyboard();
 };
-
-
-
 
 enum StandardPieceName { O = 0, I = 1, T = 2, L = 3, J = 4, S = 5, Z = 6 };
 

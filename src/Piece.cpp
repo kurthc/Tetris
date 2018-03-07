@@ -69,7 +69,7 @@ falling_piece::falling_piece(const piece& Piece)
 }
 
 
-bool falling_piece::HitSomething(const game_board& GameBoard)
+bool falling_piece::HitSomething(const game_board* GameBoard)
 {
 	bool IsOverlapping = false;
 
@@ -82,7 +82,7 @@ bool falling_piece::HitSomething(const game_board& GameBoard)
 			IsOverlapping = true;
 		}
 		// ...or if it hits another block.
-		else if (GameBoard.BlockHere(b.x, b.y))
+		else if (GameBoard->BlockHere(b.x, b.y))
 		{
 			IsOverlapping = true;
 		}
