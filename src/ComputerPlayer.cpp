@@ -16,6 +16,15 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 			falling_piece FP(*CurrentPiece);
 			FP.PieceOrientation = OIndex;
 			FP.CenterLocation = intvec2(XIndex, CurrentPiece->GetBottom(OIndex) + GAME_BOARD_HEIGHT);
+			FP.DropToBottom(GameBoardTemp);
+			auto it = FP.CurrentBlocks().begin();
+			while (it != FP.CurrentBlocks().end())
+			{
+				intvec2 FreezeLocation = *it + FP.CenterLocation;
+				GameBoardTemp->GameBoard[FreezeLocation.y][FreezeLocation.x] = BitmapIndex::BlockBlue; //
+				++it;
+			}
+			GameBoardTemp->GameBoard[]
 			//this->GameRound->DropPiece();
 
 			//GameBoardTemp->

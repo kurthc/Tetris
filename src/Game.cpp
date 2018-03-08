@@ -149,10 +149,20 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 
 void falling_piece::DropToBottom(const game_board* GameBoard)
 {
-	while (!this->HitSomething(GameBoard))
+	while (true)
 	{
 		this->CenterLocation = this->CenterLocation + intvec2(0, -1);
+		if (this->HitSomething(GameBoard))
+		{
+			this->CenterLocation = this->CenterLocation + intvec2(0, +1);
+			break;
+		}
 	}
+	//while (!this->HitSomething(GameBoard))
+	//{
+	//	this->CenterLocation = this->CenterLocation + intvec2(0, -1);
+	//}
+	//this->CenterLocation = this->CenterLocation + intvec2(0, 1);
 }
 
 
