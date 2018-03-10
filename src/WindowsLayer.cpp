@@ -143,7 +143,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLi
 	bool GameLoopFinished = false;
 
 	//player Player = player::Computer;
-	GlobalGameState = new game_state(player::User);
+	GlobalGameState = new game_state(player::Computer);
 	//GlobalGameState->Player = player::Computer;
 
 	BitmapManager = new bitmap_manager();

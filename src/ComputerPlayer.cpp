@@ -28,6 +28,7 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 				GameBoardTemp->GameBoard[FreezeLocation.y][FreezeLocation.x] = BitmapIndex::BlockBlue; //
 				++it;
 			}
+			GameBoardTemp->ClearCompletedLines();
 			double ThisBoardScore = this->MapScore(GameBoardTemp);
 			if (BestScore < 0 || ThisBoardScore < BestScore)
 			{
@@ -95,12 +96,12 @@ double computer_player::MaxHeightScore(game_board* GameBoard)
 	{
 		for (int y = HEIGHT_OF_DEATH; y >= -1; --y)
 		{
-			if (GameBoard->BlockHere(x, y) || y == -1)
+			if (y == -1 || GameBoard->BlockHere(x, y))
 			{
-				Score = MAX(MaxHeight, y+1);
+				MaxHeight = MAX(MaxHeight, y+1);
 				break;
 			}
 		}
 	}
-	return (float)Score;
+	return (float)MaxHeight;
 }

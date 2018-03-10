@@ -76,6 +76,7 @@ public:
 	bool InGameBoardRegion(const intvec2 Location) const;
 	bool UnderLineOfDeath(const intvec2 Location) const;
 	bool UnderLineOfDeath(const int x, const int y) const;
+	int ClearCompletedLines();
 };
 
 

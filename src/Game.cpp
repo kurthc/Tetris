@@ -317,10 +317,69 @@ void game_state::ProcessFallingPiece(game_round* GameRound)
 	}
 }
 
+//void game_state::ProcessLinesAfterDrop(game_round* GameRound)
+//{
+//	int LinesMade = 0;
+//	int PointsToAdd = 0;
+//
+//	// Search from top to bottom for completed rows.
+//	for (int BlockY = GAME_BOARD_HEIGHT - 1; BlockY >= 0; --BlockY)
+//	{
+//		bool FoundHole = false;
+//		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)
+//		{
+//			if (!GameRound->GameBoard.BlockHere(BlockX, BlockY))
+//			{
+//				FoundHole = true;
+//				break;
+//			}
+//		}
+//
+//		if (!FoundHole)
+//		{
+//			// A row is complete. Drop all the blocks above it.
+//			for (int DroppingBlockY = BlockY; DroppingBlockY < GAME_BOARD_HEIGHT - 1; ++DroppingBlockY)
+//			{
+//				for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
+//				{
+//					// Set each block to the block above it.
+//					GameRound->GameBoard.SetColor(DroppingBlockX, DroppingBlockY, GameRound->GameBoard.GetColor(DroppingBlockX, DroppingBlockY + 1));
+//				}
+//
+//			}
+//
+//			// Clear the top row.
+//			for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
+//			{
+//				GameRound->GameBoard.SetColor(DroppingBlockX, GAME_BOARD_HEIGHT - 1, BitmapIndex::BlockBlack);
+//			}
+//
+//			++LinesMade;
+//			if (LinesMade == 1)
+//				PointsToAdd = 100;
+//			else
+//				PointsToAdd = PointsToAdd * 3;
+//			
+//		}
+//	}
+//	this->LineCount += LinesMade;
+//	this->Score += PointsToAdd;
+//
+//}
+
 void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 {
+	int LinesMade = GameRound->GameBoard.ClearCompletedLines();
+	int PointsToAdd = LinesMade * (LinesMade + 1) / 2;
+
+	this->LineCount += LinesMade;
+	this->Score += PointsToAdd;
+
+}
+
+int game_board::ClearCompletedLines()
+{
 	int LinesMade = 0;
-	int PointsToAdd = 0;
 
 	// Search from top to bottom for completed rows.
 	for (int BlockY = GAME_BOARD_HEIGHT - 1; BlockY >= 0; --BlockY)
@@ -328,7 +387,7 @@ void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 		bool FoundHole = false;
 		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)
 		{
-			if (!GameRound->GameBoard.BlockHere(BlockX, BlockY))
+			if (!this->BlockHere(BlockX, BlockY))
 			{
 				FoundHole = true;
 				break;
@@ -343,7 +402,7 @@ void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 				for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 				{
 					// Set each block to the block above it.
-					GameRound->GameBoard.SetColor(DroppingBlockX, DroppingBlockY, GameRound->GameBoard.GetColor(DroppingBlockX, DroppingBlockY + 1));
+					this->SetColor(DroppingBlockX, DroppingBlockY, this->GetColor(DroppingBlockX, DroppingBlockY + 1));
 				}
 
 			}
@@ -351,20 +410,14 @@ void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 			// Clear the top row.
 			for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 			{
-				GameRound->GameBoard.SetColor(DroppingBlockX, GAME_BOARD_HEIGHT - 1, BitmapIndex::BlockBlack);
+				this->SetColor(DroppingBlockX, GAME_BOARD_HEIGHT - 1, BitmapIndex::BlockBlack);
 			}
 
 			++LinesMade;
-			if (LinesMade == 1)
-				PointsToAdd = 100;
-			else
-				PointsToAdd = PointsToAdd * 3;
-			
 		}
 	}
-	this->LineCount += LinesMade;
-	this->Score += PointsToAdd;
 
+	return LinesMade;
 }
 
 void game_round::FreezePiece()
