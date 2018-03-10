@@ -115,10 +115,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\ComputerPlayer.cpp" />
+    <ClCompile Include="..\src\ComputerPlayer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\Game.cpp" />
+    <ClCompile Include="..\src\GameBoard.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\Global.cpp" />
-    <ClCompile Include="..\src\Piece.cpp" />
+    <ClCompile Include="..\src\Piece.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\WindowsGraphics.cpp" />
     <ClCompile Include="..\src\WindowsLayer.cpp" />
   </ItemGroup>

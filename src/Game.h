@@ -64,15 +64,12 @@ public:
 	void ClearBoard();
 	void CopyBoard(game_board* GameBoardToCopy);
 	bool FreezePiece(const piece& Piece, const intvec2 CenterLocation, const int PieceOrientation, const BitmapIndex Color);
-	//BitmapIndex GetColor(const int x, const int y) const { return (BitmapIndex)GameBoard[y][x]; };
 	BitmapIndex GetColor(const int x, const int y) const;
 	void SetColor(const int x, const int y, const BitmapIndex Color) { GameBoard[y][x] = Color; };
 	bool BlockHere(const int x, const int y) const { return this->GetColor(x, y) != 0; };
 	bool BlockHere(const intvec2 Location) const { return this->BlockHere(Location.x, Location.y); }
 	bool BlockHereOrOutOfBounds(const int x, const int y) const;
 	bool BlockHereOrOutOfBounds(const intvec2 Location) const;
-	//bool OutOfBounds(const int x, const int y) const;
-	//bool OutOfBounds(const intvec2 Location) const;
 	bool InGameBoardRegion(const int x, const int y) const;
 	bool InGameBoardRegion(const intvec2 Location) const;
 	bool UnderLineOfDeath(const intvec2 Location) const;

@@ -1,4 +1,4 @@
-#include "Game.h"
+//#include "Game.h"
 
 void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece* NextPiece)
 {
