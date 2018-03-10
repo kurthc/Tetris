@@ -9,7 +9,7 @@ game_board::game_board()
 game_board::game_board(const game_board& InputGameBoard)
 {
 	// Make a copy of the GameBoard array.
-	for (int y = 0; y < HEIGHT_OF_DEATH; ++y)
+	for (int y = 0; y < GAME_BOARD_HEIGHT; ++y)
 	{
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
@@ -382,7 +382,7 @@ int game_board::ClearCompletedLines()
 	int LinesMade = 0;
 
 	// Search from top to bottom for completed rows.
-	for (int BlockY = GAME_BOARD_HEIGHT - 1; BlockY >= 0; --BlockY)
+	for (int BlockY = HEIGHT_OF_DEATH - 1; BlockY >= 0; --BlockY)
 	{
 		bool FoundHole = false;
 		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)

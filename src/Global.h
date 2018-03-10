@@ -5,14 +5,13 @@
 
 /*
 TODO:
-Left/Right movement is too slow when the pieces are falling fast
 Change the colors to a proper color enum and not a bitmap index.
-Checking of game board bounds in game_board.
 Get rid of globals.
 Separate out Game.cpp
-Show FPS, Score, Lines, etc. on screen
 .....
 */
+
+constexpr bool LOG_COMPUTER_PLAYER = true;
 
 // I'd prefer this to be 60, but that makes the frame length too short for Windows to reliably sleep.
 constexpr float TargetFPS = 30.0f;

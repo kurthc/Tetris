@@ -11,8 +11,11 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 	int BestOrientation = 0;
 	int BestX = 0;
 
+	std::ostringstream ss{ "" };
+
 	for (int OIndex = 0; OIndex < 4; ++OIndex)
 	{
+		ss << "Orientation " << OIndex << ": ";
 		int Left = CurrentPiece->GetLeft(OIndex);
 		int Right = CurrentPiece->GetRight(OIndex);
 		for (int XIndex = -Left; XIndex < GAME_BOARD_WIDTH - Right; ++XIndex)
@@ -30,6 +33,7 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 			}
 			GameBoardTemp->ClearCompletedLines();
 			double ThisBoardScore = this->MapScore(GameBoardTemp);
+			ss << ThisBoardScore << " ";
 			if (BestScore < 0 || ThisBoardScore < BestScore)
 			{
 				BestScore = ThisBoardScore;
@@ -44,30 +48,22 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 				GameBoardTemp->GameBoard[FreezeLocation.y][FreezeLocation.x] = this->GameRound->GameBoard.GameBoard[FreezeLocation.y][FreezeLocation.x]; //
 				++it;
 			}
-
-			//GameBoardTemp->GameBoard[]
-			//this->GameRound->DropPiece();
-
-			//GameBoardTemp->
-			//for (auto it = CurrentPiece->Blocks[OIndex].begin(); it != CurrentPiece->Blocks[OIndex].end(); ++it)
-			//{
-			//	GameBoardTemp->GameBoard[]
-			//}
-
-			// after calculation:
-			//GameBoardTemp->CopyBoard(&this->GameRound->GameBoard);
 		}
+		ss << std::endl;
 	}
-
+	
 	this->StrategyOrientation = BestOrientation;
 	this->StrategyX = BestX;
 
+	ss << "Best Orientation: " << BestOrientation << ", Best X: " << BestX << std::endl << std::endl;
+	std::cout << ss.str();
 }
 
 
 double computer_player::MapScore(game_board* GameBoard)
 {
 	return MaxHeightScore(GameBoard);
+	//return HeightScore(GameBoard);
 }
 
 double computer_player::HeightScore(game_board* GameBoard)
@@ -76,22 +72,25 @@ double computer_player::HeightScore(game_board* GameBoard)
 	int Score = 0;
 	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 	{
+		int ColumnHeight;
+		ColumnHeight = 0;
 		for (int y = HEIGHT_OF_DEATH; y >= 0; --y)
 		{
 			if (GameBoard->BlockHere(x,y))
 			{
-				Score = Score + y*y;
+				ColumnHeight = y + 1;
 			}
 		}
+		Score += ColumnHeight;
 	}
-	return (float)Score;
+	
+	return (float)Score / (float)((HEIGHT_OF_DEATH +1) * GAME_BOARD_WIDTH);
 }
 
 double computer_player::MaxHeightScore(game_board* GameBoard)
 {
 	//
 	int MaxHeight = 0;
-	int Score = 0;
 	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 	{
 		for (int y = HEIGHT_OF_DEATH; y >= -1; --y)
@@ -103,5 +102,11 @@ double computer_player::MaxHeightScore(game_board* GameBoard)
 			}
 		}
 	}
-	return (float)MaxHeight;
+	return (float)MaxHeight / (float)(HEIGHT_OF_DEATH + 1);
 }
+
+
+//double computer_player::HoleDensityScore(game_board* GameBoard)
+//{
+//
+//}

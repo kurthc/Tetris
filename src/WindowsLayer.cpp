@@ -1,7 +1,7 @@
 #include "WindowsLayer.h"
 
 static constexpr bool LOGMESSAGES = false;
-static constexpr bool LOG_FPS = true;
+static constexpr bool LOG_FPS = false;
 
 // Get the current time from QueryPerformanceCounter().
 timing_information GetSeconds()
