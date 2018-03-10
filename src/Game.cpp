@@ -9,7 +9,7 @@ game_board::game_board()
 game_board::game_board(const game_board& InputGameBoard)
 {
 	// Make a copy of the GameBoard array.
-	for (int y = 0; y < GAME_BOARD_HEIGHT; ++y)
+	for (int y = 0; y < HEIGHT_OF_DEATH; ++y)
 	{
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
@@ -21,7 +21,7 @@ game_board::game_board(const game_board& InputGameBoard)
 
 void game_board::ClearBoard()
 {
-	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
+	for (int y = 0; y < GAME_BOARD_HEIGHT; ++y)
 	{
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
@@ -33,13 +33,51 @@ void game_board::ClearBoard()
 void game_board::CopyBoard(game_board* GameBoardToCopy)
 {
 	//TODO: Would it be better to do this with memcpy?
-	for (int y = 0; y < GAME_BOARD_PLAYABLE_HEIGHT; ++y)
+	for (int y = 0; y < GAME_BOARD_HEIGHT; ++y)
 	{
 		for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 		{
 			this->GameBoard[y][x] = GameBoardToCopy->GameBoard[y][x];
 		}
 	}
+}
+
+bool game_board::UnderLineOfDeath(const intvec2 Location) const
+{
+	return this->UnderLineOfDeath(Location.x, Location.y);
+}
+
+bool game_board::UnderLineOfDeath(const int x, const int y) const
+{
+	return y < HEIGHT_OF_DEATH;
+}
+
+
+bool game_board::InGameBoardRegion(const intvec2 Location) const
+{
+	return this->InGameBoardRegion(Location.x, Location.y);
+}
+
+bool game_board::InGameBoardRegion(const int x, const int y) const
+{
+	return x >= 0 && x < GAME_BOARD_WIDTH && y >= 0 && y < GAME_BOARD_HEIGHT;
+}
+
+
+bool game_board::BlockHereOrOutOfBounds(const int x, const int y) const
+{
+	return !this->InGameBoardRegion(x, y) || this->BlockHere(x, y);
+}
+
+bool game_board::BlockHereOrOutOfBounds(const intvec2 Location) const
+{
+	return this->BlockHereOrOutOfBounds(Location.x, Location.y);
+}
+
+BitmapIndex game_board::GetColor(const int x, const int y) const
+{
+	assert(this->InGameBoardRegion(x, y));
+	return (BitmapIndex)GameBoard[y][x];
 }
 
 // Add the blocks of a piece to the game_board data.
@@ -51,11 +89,11 @@ bool game_board::FreezePiece(const piece& Piece, const intvec2 CenterLocation, c
 	{
 		intvec2 BlockLocation = CenterLocation + *it;
 		if (0 <= BlockLocation.x && BlockLocation.x < GAME_BOARD_WIDTH
-			&& 0 <= BlockLocation.y && BlockLocation.x < GAME_BOARD_HEIGHT)
+			&& 0 <= BlockLocation.y && BlockLocation.x < HEIGHT_OF_DEATH)
 		{
 			this->SetColor(BlockLocation.x, BlockLocation.y, Color);
 		}
-		if (BlockLocation.y >= GAME_BOARD_HEIGHT)
+		if (BlockLocation.y >= HEIGHT_OF_DEATH)
 		{
 			BlockAboveLineOfDeath = true;
 		}
@@ -77,8 +115,9 @@ game_round::~game_round()
 	}
 }
 
-game_state::game_state()
+game_state::game_state(player Player)
 {
+	this->Player = Player;
 	this->GameRound[0] = new game_round(this);
 	this->ComputerPlayer = new computer_player(this->GameRound[0]);  // This should probably be GameRound?
 	this->SetStandardPieces();
@@ -147,43 +186,36 @@ void game_state::UpdateGame(keyboard_info* KeyboardInfo)
 	//}
 //}
 
-void falling_piece::DropToBottom(const game_board* GameBoard)
-{
-	while (true)
-	{
-		this->CenterLocation = this->CenterLocation + intvec2(0, -1);
-		if (this->HitSomething(GameBoard))
-		{
-			this->CenterLocation = this->CenterLocation + intvec2(0, +1);
-			break;
-		}
-	}
-	//while (!this->HitSomething(GameBoard))
-	//{
-	//	this->CenterLocation = this->CenterLocation + intvec2(0, -1);
-	//}
-	//this->CenterLocation = this->CenterLocation + intvec2(0, 1);
-}
 
 
 void game_round::DropPiece()
 {
-	falling_piece FallenPiece(*this->FallingPiece->Piece);   // TODO: Make a proper copy constructor.
-	FallenPiece.PieceOrientation = this->FallingPiece->PieceOrientation;
-	FallenPiece.CenterLocation = this->FallingPiece->CenterLocation;
-
-	while (true)
-	{
-		FallenPiece.CenterLocation = FallenPiece.CenterLocation + intvec2(0, -1);
-		if (FallenPiece.HitSomething(&this->GameBoard))
-		{
-			this->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
-			this->FreezePiece();
-			this->NewFallingPieceAtTop();
-			break;
-		}
-	}
+	this->FallingPiece->DropToBottom(&this->GameBoard);
+	this->FreezePiece();
+	this->NewFallingPieceAtTop();
+	//this->GameBoard.FreezePiece();
 }
+
+
+
+//void game_round::DropPiece()
+//{
+//	falling_piece FallenPiece(*this->FallingPiece->Piece);   // TODO: Make a proper copy constructor.
+//	FallenPiece.PieceOrientation = this->FallingPiece->PieceOrientation;
+//	FallenPiece.CenterLocation = this->FallingPiece->CenterLocation;
+//
+//	while (true)
+//	{
+//		FallenPiece.CenterLocation = FallenPiece.CenterLocation + intvec2(0, -1);
+//		if (FallenPiece.HitSomething(&this->GameBoard))
+//		{
+//			this->FallingPiece->CenterLocation = FallenPiece.CenterLocation + intvec2(0, 1);
+//			this->FreezePiece();
+//			this->NewFallingPieceAtTop();
+//			break;
+//		}
+//	}
+//}
 
 void game_state::HandleKeyboard(keyboard_info* KeyboardInfo)
 {
@@ -291,7 +323,7 @@ void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 	int PointsToAdd = 0;
 
 	// Search from top to bottom for completed rows.
-	for (int BlockY = GAME_BOARD_PLAYABLE_HEIGHT - 1; BlockY >= 0; --BlockY)
+	for (int BlockY = GAME_BOARD_HEIGHT - 1; BlockY >= 0; --BlockY)
 	{
 		bool FoundHole = false;
 		for (int BlockX = 0; BlockX < GAME_BOARD_WIDTH; ++BlockX)
@@ -306,7 +338,7 @@ void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 		if (!FoundHole)
 		{
 			// A row is complete. Drop all the blocks above it.
-			for (int DroppingBlockY = BlockY; DroppingBlockY < GAME_BOARD_PLAYABLE_HEIGHT - 1; ++DroppingBlockY)
+			for (int DroppingBlockY = BlockY; DroppingBlockY < GAME_BOARD_HEIGHT - 1; ++DroppingBlockY)
 			{
 				for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 				{
@@ -319,7 +351,7 @@ void game_state::ProcessLinesAfterDrop(game_round* GameRound)
 			// Clear the top row.
 			for (int DroppingBlockX = 0; DroppingBlockX < GAME_BOARD_WIDTH; ++DroppingBlockX)
 			{
-				GameRound->GameBoard.SetColor(DroppingBlockX, GAME_BOARD_PLAYABLE_HEIGHT - 1, BitmapIndex::BlockBlack);
+				GameRound->GameBoard.SetColor(DroppingBlockX, GAME_BOARD_HEIGHT - 1, BitmapIndex::BlockBlack);
 			}
 
 			++LinesMade;
@@ -358,7 +390,7 @@ void game_round::NewFallingPieceAtTop()
 	{
 		this->FallingPiece->ReplacePiece(this->NextPiece);
 	}
-	int Height = this->FallingPiece->Piece->GetBottom(0) + GAME_BOARD_HEIGHT;
+	int Height = this->FallingPiece->Piece->GetBottom(0) + HEIGHT_OF_DEATH;
 	this->FallingPiece->CenterLocation = intvec2(4, Height);
 	this->FallingPiece->PieceOrientation = 0;
 
@@ -392,17 +424,17 @@ void game_state::HandleComputerKeyboard()
 			FallingPiece->CenterLocation.x += 1;
 			this->ComputerPlayerTimer = 1.0f;
 		}
-		else if (FallingPiece->CenterLocation.x < this->ComputerPlayer->StrategyX)
+		else if (FallingPiece->CenterLocation.x > this->ComputerPlayer->StrategyX)
 		{
 			FallingPiece->CenterLocation.x -= 1;
 			this->ComputerPlayerTimer = 1.0f;
 		}
-		this->UserIsPressingDown = false;
+		this->UserIsPressingDown = true;
 	}
 	else
 	{
 		this->UserIsPressingDown = true;
-		this->ComputerPlayerTimer -= 1.0f / TargetFPS;
+		this->ComputerPlayerTimer -= 10.0f / TargetFPS;
 	}
 }
 

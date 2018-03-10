@@ -2,13 +2,17 @@
 #include <vector>
 #include <iostream>
 #include "Global.h"
+#include <assert.h>
 
 class game_state;
 class falling_piece;
 
 constexpr int GAME_BOARD_WIDTH = 10;
-constexpr int GAME_BOARD_HEIGHT = 20;
-constexpr int GAME_BOARD_PLAYABLE_HEIGHT = GAME_BOARD_HEIGHT + 4;
+// Change:
+// GAME_BOARD_HEIGHT -> HEIGHT_OF_DEATH
+// GAME_BOARD_PLAYABLE_HEIGHT -> GAME_BOARD_HEIGHT
+constexpr int HEIGHT_OF_DEATH = 20;
+constexpr int GAME_BOARD_HEIGHT = HEIGHT_OF_DEATH + 4;
 constexpr float KEYBOARD_REPEAT_TIME = 0.1f;
 constexpr float DROP_SPEED = 50.0f;
 
@@ -53,17 +57,25 @@ public:
 	//TODO: Why do you need these constants?
 	const int GameBoardWidth = GAME_BOARD_WIDTH;
 	const int GameBoardHeight = GAME_BOARD_HEIGHT;
-	const int PlayableHeight = GAME_BOARD_PLAYABLE_HEIGHT;      // The highest point that blocks can be be dropped without triggering game over.
-	int GameBoard[GAME_BOARD_PLAYABLE_HEIGHT][GAME_BOARD_WIDTH];
+	int GameBoard[GAME_BOARD_HEIGHT][GAME_BOARD_WIDTH];
 	game_board();
 	game_board(const game_board&);
 	void ClearBoard();
 	void CopyBoard(game_board* GameBoardToCopy);
 	bool FreezePiece(const piece& Piece, const intvec2 CenterLocation, const int PieceOrientation, const BitmapIndex Color);
-	BitmapIndex GetColor(const int x, const int y) const { return (BitmapIndex)GameBoard[y][x]; };
+	//BitmapIndex GetColor(const int x, const int y) const { return (BitmapIndex)GameBoard[y][x]; };
+	BitmapIndex GetColor(const int x, const int y) const;
 	void SetColor(const int x, const int y, const BitmapIndex Color) { GameBoard[y][x] = Color; };
 	bool BlockHere(const int x, const int y) const { return this->GetColor(x, y) != 0; };
-	//void DropPiece(falling_piece* FallingPiece);
+	bool BlockHere(const intvec2 Location) const { return this->BlockHere(Location.x, Location.y); }
+	bool BlockHereOrOutOfBounds(const int x, const int y) const;
+	bool BlockHereOrOutOfBounds(const intvec2 Location) const;
+	//bool OutOfBounds(const int x, const int y) const;
+	//bool OutOfBounds(const intvec2 Location) const;
+	bool InGameBoardRegion(const int x, const int y) const;
+	bool InGameBoardRegion(const intvec2 Location) const;
+	bool UnderLineOfDeath(const intvec2 Location) const;
+	bool UnderLineOfDeath(const int x, const int y) const;
 };
 
 
@@ -116,7 +128,9 @@ public:
 	computer_player(game_round* GameRound) : GameRound(GameRound) {};
 	void RecalculateStrategy(const piece* CurrentPiece, const piece* NextPiece);
 	//void FindBestLocation();
-	double MapScore();
+	double MapScore(game_board*);
+	double HeightScore(game_board*);
+	double MaxHeightScore(game_board*);
 
 };
 
@@ -138,7 +152,7 @@ public:
 	computer_player* ComputerPlayer;
 	float ComputerPlayerTimer = 0.0f;
 
-	game_state();
+	game_state(player Player);
 	void SetStandardPieces();
 	void HandleKeyboard(keyboard_info*);
 	void UpdateGame(keyboard_info*);

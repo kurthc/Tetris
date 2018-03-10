@@ -27,7 +27,7 @@ intvec2 buffer::MapToDisplayCoordinates(intvec2 MapPosition)
 	game_board& GameBoard = this->GameState->GameRound[0]->GameBoard;
 	//game_board& GameBoard = this->GameState.GameBoard;
 	int DisplayX = GAME_MAP_LEFT + MapPosition.x * BLOCK_WIDTH;
-	int DisplayY = GAME_MAP_TOP + (GameBoard.PlayableHeight - MapPosition.y) * BLOCK_HEIGHT;
+	int DisplayY = GAME_MAP_TOP + (GameBoard.GameBoardHeight - MapPosition.y) * BLOCK_HEIGHT;
 	return { DisplayX, DisplayY };
 }
 
@@ -85,20 +85,20 @@ void buffer::DrawGameMap()
 	//TODO: Make this a constant somewhere.
 	const static int BorderWidth = 4;  
 	this->DrawRectangle(GAME_MAP_LEFT - BorderWidth, GAME_MAP_TOP - BorderWidth, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH + BorderWidth,
-		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT + BorderWidth, 255, 255, 255);
+		GAME_MAP_TOP + GameBoard.GameBoardHeight * BLOCK_HEIGHT + BorderWidth, 255, 255, 255);
 
 	this->DrawRectangle(GAME_MAP_LEFT, GAME_MAP_TOP - 4, GAME_MAP_LEFT + GameBoard.GameBoardWidth * BLOCK_WIDTH,
-		GAME_MAP_TOP + GameBoard.PlayableHeight * BLOCK_HEIGHT, 0, 0, 0);
+		GAME_MAP_TOP + GameBoard.GameBoardHeight * BLOCK_HEIGHT, 0, 0, 0);
 
 	this->DrawRectangle(NextPieceRegion.left - BorderWidth, NextPieceRegion.top - BorderWidth, NextPieceRegion.right + BorderWidth, NextPieceRegion.bottom + BorderWidth, 255, 255, 255);
 	this->DrawRectangle(NextPieceRegion, 0, 0, 0);
 
-	intvec2 TopLineLeft = this->MapToDisplayCoordinates(intvec2(0, GAME_BOARD_HEIGHT + 1));
-	intvec2 TopLineRight = this->MapToDisplayCoordinates(intvec2(GAME_BOARD_WIDTH, GAME_BOARD_HEIGHT + 1));
+	intvec2 TopLineLeft = this->MapToDisplayCoordinates(intvec2(0, HEIGHT_OF_DEATH + 1));
+	intvec2 TopLineRight = this->MapToDisplayCoordinates(intvec2(GAME_BOARD_WIDTH, HEIGHT_OF_DEATH + 1));
 	this->DrawRectangle(TopLineLeft.x, TopLineLeft.y, TopLineRight.x, TopLineLeft.y+1, 255, 255, 255);
 	//this->DrawRectangle(GAME_MAP_LEFT - BorderWidth, GAME_MA - BorderWidth)
 
-	for (int y = GameBoard.PlayableHeight - 1; y >= 0; --y)
+	for (int y = GameBoard.GameBoardHeight - 1; y >= 0; --y)
 	{
 		for (int x = 0; x < GameBoard.GameBoardWidth; ++x)
 		{
@@ -159,7 +159,7 @@ void buffer::DrawNextPiece()
 	{
 		
 		intvec2 BlockLocation = this->MapToDisplayCoordinates(*it)
-			- intvec2(GAME_MAP_LEFT, GAME_MAP_TOP + (GameBoard.PlayableHeight) * BLOCK_HEIGHT);
+			- intvec2(GAME_MAP_LEFT, GAME_MAP_TOP + (GameBoard.GameBoardHeight) * BLOCK_HEIGHT);
 		intvec2 DisplayLocation = BlockLocation + intvec2((NextPieceRegion.left + NextPieceRegion.right)/2, (NextPieceRegion.top + NextPieceRegion.bottom)/2);
 		this->DrawBitmap(DisplayLocation.x, DisplayLocation.y, BLOCK_WIDTH, BLOCK_HEIGHT, this->BitmapManager->Bitmap[BitmapIndex]);
 		++it;

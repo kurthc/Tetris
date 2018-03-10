@@ -7,6 +7,10 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 	//this->StrategyOrientation = 1;
 	//this->StrategyX = 2;
 
+	double BestScore = -1.0;
+	int BestOrientation = 0;
+	int BestX = 0;
+
 	for (int OIndex = 0; OIndex < 4; ++OIndex)
 	{
 		int Left = CurrentPiece->GetLeft(OIndex);
@@ -15,7 +19,7 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 		{
 			falling_piece FP(*CurrentPiece);
 			FP.PieceOrientation = OIndex;
-			FP.CenterLocation = intvec2(XIndex, CurrentPiece->GetBottom(OIndex) + GAME_BOARD_HEIGHT);
+			FP.CenterLocation = intvec2(XIndex, CurrentPiece->GetBottom(OIndex) + HEIGHT_OF_DEATH);
 			FP.DropToBottom(GameBoardTemp);
 			auto it = FP.CurrentBlocks().begin();
 			while (it != FP.CurrentBlocks().end())
@@ -24,7 +28,23 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 				GameBoardTemp->GameBoard[FreezeLocation.y][FreezeLocation.x] = BitmapIndex::BlockBlue; //
 				++it;
 			}
-			GameBoardTemp->GameBoard[]
+			double ThisBoardScore = this->MapScore(GameBoardTemp);
+			if (BestScore < 0 || ThisBoardScore < BestScore)
+			{
+				BestScore = ThisBoardScore;
+				BestOrientation = OIndex;
+				BestX = XIndex;
+			}
+
+			it = FP.CurrentBlocks().begin();
+			while (it != FP.CurrentBlocks().end())
+			{
+				intvec2 FreezeLocation = *it + FP.CenterLocation;
+				GameBoardTemp->GameBoard[FreezeLocation.y][FreezeLocation.x] = this->GameRound->GameBoard.GameBoard[FreezeLocation.y][FreezeLocation.x]; //
+				++it;
+			}
+
+			//GameBoardTemp->GameBoard[]
 			//this->GameRound->DropPiece();
 
 			//GameBoardTemp->
@@ -37,21 +57,48 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 			//GameBoardTemp->CopyBoard(&this->GameRound->GameBoard);
 		}
 	}
+
+	this->StrategyOrientation = BestOrientation;
+	this->StrategyX = BestX;
+
 }
 
 
+double computer_player::MapScore(game_board* GameBoard)
+{
+	return MaxHeightScore(GameBoard);
+}
 
-double computer_player::MapScore()
+double computer_player::HeightScore(game_board* GameBoard)
 {
 	//
 	int Score = 0;
 	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 	{
-		for (int y = GAME_BOARD_HEIGHT; y >= 0; ++y)
+		for (int y = HEIGHT_OF_DEATH; y >= 0; --y)
 		{
-			if (this->GameRound->GameBoard.BlockHere(x,y))
+			if (GameBoard->BlockHere(x,y))
 			{
-				Score = Score + y;
+				Score = Score + y*y;
+			}
+		}
+	}
+	return (float)Score;
+}
+
+double computer_player::MaxHeightScore(game_board* GameBoard)
+{
+	//
+	int MaxHeight = 0;
+	int Score = 0;
+	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
+	{
+		for (int y = HEIGHT_OF_DEATH; y >= -1; --y)
+		{
+			if (GameBoard->BlockHere(x, y) || y == -1)
+			{
+				Score = MAX(MaxHeight, y+1);
+				break;
 			}
 		}
 	}

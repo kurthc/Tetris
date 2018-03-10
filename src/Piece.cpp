@@ -64,7 +64,7 @@ falling_piece::falling_piece(const piece& Piece)
 	//this->Piece = Piece;    //copy
 	this->Piece = new piece(Piece);
 	int Height = this->Piece->GetBottom(0);
-	this->CenterLocation = intvec2(4, Height + GAME_BOARD_HEIGHT);
+	this->CenterLocation = intvec2(4, Height + HEIGHT_OF_DEATH);
 	this->PieceOrientation = 0;
 }
 
@@ -77,6 +77,7 @@ bool falling_piece::HitSomething(const game_board* GameBoard)
 	{
 		// For each block in the piece, check if it goes out of bounds...
 		intvec2 b = (*this)[i];
+		//if (b.x < 0 || b.x >= GAME_BOARD_WIDTH || b.y < 0 || b.y >= GAME_BOARD_HEIGHT)
 		if (b.x < 0 || b.x >= GAME_BOARD_WIDTH || b.y < 0)
 		{
 			IsOverlapping = true;
@@ -106,4 +107,22 @@ void falling_piece::ReplacePiece(piece* NewPiece)
 	}
 	this->Piece = NewPiece;
 	return;
+}
+
+void falling_piece::DropToBottom(const game_board* GameBoard)
+{
+	while (true)
+	{
+		this->CenterLocation = this->CenterLocation + intvec2(0, -1);
+		if (this->HitSomething(GameBoard))
+		{
+			this->CenterLocation = this->CenterLocation + intvec2(0, +1);
+			break;
+		}
+	}
+	//while (!this->HitSomething(GameBoard))
+	//{
+	//	this->CenterLocation = this->CenterLocation + intvec2(0, -1);
+	//}
+	//this->CenterLocation = this->CenterLocation + intvec2(0, 1);
 }
