@@ -1,3 +1,4 @@
+#include "Game.h"
 //#include "Game.h"
 
 void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece* NextPiece)
@@ -62,8 +63,12 @@ void computer_player::RecalculateStrategy(const piece* CurrentPiece, const piece
 
 double computer_player::MapScore(game_board* GameBoard)
 {
-	return MaxHeightScore(GameBoard);
+	//return BlockCountScore(GameBoard);
+	//return MaxHeightScore(GameBoard);
 	//return HeightScore(GameBoard);
+
+	return BlockCountScore(GameBoard) + MaxHeightScore(GameBoard);
+
 }
 
 double computer_player::HeightScore(game_board* GameBoard)
@@ -87,24 +92,50 @@ double computer_player::HeightScore(game_board* GameBoard)
 	return (float)Score / (float)((HEIGHT_OF_DEATH +1) * GAME_BOARD_WIDTH);
 }
 
+//double computer_player::MaxHeightScore(game_board* GameBoard)
+//{
+//	//
+//	int MaxHeight = 0;
+//	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
+//	{
+//		for (int y = HEIGHT_OF_DEATH; y >= -1; --y)
+//		{
+//			if (y == -1 || GameBoard->BlockHere(x, y))
+//			{
+//				MaxHeight = MAX(MaxHeight, y+1);
+//				break;
+//			}
+//		}
+//	}
+//	return (float)MaxHeight / (float)(HEIGHT_OF_DEATH + 1);
+//}
+
 double computer_player::MaxHeightScore(game_board* GameBoard)
 {
 	//
 	int MaxHeight = 0;
 	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
 	{
-		for (int y = HEIGHT_OF_DEATH; y >= -1; --y)
-		{
-			if (y == -1 || GameBoard->BlockHere(x, y))
-			{
-				MaxHeight = MAX(MaxHeight, y+1);
-				break;
-			}
-		}
+		int Height = GameBoard->HeightAtX(x);
+		MaxHeight = MAX(MaxHeight, Height);
 	}
 	return (float)MaxHeight / (float)(HEIGHT_OF_DEATH + 1);
 }
 
+
+double computer_player::BlockCountScore(game_board* GameBoard)
+{
+	//
+	int BlockCount = 0;
+	for (int x = 0; x < GAME_BOARD_WIDTH; ++x)
+	{
+		BlockCount += GameBoard->BlockCountAtX(x);
+		//int Height = GameBoard->HeightAtX(x);
+		//MaxHeight = MAX(MaxHeight, Height);
+	}
+
+	return (float)BlockCount / (float)(GAME_BOARD_HEIGHT * GAME_BOARD_WIDTH) ;
+}
 
 //double computer_player::HoleDensityScore(game_board* GameBoard)
 //{

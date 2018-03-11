@@ -1,3 +1,4 @@
+#include "Game.h"
 game_board::game_board()
 {
 	this->ClearBoard();
@@ -144,4 +145,53 @@ int game_board::ClearCompletedLines()
 	}
 
 	return LinesMade;
+}
+
+int game_board::HeightAtX(int x)
+{
+	assert(this->InGameBoardRegion(x, 0));
+	int Height = 0;
+
+	for (int y = HEIGHT_OF_DEATH; y >= 0; --y)
+	{
+		if (this->BlockHere(x, y))
+		{
+			Height = y + 1;
+			break;
+		}
+	}
+	return Height;
+}
+
+
+int game_board::HolesAtX(int x)
+{
+	assert(this->InGameBoardRegion(x, 0));
+	int HoleCount = 0;
+	int Top = this->HeightAtX(x);
+
+	for (int y = Top - 2; y >= 0; --y)
+	{
+		if (this->BlockHere(x, y))
+		{
+			++HoleCount;
+		}
+	}
+	return HoleCount;
+}
+
+int game_board::BlockCountAtX(int x)
+{
+	assert(this->InGameBoardRegion(x, 0));
+	int BlockCount = 0;
+
+	for (int y = HEIGHT_OF_DEATH; y >= 0; --y)
+	{
+		if (this->BlockHere(x, y))
+		{
+			++BlockCount;
+			break;
+		}
+	}
+	return BlockCount;
 }

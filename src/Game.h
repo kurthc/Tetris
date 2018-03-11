@@ -75,6 +75,9 @@ public:
 	bool UnderLineOfDeath(const intvec2 Location) const;
 	bool UnderLineOfDeath(const int x, const int y) const;
 	int ClearCompletedLines();
+	int HeightAtX(int x);
+	int HolesAtX(int x);
+	int BlockCountAtX(int x);
 };
 
 
@@ -130,6 +133,8 @@ public:
 	double MapScore(game_board*);
 	double HeightScore(game_board*);
 	double MaxHeightScore(game_board*);
+
+	double BlockCountScore(game_board * GameBoard);
 
 };
 
